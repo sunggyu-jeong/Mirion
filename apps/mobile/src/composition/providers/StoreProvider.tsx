@@ -1,4 +1,4 @@
-import { store } from '@/src/app/store';
+import { store } from '@/src/composition/store';
 import React from 'react';
 import { Provider } from 'react-redux';
 
