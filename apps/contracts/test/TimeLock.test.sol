@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { Test } from "forge-std/Test.sol";
-import { TimeLock } from "../src/Timelock.sol"
+import { TimeLock } from "../src/TimeLock.sol";
 
 contract TimeLockTest is Test {
     TimeLock public timeLock;
