@@ -1,11 +1,11 @@
-import { store } from "@/src/app/store";
+import { store } from '@/src/app/store';
+import React from 'react';
 import { Provider } from 'react-redux';
-import React from "react";
 
 interface Props {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export const StoreProvider = ({ children }: Props) => {
-    return <Provider store={store}>{children}</Provider>;
-}
+  return <Provider store={store}>{children}</Provider>;
+};
