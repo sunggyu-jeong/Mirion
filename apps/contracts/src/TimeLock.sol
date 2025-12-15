@@ -38,4 +38,8 @@ contract TimeLock {
 
         emit Withdraw(msg.sender, amount);    
     }
+
+    function getLockInfo(address _user) external view returns (uint256 balance, uint256) {
+        return (balances[_user], unlockTimes[_user]);
+    }
 }
