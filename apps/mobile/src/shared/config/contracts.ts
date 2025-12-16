@@ -1,8 +1,8 @@
-import timeLockAbi from './abis/TimeLock.json';
+import { TIME_LOCK_ABI } from "@/src/shared/config/abis/TimeLockABI";
 
-export const CONTRACT_ADDRESS = process.env.EXPO_PUBLIC_CONTRACT_ADDRESS as `0x${string}`;
+export const CONTRACT_ADDRESS = process.env.EXPO_PUBLIC_CONTRACT_ADDRESS;
 
 export const timeLockContract = {
   address: CONTRACT_ADDRESS,
-  abi: timeLockAbi,
+  abi: TIME_LOCK_ABI,
 } as const;
