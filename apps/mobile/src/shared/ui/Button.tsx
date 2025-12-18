@@ -1,6 +1,6 @@
 import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 
-import { cn } from '@/src/shared/lib/utils';
+import { cn } from '@/src/shared/lib/utils/cn';
 
 interface ButtonProps {
   label: string;
