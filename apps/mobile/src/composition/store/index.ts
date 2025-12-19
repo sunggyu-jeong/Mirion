@@ -1,13 +1,32 @@
 import { baseApi } from '@/src/shared/api/baseApi';
-import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
+import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
+const rootReducer = combineReducers({
+  [baseApi.reducerPath]: baseApi.reducer,
+});
+
+const persistConfig = {
+  key: 'rakpy-root',
+  version: 1,
+  storage: AsyncStorage,
+  whitelist: []
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
-  reducer: {
-    [baseApi.reducerPath]: baseApi.reducer,
-  },
-  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(baseApi.middleware),
+  reducer: persistedReducer,
+  middleware: getDefaultMiddleware => getDefaultMiddleware({
+    serializableCheck: {
+      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
+    }
+  }).concat(baseApi.middleware),
 });
+
+export const persistor = persistStore(store)
 
 setupListeners(store.dispatch);
 
