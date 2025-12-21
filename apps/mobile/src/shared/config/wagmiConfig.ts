@@ -1,23 +1,23 @@
-import { http, createConfig, createStorage } from 'wagmi'
-import { mainnet, sepolia } from 'wagmi/chains'
-import { mock } from 'wagmi/connectors'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createConfig, createStorage, http } from 'wagmi';
+import { mainnet, sepolia } from 'wagmi/chains';
+
+const storage = createStorage({
+  storage: {
+    getItem: key => AsyncStorage.getItem(key),
+    setItem: (key, value) => AsyncStorage.setItem(key, value),
+    removeItem: key => AsyncStorage.removeItem(key),
+  },
+  key: 'rakpy-wagmi',
+});
 
 export const config = createConfig({
   chains: [mainnet, sepolia],
   transports: {
     [mainnet.id]: http(),
-    [sepolia.id]: http()
+    [sepolia.id]: http(),
   },
-  connectors: [
-    mock({
-      accounts: ['0x70997970C51812dc3A010C7d01b50e0d17dc79C8']
-    })
-  ],
-  storage: createStorage({
-    storage: AsyncStorage,
-    key: 'rakpy-wagmi'
-  })
+  storage,
 });
 
 export function getWagmiConfig() {

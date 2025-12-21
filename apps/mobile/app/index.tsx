@@ -1,7 +1,6 @@
+import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-
-import { Redirect } from '@/.expo/types/router';
 
 export default function SplashScreen() {
   const [isReady, setIsReady] = useState(false);
