@@ -18,7 +18,7 @@ export const useWalletAuth = () => {
     connect: handleConnect,
     error,
     isPending,
-    disconnectMutation,
+    disconnect: disconnectMutation,
     address,
     isConnected,
     chainId

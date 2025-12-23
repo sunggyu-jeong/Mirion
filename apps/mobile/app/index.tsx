@@ -23,5 +23,5 @@ export default function SplashScreen() {
     );
   }
 
-  return <Redirect href="/(tabs)/home" />;
+  return <Redirect href="/home" />;
 }

@@ -1,7 +1,7 @@
 import { mockConnect, mockDisconnect } from "@/__tests__/setupWagmiMock";
 import { useWalletAuth } from "@/src/features/wallet/model";
 import { useAccount } from "@reown/appkit-react-native";
-import { act } from "react";
+import { renderHook, act } from "@testing-library/react-native";
 
 describe('지갑 연결 커스텀 훅 테스트', () => {
   beforeEach(() => {
@@ -31,7 +31,7 @@ describe('지갑 연결 커스텀 훅 테스트', () => {
     const { result } = renderHook(() => useWalletAuth())
 
     act(() => {
-      result.current.disconnect();
+      result.current.disconnect()
     })
     expect(mockDisconnect).toHaveBeenCalledTimes(1)
   })
