@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     backgroundColor: '#FFFFFF',
+    boxShadow: '0 4px 4px rgba(0,0,0,0.11),',
   },
   leftSection: {
     flexDirection: 'column',
