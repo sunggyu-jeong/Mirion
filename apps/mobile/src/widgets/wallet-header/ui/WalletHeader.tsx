@@ -1,11 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatUnits } from 'viem';
 import { useAccount, useBalance } from 'wagmi';
 
 import { useEthPrice } from '@/src/entities/price-tracker';
 
 export const WalletHeader = () => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { data: balance } = useBalance({
     address,
     query: {
@@ -15,62 +16,83 @@ export const WalletHeader = () => {
   const { data: price } = useEthPrice();
 
   const formattedBalance = balance ? formatUnits(balance.value, balance.decimals) : '0';
-
-  const krwValue =
-    balance && price
-      ? (parseFloat(formattedBalance) * price).toLocaleString(undefined, {
-          maximumFractionDigits: 0,
-        })
-      : '0';
+  const displayAddress = address ? `${address.slice(0, 6)} ... ${address.slice(-4)}` : '연결 안 됨';
 
   return (
-    <View style={styles.container}>
-      <View style={styles.addressBadge}>
-        <Text style={styles.addressText}>
-          {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '연결 안 됨'}
-        </Text>
+    <SafeAreaView
+      style={styles.container}
+      edges={['top', 'left', 'right']}
+    >
+      <View style={styles.leftSection}>
+        <Text style={styles.brandTitle}>LockFi</Text>
+        <Text style={styles.brandSubtitle}>Time-Locked Savings</Text>
       </View>
 
-      <Text style={styles.krwValue}>₩{krwValue}</Text>
-
-      <Text style={styles.ethBalance}>{parseFloat(formattedBalance).toFixed(4)} ETH</Text>
-    </View>
+      <View style={styles.walletBadge}>
+        <View style={[styles.statusDot, isConnected && styles.statusOnline]} />
+        <View style={styles.walletInfo}>
+          <Text style={styles.networkText}>Base L2</Text>
+          <Text style={styles.addressText}>{displayAddress}</Text>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 48,
-    backgroundColor: '#000000',
-    position: 'relative',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
   },
-  addressBadge: {
-    position: 'absolute',
-    top: 10,
-    right: 16,
-    backgroundColor: '#111827',
-    paddingHorizontal: 16,
+  leftSection: {
+    flexDirection: 'column',
+  },
+  brandTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#0047FF',
+    lineHeight: 32,
+  },
+  brandSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontWeight: '500',
+  },
+  walletBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8EFFF',
     paddingVertical: 8,
-    borderRadius: 999,
+    paddingHorizontal: 14,
+    borderRadius: 24,
     borderWidth: 1,
-    borderTopColor: '#1F2937',
+    borderColor: '#C7D2FE',
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#9CA3AF',
+    marginRight: 10,
+  },
+  statusOnline: {
+    backgroundColor: '#10B981',
+  },
+  walletInfo: {
+    flexDirection: 'column',
+  },
+  networkText: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontWeight: '500',
   },
   addressText: {
-    color: '#9CA3AF',
+    fontSize: 14,
     fontWeight: '700',
-    fontSize: 12,
-  },
-  krwValue: {
-    color: '#FFFFFF',
-    fontSize: 36,
-    fontWeight: '700',
-  },
-  ethBalance: {
-    color: '#6B7280',
-    fontSize: 18,
-    marginTop: 8,
-    fontWeight: '500',
+    color: '#000000',
   },
 });

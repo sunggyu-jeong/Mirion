@@ -1,12 +1,9 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { WalletHeader } from '@/src/widgets/wallet-header/ui/WalletHeader';
-
 export default function HomePage() {
   return (
     <SafeAreaView style={styles.container}>
-      <WalletHeader />
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}></View>
       </ScrollView>

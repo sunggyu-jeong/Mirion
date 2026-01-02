@@ -2,13 +2,15 @@ import { Tabs } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { TabBar } from '@/src/widgets/tab-bar/ui/TabBar';
+import { WalletHeader } from '@/src/widgets/wallet-header/ui/WalletHeader';
 
 export default function TabLayout() {
   return (
     <Tabs
       tabBar={props => <TabBar {...props} />}
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        header: () => <WalletHeader />,
       }}
     >
       <Tabs.Screen

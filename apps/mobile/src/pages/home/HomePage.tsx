@@ -2,7 +2,6 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LockupCard } from '@/src/widgets/lockup-card/ui/LockupCard';
-import { WalletHeader } from '@/src/widgets/wallet-header/ui/WalletHeader';
 
 export const HomePage = () => {
   //fixme: 데이터 연동 필요
@@ -11,8 +10,6 @@ export const HomePage = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView>
-        <WalletHeader />
-
         <View style={styles.cardWrapper}>
           {hasLockup ? (
             <LockupCard
