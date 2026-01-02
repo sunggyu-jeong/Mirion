@@ -1,6 +1,5 @@
-import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-
-import { cn } from '@/src/shared/lib/utils/cn';
+import React from 'react';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
 
 interface ButtonProps {
   label: string;
@@ -9,7 +8,7 @@ interface ButtonProps {
   size?: 'lg' | 'md';
   disabled?: boolean;
   isLoading?: boolean;
-  className?: string;
+  style?: ViewStyle;
 }
 
 export const Button = ({
@@ -19,35 +18,72 @@ export const Button = ({
   size = 'lg',
   disabled,
   isLoading,
-  className,
+  style,
 }: ButtonProps) => {
+  const containerStyles = [
+    styles.base,
+    variant === 'primary' && styles.primaryBtn,
+    variant === 'ghost' && styles.ghostBtn,
+    size === 'lg' && styles.lgBtn,
+    size === 'md' && styles.mdBtn,
+    disabled && styles.disabledBtn,
+    style,
+  ];
+
+  const textStyles = [
+    styles.textBase,
+    variant === 'primary' ? styles.primaryText : styles.ghostText,
+  ];
+
   return (
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled || isLoading}
       activeOpacity={0.8}
-      className={cn(
-        'rounded-2xl flex-row justify-center items-center',
-        variant === 'primary' && 'bg-primary',
-        variant === 'ghost' && 'bg-transparent',
-        size === 'lg' && 'py-4',
-        size === 'md' && 'py-3',
-        disabled && 'bg-gray-200 opacity-50',
-        className,
-      )}
+      style={containerStyles}
     >
       {isLoading ? (
         <ActivityIndicator color={variant === 'ghost' ? '#000' : 'white'} />
       ) : (
-        <Text
-          className={cn(
-            'font-bold text-center',
-            variant === 'primary' ? 'text-white text-lg' : 'text-text-500 text-base',
-          )}
-        >
-          {label}
-        </Text>
+        <Text style={textStyles}>{label}</Text>
       )}
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  base: {
+    borderRadius: 16,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  primaryBtn: {
+    backgroundColor: '#007AFF',
+  },
+  ghostBtn: {
+    backgroundColor: 'transparent',
+  },
+  lgBtn: {
+    paddingVertical: 16,
+  },
+  mdBtn: {
+    paddingVertical: 12,
+  },
+  disabledBtn: {
+    backgroundColor: '#E5E7EB',
+    opacity: 0.5,
+  },
+  textBase: {
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  primaryText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+  },
+  ghostText: {
+    color: '#6B7280',
+    fontSize: 16,
+  },
+});
