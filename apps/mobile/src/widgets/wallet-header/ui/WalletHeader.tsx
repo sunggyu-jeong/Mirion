@@ -1,22 +1,21 @@
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { formatUnits } from 'viem';
-import { useAccount, useBalance } from 'wagmi';
-
-import { useEthPrice } from '@/src/entities/price-tracker';
 
 export const WalletHeader = () => {
-  const { address, isConnected } = useAccount();
-  const { data: balance } = useBalance({
-    address,
-    query: {
-      enabled: !!address,
-    },
-  });
-  const { data: price } = useEthPrice();
+  // const { address, isConnected } = useAccount();
+  // const { data: balance } = useBalance({
+  //   address,
+  //   query: {
+  //     enabled: !!address,
+  //   },
+  // });
+  // const { data: price } = useEthPrice();
 
-  const formattedBalance = balance ? formatUnits(balance.value, balance.decimals) : '0';
-  const displayAddress = address ? `${address.slice(0, 6)} ... ${address.slice(-4)}` : '연결 안 됨';
+  // const formattedBalance = balance ? formatUnits(balance.value, balance.decimals) : '0';
+  // const displayAddress = address ? `${address.slice(0, 6)} ... ${address.slice(-4)}` : '연결 안 됨';
+  const isConnected = false;
+  const displayAddress = '0x1234...abcd';
 
   return (
     <SafeAreaView
