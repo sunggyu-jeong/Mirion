@@ -2,13 +2,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createConfig, createStorage, http } from 'wagmi';
 import { mainnet, sepolia } from 'wagmi/chains';
 
+if (typeof window === 'undefined') {
+  (global as any).window = global;
+  (global as any).window.addEventListener = () => {};
+  (global as any).window.removeEventListener = () => {};
+}
+
 const storage = createStorage({
-  storage: {
-    getItem: key => AsyncStorage.getItem(key),
-    setItem: (key, value) => AsyncStorage.setItem(key, value),
-    removeItem: key => AsyncStorage.removeItem(key),
-  },
-  key: 'rakpy-wagmi',
+  storage: AsyncStorage,
+  key: 'lockfi-wagmi-storage',
 });
 
 export const config = createConfig({
@@ -18,6 +20,8 @@ export const config = createConfig({
     [sepolia.id]: http(),
   },
   storage,
+  ssr: false,
+  multiInjectedProviderDiscovery: false,
 });
 
 export function getWagmiConfig() {

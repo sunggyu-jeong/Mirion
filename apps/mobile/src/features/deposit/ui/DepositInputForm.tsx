@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Button } from '@/src/shared/ui/Button';
 
@@ -12,7 +12,6 @@ export const DepositInputForm = ({ maxBalance, onSubmit }: Props) => {
   const [amount, setAmount] = useState('');
 
   const handleMax = () => {
-    //FIXME: gas price 계산 후 넣어주기
     const safeMax = Math.max(0, maxBalance - 0.005);
     setAmount(safeMax.toString());
   };
@@ -20,30 +19,30 @@ export const DepositInputForm = ({ maxBalance, onSubmit }: Props) => {
   const isValid = Number(amount) > 0 && Number(amount) <= maxBalance;
 
   return (
-    <View className="flex-1 mt-10">
-      <Text className="text-3xl font-bold text-text-900 mb-8">얼마를{'\n'}보관하시겠어요?</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>얼마를{'\n'}보관하시겠어요?</Text>
 
-      <View className="flex-row items-baseline border-b-2 border-primary pb-2">
+      <View style={styles.inputContainer}>
         <TextInput
           value={amount}
           onChangeText={setAmount}
           placeholder="0"
           keyboardType="numeric"
           autoFocus
-          className="flex-1 text-4xl font-bold text-text-900 leading-tight"
+          style={styles.input}
           placeholderTextColor="#E5E8EB"
         />
-        <Text className="text-xl font-bold text-text-900 ml-2">ETH</Text>
+        <Text style={styles.unitText}>ETH</Text>
       </View>
 
-      <View className="flex-row justify-between mt-3">
-        <Text className="text-text-500 text-sm">보유 {maxBalance} ETH</Text>
+      <View style={styles.infoRow}>
+        <Text style={styles.balanceText}>보유 {maxBalance} ETH</Text>
         <TouchableOpacity onPress={handleMax}>
-          <Text className="text-primary font-bold text-sm">최대 입력</Text>
+          <Text style={styles.maxButtonText}>최대 입력</Text>
         </TouchableOpacity>
       </View>
 
-      <View className="flex-1 justify-end pb-4">
+      <View style={styles.footer}>
         <Button
           label="확인"
           onPress={() => onSubmit(amount)}
@@ -53,3 +52,54 @@ export const DepositInputForm = ({ maxBalance, onSubmit }: Props) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 40,
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 32,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    borderBottomWidth: 2,
+    borderBottomColor: '#007AFF',
+    paddingBottom: 8,
+  },
+  input: {
+    flex: 1,
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  unitText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    marginLeft: 8,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  balanceText: {
+    color: '#6B7280',
+    fontSize: 14,
+  },
+  maxButtonText: {
+    color: '#007AFF',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  footer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 16,
+  },
+});

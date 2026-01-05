@@ -1,8 +1,8 @@
+import { formatDistance } from 'date-fns';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Button } from '@/src/shared/ui/Button';
-import { formatDistance } from 'date-fns';
 
 interface LockupCardProps {
   amount: string;
@@ -15,20 +15,20 @@ export const LockupCard = ({ amount, unlockTime, onWithdrawPress }: LockupCardPr
   const timeLeft = formatDistance(new Date(unlockTime * 1000), new Date(), { addSuffix: true });
 
   return (
-    <View className="mx-5 bg-gray-900 rounded-3xl p-8 border border-gray-800 shadow-lg">
-      <View className="flex-row justify-between mb-6">
-        <Text className="text-gray-400 font-semibold">Active Lockup</Text>
+    <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <Text style={styles.headerText}>Active Lockup</Text>
         <Button
           label="Base L2"
           onPress={() => {}}
         />
       </View>
 
-      <Text className="text-white text-5xl font-bold mb-4">{amount} ETH</Text>
+      <Text style={styles.amountText}>{amount} ETH</Text>
 
-      <View className="bg-black/30 p-4 rounded-xl mb-6">
-        <Text className="text-gray-500 mb-1">Status</Text>
-        <Text className="text-white text-xl font-mono">
+      <View style={styles.statusBox}>
+        <Text style={styles.statusLabel}>Status</Text>
+        <Text style={styles.statusValue}>
           {isUnlocked ? 'Unlock Available 🔓' : `Unlocks ${timeLeft}`}
         </Text>
       </View>
@@ -36,14 +36,80 @@ export const LockupCard = ({ amount, unlockTime, onWithdrawPress }: LockupCardPr
       <TouchableOpacity
         disabled={!isUnlocked}
         onPress={onWithdrawPress}
-        className={`w-full py-4 rounded-full items-center ${
-          isUnlocked ? 'bg-[#00D632]' : 'bg-gray-800'
-        }`}
+        style={[styles.withdrawButton, isUnlocked ? styles.buttonUnlocked : styles.buttonLocked]}
       >
-        <Text className={`font-bold text-lg ${isUnlocked ? 'text-black' : 'text-gray-500'}`}>
+        <Text style={[styles.withdrawText, isUnlocked ? styles.textUnlocked : styles.textLocked]}>
           {isUnlocked ? 'Withdraw Funds' : 'Locked'}
         </Text>
       </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: 20,
+    backgroundColor: '#111827',
+    borderRadius: 24,
+    padding: 32,
+    borderWidth: 1,
+    borderColor: '#1F2937',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    elevation: 5,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  headerText: {
+    color: '#9CA3AF',
+    fontWeight: '600',
+  },
+  amountText: {
+    color: '#FFFFFF',
+    fontSize: 48,
+    fontWeight: '700',
+    marginBottom: 16,
+  },
+  statusBox: {
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 24,
+  },
+  statusLabel: {
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  statusValue: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontFamily: 'monospace',
+  },
+  withdrawButton: {
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 9999,
+    alignItems: 'center',
+  },
+  buttonUnlocked: {
+    backgroundColor: '#00D632',
+  },
+  buttonLocked: {
+    backgroundColor: '#1F2937',
+  },
+  withdrawText: {
+    fontWeight: '700',
+    fontSize: 18,
+  },
+  textUnlocked: {
+    color: '#000000',
+  },
+  textLocked: {
+    color: '#6B7280',
+  },
+});

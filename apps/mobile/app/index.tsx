@@ -1,6 +1,6 @@
 import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 export default function SplashScreen() {
   const [isReady, setIsReady] = useState(false);
@@ -14,7 +14,7 @@ export default function SplashScreen() {
 
   if (!isReady) {
     return (
-      <View className="flex-1 justify-center items-center bg-primary">
+      <View style={styles.container}>
         <ActivityIndicator
           size="large"
           color="white"
@@ -25,3 +25,12 @@ export default function SplashScreen() {
 
   return <Redirect href="/home" />;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
+  },
+});

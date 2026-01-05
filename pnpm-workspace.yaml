@@ -2,4 +2,9 @@ packages:
   - apps/*
   - packages/*
 
+ignoredBuiltDependencies:
+  - bufferutil
+  - react-native-nitro-modules
+  - utf-8-validate
+
 nodeLinker: hoisted
