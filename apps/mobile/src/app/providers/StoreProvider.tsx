@@ -1,4 +1,4 @@
-import { persistor, store } from '@/src/composition/store';
+import { persistor, store } from '@/src/app/store';
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { Provider } from 'react-redux';

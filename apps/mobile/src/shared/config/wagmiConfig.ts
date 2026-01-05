@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createConfig, createStorage, http } from 'wagmi';
-import { mainnet, sepolia } from 'wagmi/chains';
+import { mainnet, sepolia } from 'viem/chains';
 
 if (typeof window === 'undefined') {
   (global as any).window = global;
