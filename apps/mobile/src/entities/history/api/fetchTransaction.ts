@@ -1,66 +1,69 @@
 import { parseAbiItem } from "viem";
 import { getPublicClient } from '@wagmi/core';
-import { config, CONTRACT_ADDRESS, getWagmiConfig, isEmpty } from "@/src/shared";
+import { config, CONTRACT_ADDRESS, isEmpty } from "@/src/shared";
 import { HistoryItem } from "@/src/entities/history/model";
 
 const DEPOSIT_EVENT = parseAbiItem('event Deposit(address indexed user, uint256 amount, uint256 unlockTime)');
-const WITHDRAW_EVENT = parseAbiItem('event Withdraw(address indexed user, uint256 amount)');
+const WITHDRAW_EVENT = parseAbiItem('event Withdraw(address indexed user, uint256 amount, uint256 fee)');
 
-//FIXME: - 로그 N개 > N번 호출, 추후에 graph로 변경 필요
 export const fetchUserHistory = async (userAddress: `0x${string}`): Promise<HistoryItem[]> => {
   try {
     const publicClient = getPublicClient(config);
+    if (isEmpty(publicClient)) throw new Error("Public client not found");
 
-    if (isEmpty(publicClient)) throw new Error("public client가 존재하지 않습니다.")
+    const [depositLogs, withdrawLogs] = await Promise.all([
+      publicClient.getLogs({
+        address: CONTRACT_ADDRESS,
+        event: DEPOSIT_EVENT,
+        args: { user: userAddress },
+        fromBlock: 'earliest',
+        toBlock: 'latest',
+      }),
+      publicClient.getLogs({
+        address: CONTRACT_ADDRESS,
+        event: WITHDRAW_EVENT,
+        args: { user: userAddress },
+        fromBlock: 'earliest',
+        toBlock: 'latest',
+      })
+    ]);
 
-    const getBlockTimestamp = async (blockNumber: bigint) => {
-      const block = await publicClient.getBlock({ blockNumber });
-      return Number(block.timestamp);
-    };
+    const blockNumbers = new Set<bigint>();
+    depositLogs.forEach(l => blockNumbers.add(l.blockNumber));
+    withdrawLogs.forEach(l => blockNumbers.add(l.blockNumber));
 
-    const depositLogs = await publicClient.getLogs({ 
-      address: CONTRACT_ADDRESS,
-      event: DEPOSIT_EVENT,
-      args: { user: userAddress },
-      fromBlock: 'earliest',
-      toBlock: 'latest', 
-    })
+    const blockTimeMap = new Map<string, number>();
+    await Promise.all(
+      Array.from(blockNumbers).map(async (bn) => {
+        const block = await publicClient.getBlock({ blockNumber: bn });
+        blockTimeMap.set(bn.toString(), Number(block.timestamp));
+      })
+    );
 
-    const withdrawLogs = await publicClient.getLogs({ 
-      address: CONTRACT_ADDRESS,
-      event: WITHDRAW_EVENT,
-      args: { user: userAddress },
-      fromBlock: 'earliest',
-      toBlock: 'latest', 
-    })
-
-    const formattedDeposit = await Promise.all(
-      depositLogs.map(async (el) => ({
+    const formattedDeposit: HistoryItem[] = depositLogs.map(el => ({
         id: `${el.transactionHash}-${el.logIndex}`,
-        type: 'DEPOSIT' as const,
+        type: 'DEPOSIT',
         amount: el.args.amount?.toString() || '0',
         unlockTime: el.args.unlockTime?.toString() || '',
-        timestamp: await getBlockTimestamp(el.blockNumber!), 
+        timestamp: blockTimeMap.get(el.blockNumber.toString()) || 0,
         txHash: el.transactionHash
-      }))
-    );
+    }));
 
-    const formattedWithdraw = await Promise.all(
-      withdrawLogs.map(async (el) => ({
+    const formattedWithdraw: HistoryItem[] = withdrawLogs.map(el => ({
         id: `${el.transactionHash}-${el.logIndex}`,
-        type: 'WITHDRAW' as const,
+        type: 'WITHDRAW',
         amount: el.args.amount?.toString() || '0',
-        timestamp: await getBlockTimestamp(el.blockNumber!),
+        unlockTime: '', 
+        timestamp: blockTimeMap.get(el.blockNumber.toString()) || 0,
         txHash: el.transactionHash
-      }))
-    );
+    }));
 
-    const allHistory = [...formattedDeposit, ...formattedWithdraw].sort(
+    return [...formattedDeposit, ...formattedWithdraw].sort(
       (a, b) => b.timestamp - a.timestamp
     );
-    return allHistory
-  } catch(err) {
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>> failed to fetch history", err);
+
+  } catch (err) {
+    console.error("Fetch history failed:", err);
     throw err;
   }
 }
