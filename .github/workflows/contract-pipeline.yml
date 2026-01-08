@@ -28,8 +28,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
-          cache-dependency-path: './apps/contracts/pnpm-lock.yaml'
 
       - name: Install Dependencies
         working-directory: apps/contracts
@@ -61,8 +59,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
-          cache-dependency-path: './apps/contracts/pnpm-lock.yaml'
 
       - name: Install Dependencies
         working-directory: apps/contracts
@@ -99,8 +95,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
-          cache-dependency-path: './apps/contracts/pnpm-lock.yaml'
 
       - name: Install Dependencies
         working-directory: apps/contracts
