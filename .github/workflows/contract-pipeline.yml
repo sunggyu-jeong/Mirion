@@ -25,6 +25,7 @@ jobs:
           version: 9
       
       - name: Install Dependencies
+        working-directory: apps/contracts
         run: pnpm install
       
       - name: Run Tests
