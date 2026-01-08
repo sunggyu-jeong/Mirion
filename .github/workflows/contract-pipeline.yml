@@ -22,7 +22,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 9
+          version: 10
       
       - name: Install Dependencies
         working-directory: apps/contracts
@@ -48,7 +48,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Deploy to Base Sepolia
         working-directory: apps/contracts
@@ -74,6 +74,11 @@ jobs:
         
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Deploy to Base Mainnet
         working-directory: apps/contracts
