@@ -6,7 +6,7 @@ import { LivePriceCard } from '@/src/widgets/live-price-card';
 import { VaultStatusCard } from '@/src/widgets/vault-status-card';
 
 export default function HomePage() {
-  const [isStored, setIsStored] = useState(true);
+  const [isStored, setIsStored] = useState(false);
 
   const mockData = {
     price: '3,245,000',
