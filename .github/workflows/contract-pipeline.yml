@@ -20,18 +20,13 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
       
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v2
         with:
-          run_install: false
+          version: 9
       
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       - name: Install Dependencies
         working-directory: apps/contracts
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
       
       - name: Run Tests
         working-directory: apps/contracts
@@ -50,20 +45,6 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-      
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Dependencies
-        working-directory: apps/contracts
-        run: pnpm install --frozen-lockfile
-        
       - name: Deploy to Base Sepolia
         working-directory: apps/contracts
         env:
@@ -85,23 +66,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          
+        
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
-        
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-      
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Dependencies
-        working-directory: apps/contracts
-        run: pnpm install --frozen-lockfile
 
       - name: Deploy to Base Mainnet
         working-directory: apps/contracts
