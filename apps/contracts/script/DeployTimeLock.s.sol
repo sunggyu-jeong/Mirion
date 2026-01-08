@@ -4,8 +4,9 @@ import { TimeLock } from "../src/TimeLock.sol";
 
 contract DeployTimeLock is Script {
     function run() external {
-        
-        vm.startBroadcast();
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+        vm.startBroadcast(deployerPrivateKey);
 
         TimeLock timeLock = new TimeLock();
 
