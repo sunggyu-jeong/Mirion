@@ -1,7 +1,14 @@
 [profile.default]
 src = "src"
 out = "out"
-libs = ["lib"]
+libs = ["lib", "../../node_modules"] 
+
+remappings = [
+    "@openzeppelin/contracts/=../../node_modules/@openzeppelin/contracts/",
+    "forge-std/=lib/forge-std/src/",
+    "interfaces/=src/interfaces/",
+    "errors/=src/errors/"
+]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
 [etherscan]
