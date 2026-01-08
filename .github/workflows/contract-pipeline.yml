@@ -40,8 +40,27 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+        
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Debug Environment Variables
+        working-directory: apps/contracts
+        env:
+          RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          PRIVATE_KEY: ${{ secrets.TESTNET_DEPLOYER_PRIVATE_KEY }}
+        run: |
+          echo "--- Environment Check ---"
+          echo "RPC_URL length: ${#RPC_URL}"
+          echo "PRIVATE_KEY length: ${#PRIVATE_KEY}"
+          
+          if [ -n "$RPC_URL" ]; then
+            echo "RPC_URL starts with: $(echo $RPC_URL | cut -c 1-5)..."
+          else
+            echo "RPC_URL is EMPTY!"
+          fi
+          echo "------------------------"
+        
       - name: Deploy to Base Sepolia
         working-directory: apps/contracts
         env:
