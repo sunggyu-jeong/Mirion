@@ -1,12 +1,15 @@
 import { Label } from '@react-navigation/elements';
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAccount, useDisconnect } from 'wagmi';
 
 import { WalletInfoCard } from '@/src/entities/wallet/ui';
 import { ExploreNetworkButton } from '@/src/features/wallet/ui/ExploreNetworkButton';
 import { Card, Value } from '@/src/shared';
 
 export default function SettingPage() {
+  const { address, isConnected, chain } = useAccount();
+  const { disconnect } = useDisconnect();
+
   return (
     <ScrollView
       style={styles.container}
@@ -14,27 +17,43 @@ export default function SettingPage() {
     >
       <Text style={styles.pageTitle}>설정</Text>
 
+      {/* 1. 지갑 정보 섹션 */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>지갑정보</Text>
-        <WalletInfoCard
-          address="0x1234567890123456789012345678901234567890"
-          network="Base L2 Network"
-        />
+        <Text style={styles.sectionTitle}>지갑 정보</Text>
+        {isConnected ? (
+          <>
+            <WalletInfoCard
+              address={address ?? ''}
+              network={chain?.name || 'Base L2 Network'}
+            />
+            <TouchableOpacity
+              style={styles.disconnectButton}
+              onPress={() => disconnect()}
+            >
+              <Text style={styles.disconnectText}>지갑 연결 해제</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Card style={styles.emptyCard}>
+            <Text style={styles.emptyText}>연결된 지갑이 없습니다.</Text>
+            {/* 여기에 ConnectWalletButton을 배치하면 좋습니다 */}
+          </Card>
+        )}
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>정보</Text>
         <Card>
           <View style={styles.row}>
-            <Label>버전</Label>
+            <Label style={{ color: '#6B7280' }}>버전</Label>
             <Value>1.0.0</Value>
           </View>
           <View style={styles.separator} />
           <View style={styles.row}>
-            <Label>네트워크</Label>
-            <Value>Base Mainnet</Value>
+            <Label style={{ color: '#6B7280' }}>네트워크</Label>
+            <Value>{isConnected ? chain?.name : '미연결'}</Value>
           </View>
-          <ExploreNetworkButton networkName="Base" />
+          {isConnected && chain?.name === 'Base' && <ExploreNetworkButton networkName="Base" />}
         </Card>
       </View>
     </ScrollView>
@@ -42,11 +61,42 @@ export default function SettingPage() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  container: { flex: 1, backgroundColor: '#F9FAFB' },
   content: { padding: 20 },
-  pageTitle: { fontSize: 24, fontWeight: '700', marginBottom: 24 },
+  pageTitle: { fontSize: 24, fontWeight: '800', marginBottom: 24, color: '#111827' },
   section: { marginBottom: 32 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', marginBottom: 12 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12 },
-  separator: { height: 1, backgroundColor: '#E5E7EB', width: '100%' },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 12,
+    color: '#6B7280',
+    textTransform: 'uppercase',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  separator: { height: 1, backgroundColor: '#F3F4F6', width: '100%' },
+
+  disconnectButton: {
+    marginTop: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+    backgroundColor: '#FFF1F2',
+    borderRadius: 12,
+  },
+  disconnectText: { color: '#F43F5E', fontWeight: '600', fontSize: 14 },
+
+  emptyCard: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    backgroundColor: '#F9FAFB',
+  },
+  emptyText: { color: '#9CA3AF', fontSize: 14 },
 });

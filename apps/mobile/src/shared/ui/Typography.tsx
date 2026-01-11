@@ -1,10 +1,16 @@
+import type { ReactNode } from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
 
-export const Label = ({ children, style }: { children: string; style?: TextStyle }) => (
+interface Props {
+  children: ReactNode;
+  style?: TextStyle;
+}
+
+export const Label = ({ children, style }: Props) => (
   <Text style={[styles.label, style]}>{children}</Text>
 );
 
-export const Value = ({ children, style }: { children: string; style?: TextStyle }) => (
+export const Value = ({ children, style }: Props) => (
   <Text style={[styles.value, style]}>{children}</Text>
 );
 
