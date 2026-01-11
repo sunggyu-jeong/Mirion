@@ -1,15 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { useGetEthPriceQuery } from '@/src/entities/price-tracker';
 import { LivePriceCard } from '@/src/widgets/live-price-card';
 import { VaultStatusCard } from '@/src/widgets/vault-status-card';
 
 export default function HomePage() {
+  const { data } = useGetEthPriceQuery();
   const [isStored, setIsStored] = useState(false);
 
   const mockData = {
-    price: '3,245,000',
     balance: '1.25',
     startDate: '2026-01-04',
     unlockDate: '2026-01-06',
@@ -22,7 +23,7 @@ export default function HomePage() {
         contentContainerStyle={styles.scrollContent}
       >
         <LivePriceCard
-          price={mockData.price}
+          data={data}
           isStored={isStored}
           onToggle={() => setIsStored(!isStored)}
         />

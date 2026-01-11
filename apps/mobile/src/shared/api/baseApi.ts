@@ -1,12 +1,15 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { TAG_LIST } from '@/src/shared/api/types';
-
-const BASE_URL = '';
+import { TAG_LIST } from './types';
 
 export const baseApi = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
+  reducerPath: 'baseApi',
+  baseQuery: fetchBaseQuery({ baseUrl: '' }),
+
+  tagTypes: TAG_LIST,
+
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
+  keepUnusedDataFor: 60,
   endpoints: () => ({}),
-  tagTypes: [...TAG_LIST],
 });

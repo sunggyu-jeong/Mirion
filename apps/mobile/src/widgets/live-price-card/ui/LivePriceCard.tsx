@@ -1,15 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { formatTime } from '@/src/shared';
+import type { EthPriceResult } from '@/src/entities/price-tracker';
 
 interface Props {
-  price: string;
+  data: EthPriceResult | undefined;
   isStored: boolean;
   onToggle: () => void;
 }
 
-export const LivePriceCard = ({ price, isStored, onToggle }: Props) => (
+export const LivePriceCard = ({ data, isStored, onToggle }: Props) => (
   <View style={styles.card}>
     <View style={styles.header}>
       <View style={styles.coinIcon}>
@@ -21,7 +21,7 @@ export const LivePriceCard = ({ price, isStored, onToggle }: Props) => (
       </View>
       <View>
         <Text style={styles.title}>Ethereum</Text>
-        <Text style={styles.subTitle}>실시간 시세</Text>
+        <Text style={styles.subTitle}>실시간 시세(coingekco)</Text>
       </View>
       <TouchableOpacity
         onPress={onToggle}
@@ -30,14 +30,14 @@ export const LivePriceCard = ({ price, isStored, onToggle }: Props) => (
         <Text style={styles.badgeText}>{isStored ? '저장됨' : '비어있음'}</Text>
       </TouchableOpacity>
     </View>
-    <Text style={styles.price}>{`₩ ${price}`}</Text>
+    <Text style={styles.price}>{`₩ ${data?.price ?? 0}`}</Text>
     <View style={styles.footer}>
       <Ionicons
         name="time-outline"
         size={14}
         color="#94A3B8"
       />
-      <Text style={styles.time}>{` ${formatTime()} 기준`}</Text>
+      <Text style={styles.time}>{` ${data?.updatedAt ?? ''} 기준`}</Text>
     </View>
   </View>
 );

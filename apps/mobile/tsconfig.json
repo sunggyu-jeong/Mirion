@@ -1,6 +1,7 @@
 {
   "extends": "expo/tsconfig.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "strict": true,
     "baseUrl": ".",
     "paths": {
@@ -16,7 +17,6 @@
     "allowJs": true,
     "noEmit": true,
     "skipLibCheck": true,
-    /* ---------------------------------- */
     "types": [
       "jest",
       "node"
