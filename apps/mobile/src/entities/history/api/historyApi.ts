@@ -19,3 +19,5 @@ export const historyApi = baseApi.injectEndpoints({
     }),
   }),
 });
+
+export const { useGetUserHistoryQuery } = historyApi;

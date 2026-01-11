@@ -1,6 +1,6 @@
 export interface HistoryItem {
   id: string;
-  type: 'DEPOSIT' | "WITHDRAW",
+  type: 'DEPOSIT' | 'WITHDRAW';
   amount: string;
   unlockTime?: string;
   timestamp: number;
