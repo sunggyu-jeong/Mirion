@@ -1,15 +1,16 @@
-import { useConnection, useBalance } from 'wagmi'
+import { formatUnits } from 'viem';
+import { useAccount, useBalance } from 'wagmi';
 
 export const useWalletInfo = () => {
-  const { address, isConnected, chain } = useConnection()
-  
+  const { address, isConnected, chain } = useAccount();
+
   const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
     address,
-  })
+  });
 
-  const formattedBalance = balanceData 
-    ? `${balanceData.decimals.toFixed(4)} ${balanceData.symbol}` 
-    : '0.00 ETH'
+  const formattedBalance = balanceData
+    ? `${Number(formatUnits(balanceData.value, balanceData.decimals)).toFixed(4)} ${balanceData.symbol}`
+    : '0.0000 ETH';
 
   return {
     address,
@@ -17,5 +18,5 @@ export const useWalletInfo = () => {
     chainName: chain?.name,
     formattedBalance,
     isBalanceLoading,
-  }
-}
+  };
+};

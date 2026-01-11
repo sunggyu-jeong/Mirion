@@ -1,26 +1,28 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { formatUnits } from 'viem';
+import { useAccount, useBalance } from 'wagmi';
 
 export const WalletHeader = () => {
-  // const { address, isConnected } = useAccount();
-  // const { data: balance } = useBalance({
-  //   address,
-  //   query: {
-  //     enabled: !!address,
-  //   },
-  // });
-  // const { data: price } = useEthPrice();
+  const { address, isConnected } = useAccount();
 
-  // const formattedBalance = balance ? formatUnits(balance.value, balance.decimals) : '0';
-  // const displayAddress = address ? `${address.slice(0, 6)} ... ${address.slice(-4)}` : '연결 안 됨';
-  const isConnected = false;
-  const displayAddress = '0x1234...abcd';
+  const { data: balance } = useBalance({
+    address,
+    query: {
+      enabled: !!address,
+    },
+  });
+
+  const formattedBalance = balance
+    ? Number(formatUnits(balance.value, balance.decimals)).toFixed(4)
+    : '0.0000';
+
+  const displayAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '연결 안 됨';
 
   return (
     <SafeAreaView
       style={styles.container}
-      edges={['top', 'left', 'right']}
+      edges={['top']}
     >
       <View style={styles.leftSection}>
         <Text style={styles.brandTitle}>LockFi</Text>
@@ -29,9 +31,13 @@ export const WalletHeader = () => {
 
       <View style={styles.walletBadge}>
         <View style={[styles.statusDot, isConnected && styles.statusOnline]} />
+
         <View style={styles.walletInfo}>
           <Text style={styles.networkText}>Base L2</Text>
-          <Text style={styles.addressText}>{displayAddress}</Text>
+          <Text style={styles.addressText}>
+            {isConnected ? `${formattedBalance} ${balance?.symbol || 'ETH'}` : displayAddress}
+          </Text>
+          {isConnected && <Text style={styles.miniAddressText}>{displayAddress}</Text>}
         </View>
       </View>
     </SafeAreaView>
@@ -46,19 +52,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     backgroundColor: '#FFFFFF',
-    boxShadow: '0 4px 4px rgba(0,0,0,0.11),',
+    // 3. 리액트 네이티브 표준 쉐도우 설정
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   leftSection: {
     flexDirection: 'column',
   },
   brandTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '800',
     color: '#0047FF',
-    lineHeight: 32,
   },
   brandSubtitle: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#6B7280',
     fontWeight: '500',
   },
@@ -66,9 +82,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#E8EFFF',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 24,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: '#C7D2FE',
   },
@@ -77,7 +93,7 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#9CA3AF',
-    marginRight: 10,
+    marginRight: 8,
   },
   statusOnline: {
     backgroundColor: '#10B981',
@@ -86,13 +102,18 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   networkText: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#6B7280',
-    fontWeight: '500',
+    fontWeight: '600',
+    textTransform: 'uppercase',
   },
   addressText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
-    color: '#000000',
+    color: '#111827',
+  },
+  miniAddressText: {
+    fontSize: 10,
+    color: '#6B7280',
   },
 });
