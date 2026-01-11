@@ -1,9 +1,8 @@
-import { BottomSheetHandler, common, gray } from "@/src/shared";
-import BottomSheetWrapper from "@/src/shared/ui/BottomSheet";
-import BottomSheet, { TouchableOpacity } from "@gorhom/bottom-sheet";
-import React, { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
-
+import { BottomSheetHandler, common, gray } from '@/src/shared';
+import BottomSheetWrapper from '@/src/shared/ui/BottomSheet';
+import BottomSheet, { TouchableOpacity } from '@gorhom/bottom-sheet';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 
 interface WalletOption {
   id: string;
@@ -17,15 +16,15 @@ interface ConnectWalletSheetProps {
 
 //TODO: 지갑 아이콘 추가필요
 const WALLET_OPTIONS: WalletOption[] = [
-  { id: 'metamask', name: 'MetaMask', logo: require('@/src/assets/wallets/metamask.png') },
-  { id: 'walletconnect', name: 'WalletConnect', logo: require('@/src/assets/wallets/walletconnect.png') },
-  { id: 'coinbase', name: 'Coinbase Wallet', logo: require('@/src/assets/wallets/coinbase.png') },
-]
+  { id: 'metamask', name: 'MetaMask', logo: require('') },
+  { id: 'walletconnect', name: 'WalletConnect', logo: require('') },
+  { id: 'coinbase', name: 'Coinbase Wallet', logo: require('') },
+];
 
 const SHEET_CONFIG = {
   itemHeight: 64,
   visibleItems: 4,
-  snapPoints: [200, '45%']
+  snapPoints: [200, '45%'],
 } as const;
 
 const ConnectWalletSheet = forwardRef<BottomSheetHandler, ConnectWalletSheetProps>(
@@ -39,27 +38,34 @@ const ConnectWalletSheet = forwardRef<BottomSheetHandler, ConnectWalletSheetProp
       snapToIndex: (index: number) => sheetRef.current?.snapToIndex(index),
     }));
 
-    const handleWalletPress = useCallback((walletId: string) => {
-      onConnect(walletId);
-      sheetRef.current?.close();
-    }, [onConnect]);
+    const handleWalletPress = useCallback(
+      (walletId: string) => {
+        onConnect(walletId);
+        sheetRef.current?.close();
+      },
+      [onConnect],
+    );
 
-    const renderWalletItem = useCallback(({ item }: { item: WalletOption }) => (
-      <TouchableOpacity
-        style={styles.walletRow}
-        onPress={() => handleWalletPress(item.id)}
-        activeOpacity={0.6}
-      >
-        <View style={styles.walletContent}>
-          <View style={styles.logoContainer}>
-            <Image source={item.logo} style={styles.logo} />
+    const renderWalletItem = useCallback(
+      ({ item }: { item: WalletOption }) => (
+        <TouchableOpacity
+          style={styles.walletRow}
+          onPress={() => handleWalletPress(item.id)}
+          activeOpacity={0.6}
+        >
+          <View style={styles.walletContent}>
+            <View style={styles.logoContainer}>
+              <Image
+                source={item.logo}
+                style={styles.logo}
+              />
+            </View>
+            <Text style={styles.walletName}>{item.name}</Text>
           </View>
-          <Text style={styles.walletName}>
-            {item.name}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    ), [handleWalletPress]);
+        </TouchableOpacity>
+      ),
+      [handleWalletPress],
+    );
 
     return (
       <BottomSheetWrapper
@@ -70,10 +76,10 @@ const ConnectWalletSheet = forwardRef<BottomSheetHandler, ConnectWalletSheetProp
       >
         <View style={styles.container}>
           <Text style={styles.title}>지갑 연결</Text>
-          
+
           <FlatList
             data={WALLET_OPTIONS}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             renderItem={renderWalletItem}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
@@ -83,8 +89,8 @@ const ConnectWalletSheet = forwardRef<BottomSheetHandler, ConnectWalletSheetProp
         </View>
       </BottomSheetWrapper>
     );
-  }
-)
+  },
+);
 
 ConnectWalletSheet.displayName = 'ConnectWalletSheet';
 

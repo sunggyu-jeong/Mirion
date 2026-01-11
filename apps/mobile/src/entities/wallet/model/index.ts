@@ -1,1 +1,2 @@
-export * from "./useWalletInfo"
+export * from './useVaultInfo';
+export * from './useWalletInfo';

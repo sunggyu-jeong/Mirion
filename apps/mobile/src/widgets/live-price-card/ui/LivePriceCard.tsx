@@ -1,70 +1,98 @@
+import { useGetEthPriceQuery } from '@/src/entities/price-tracker';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
-import type { EthPriceResult } from '@/src/entities/price-tracker';
+export const LivePriceCard = () => {
+  const { data, isLoading, error } = useGetEthPriceQuery();
 
-interface Props {
-  data: EthPriceResult | undefined;
-  isStored: boolean;
-  onToggle: () => void;
-}
-
-export const LivePriceCard = ({ data, isStored, onToggle }: Props) => (
-  <View style={styles.card}>
-    <View style={styles.header}>
-      <View style={styles.coinIcon}>
-        <Ionicons
-          name="logo-bitcoin"
-          size={24}
-          color="#627EEA"
-        />
+  if (isLoading)
+    return (
+      <View style={[styles.container, styles.loadingCenter]}>
+        <Text style={styles.loadingText}>시세 불러오는 중...</Text>
       </View>
-      <View>
-        <Text style={styles.title}>Ethereum</Text>
-        <Text style={styles.subTitle}>실시간 시세(coingekco)</Text>
+    );
+
+  if (error) return null;
+
+  const isPositive = data ? data.change > 0 : true;
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.coinTitle}>
+          <View style={styles.iconBg}>
+            <Ionicons
+              name={'logo-ethereum' as any}
+              size={20}
+              color="#627EEA"
+            />
+          </View>
+          <Text style={styles.coinName}>Ethereum</Text>
+          <Text style={styles.coinSymbol}>ETH/KRW</Text>
+        </View>
+        <View style={[styles.changeBadge, isPositive ? styles.bgUp : styles.bgDown]}>
+          <Text style={[styles.changeText, isPositive ? styles.textUp : styles.textDown]}>
+            {isPositive ? '+' : ''}
+            {data?.change.toFixed(2)}%
+          </Text>
+        </View>
       </View>
-      <TouchableOpacity
-        onPress={onToggle}
-        style={styles.badge}
-      >
-        <Text style={styles.badgeText}>{isStored ? '저장됨' : '비어있음'}</Text>
-      </TouchableOpacity>
+
+      <View style={styles.priceSection}>
+        <Text style={styles.priceValue}>
+          {data?.price}
+          <Text style={styles.currency}> 원</Text>
+        </Text>
+        <Text style={styles.updateTime}>실시간 시세 (30초마다 갱신)</Text>
+      </View>
     </View>
-    <Text style={styles.price}>{`₩ ${data?.price ?? 0}`}</Text>
-    <View style={styles.footer}>
-      <Ionicons
-        name="time-outline"
-        size={14}
-        color="#94A3B8"
-      />
-      <Text style={styles.time}>{` ${data?.updatedAt ?? ''} 기준`}</Text>
-    </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: 'white', borderRadius: 24, padding: 24, elevation: 3 },
-  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  coinIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  container: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+      },
+      android: { elevation: 2 },
+    }),
+  },
+  loadingCenter: { height: 120, justifyContent: 'center', alignItems: 'center' },
+  loadingText: { color: '#94A3B8', fontSize: 14 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  coinTitle: { flexDirection: 'row', alignItems: 'center' },
+  iconBg: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: '#F1F5F9',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 10,
   },
-  title: { fontSize: 16, fontWeight: '700', color: '#1E293B' },
-  subTitle: { fontSize: 12, color: '#64748B' },
-  badge: {
-    marginLeft: 'auto',
-    backgroundColor: '#F1F5F9',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  badgeText: { fontSize: 10, fontWeight: 'bold', color: '#64748B' },
-  price: { fontSize: 28, fontWeight: '800', color: '#0F172A' },
-  footer: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
-  time: { fontSize: 12, color: '#94A3B8' },
+  coinName: { fontSize: 16, fontWeight: '700', color: '#1E293B' },
+  coinSymbol: { fontSize: 12, color: '#94A3B8', marginLeft: 6 },
+  changeBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  bgUp: { backgroundColor: '#FEF2F2' },
+  bgDown: { backgroundColor: '#F0FDF4' },
+  changeText: { fontSize: 12, fontWeight: '700' },
+  textUp: { color: '#EF4444' },
+  textDown: { color: '#10B981' },
+  priceSection: { marginTop: 4 },
+  priceValue: { fontSize: 26, fontWeight: '800', color: '#0F172A' },
+  currency: { fontSize: 18, fontWeight: '600', color: '#64748B' },
+  updateTime: { fontSize: 11, color: '#94A3B8', marginTop: 6 },
 });
