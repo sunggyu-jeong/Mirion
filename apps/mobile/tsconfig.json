@@ -1,5 +1,5 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": "expo/tsconfig.json",
   "compilerOptions": {
     "strict": true,
     "baseUrl": ".",
@@ -8,7 +8,15 @@
         "./*"
       ]
     },
-    "target": "esnext",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    /* ---------------------------------- */
     "types": [
       "jest",
       "node"
