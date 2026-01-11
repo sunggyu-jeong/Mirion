@@ -1,27 +1,51 @@
-import { useDepositMutation } from "@/src/entities/deposit/model";
-
+import { timeLockContract } from '@/src/shared/config/contracts';
+import { parseEther } from 'viem';
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
 export const useDeposit = () => {
-  const { deposit, isPending, isSuccess, error } = useDepositMutation();
+  const {
+    writeContract,
+    data: hash,
+    isPending: isWritePending,
+    error: writeError,
+  } = useWriteContract();
+
+  const {
+    isLoading: isConfirming,
+    isSuccess,
+    error: confirmError,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   const handleDeposit = (amount: string, duration: number) => {
+    if (!amount || parseFloat(amount) <= 0) {
+      console.log('에러 토스트: 금액을 입력해주세요.');
+      return;
+    }
 
-    if (parseFloat(amount) <= 0) return;
-
-    deposit(amount, duration, {
-        onSuccess: (hash: any) => {
-            console.log("성공 토스트: 락업 완료!", hash);
+    writeContract(
+      {
+        ...timeLockContract,
+        functionName: 'deposit',
+        args: [BigInt(duration)],
+        value: parseEther(amount),
+      },
+      {
+        onSuccess: txHash => {
+          console.log('서명 완료! 네트워크 확인 중...', txHash);
         },
-        onError: (e: any) => {
-            console.log("실패 토스트: 가스비 부족 등 작업필요", e);
-        }
-    });
+        onError: err => {
+          console.log('실패 토스트: 유저 거부 또는 가스비 부족', err.message);
+        },
+      },
+    );
   };
 
   return {
     handleDeposit,
-    isPending,
+    isPending: isWritePending || isConfirming,
     isSuccess,
-    error
+    error: writeError || confirmError,
   };
 };

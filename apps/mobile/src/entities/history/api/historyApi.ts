@@ -1,21 +1,21 @@
-import { fetchUserHistory } from "@/src/entities/history/api/fetchTransaction";
-import { HistoryItem } from "@/src/entities/history/model";
-import { baseApi } from "@/src/shared";
+import { fetchUserHistory } from '@/src/entities/history/api/fetchTransaction';
+import { HistoryItem } from '@/src/entities/history/model';
+import { baseApi } from '@/src/shared';
 
 export const historyApi = baseApi.injectEndpoints({
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getUserHistory: builder.query<HistoryItem[], string>({
-      queryFn: async(userAddress) => {
+      queryFn: async userAddress => {
         try {
-          const data = await fetchUserHistory(userAddress as `0x${string}`)
+          const data = await fetchUserHistory(userAddress as `0x${string}`);
           return { data };
-        } catch(err: any) {
-          console.log(">>>>>>>>> history Api Call Failed", err)
+        } catch (err: any) {
+          console.log('>>>>>>>>> history Api Call Failed', err);
           return { error: err?.message ?? '알 수 없는 오류가 발생했습니다.' };
         }
       },
-      providesTags: ['History'],
+      providesTags: ['HISTORY'],
       keepUnusedDataFor: 180,
-    })
-  })
-})
+    }),
+  }),
+});

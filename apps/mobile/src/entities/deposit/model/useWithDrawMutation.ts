@@ -1,13 +1,15 @@
 import { timeLockContract } from '@/src/shared/config/contracts';
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 
-export const useWithdrawMutation = () => {
-  const { mutate, data: hash, isPending, error } = useWriteContract();
-  
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
+export const useWithDrawMutation = () => {
+  const { writeContract, data: hash, isPending, error } = useWriteContract();
 
-  const executeWithdraw = () => {
-    mutate({
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  const withdraw = () => {
+    writeContract({
       ...timeLockContract,
       functionName: 'withdraw',
       args: [],
@@ -15,11 +17,11 @@ export const useWithdrawMutation = () => {
   };
 
   return {
-    executeWithdraw,
+    withdraw,
     hash,
-    isPending,    
-    isConfirming, 
-    isConfirmed, 
+    isPending,
+    isConfirming,
+    isConfirmed,
     error,
   };
 };

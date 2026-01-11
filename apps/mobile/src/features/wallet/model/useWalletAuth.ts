@@ -1,26 +1,29 @@
 import { isNotEmpty } from '@/src/shared';
-import { useConnect, useDisconnect, useConnection, useConnectors } from 'wagmi'
+import { useAccount, useConnect, useConnectors, useDisconnect } from 'wagmi';
 
 export const useWalletAuth = () => {
-  const { mutate: connectMutation, error, isPending } = useConnect();
-  const { mutate: disconnectMutation } = useDisconnect();
-  const { address, isConnected, chainId } = useConnection();
-  const connectors = useConnectors()
+  const { connect, error, isPending } = useConnect();
+  const { disconnect } = useDisconnect();
+
+  const { address, isConnected, chainId } = useAccount();
+  const connectors = useConnectors();
 
   const handleConnect = (connectorId?: string) => {
-    const targetConnectors = connectorId ? connectors.find((c) => c.id === connectorId) : connectors[0]
-    if(isNotEmpty(targetConnectors)) {
-      connectMutation({ connector: targetConnectors })
+    const target = connectorId ? connectors.find(c => c.id === connectorId) : connectors[0];
+
+    if (isNotEmpty(target)) {
+      connect({ connector: target });
     }
-  }
+  };
 
   return {
     connect: handleConnect,
-    error,
-    isPending,
-    disconnect: disconnectMutation,
+    disconnect,
     address,
     isConnected,
-    chainId
-  }
-}
+    chainId,
+    error,
+    isPending,
+    connectors,
+  };
+};
