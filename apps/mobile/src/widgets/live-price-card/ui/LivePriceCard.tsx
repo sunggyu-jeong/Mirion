@@ -1,6 +1,6 @@
 import { useGetEthPriceQuery } from '@/src/entities/price-tracker';
-import { Ionicons } from '@expo/vector-icons';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 
 export const LivePriceCard = () => {
   const { data, isLoading, error } = useGetEthPriceQuery();
@@ -8,6 +8,10 @@ export const LivePriceCard = () => {
   if (isLoading)
     return (
       <View style={[styles.container, styles.loadingCenter]}>
+        <ActivityIndicator
+          size="small"
+          color="#627EEA"
+        />
         <Text style={styles.loadingText}>시세 불러오는 중...</Text>
       </View>
     );
@@ -21,8 +25,8 @@ export const LivePriceCard = () => {
       <View style={styles.header}>
         <View style={styles.coinTitle}>
           <View style={styles.iconBg}>
-            <Ionicons
-              name={'logo-ethereum' as any}
+            <MaterialCommunityIcons
+              name="ethereum"
               size={20}
               color="#627EEA"
             />
@@ -32,18 +36,17 @@ export const LivePriceCard = () => {
         </View>
         <View style={[styles.changeBadge, isPositive ? styles.bgUp : styles.bgDown]}>
           <Text style={[styles.changeText, isPositive ? styles.textUp : styles.textDown]}>
-            {isPositive ? '+' : ''}
-            {data?.change.toFixed(2)}%
+            {isPositive ? '▲' : '▼'} {Math.abs(data?.change || 0).toFixed(2)}%
           </Text>
         </View>
       </View>
 
       <View style={styles.priceSection}>
         <Text style={styles.priceValue}>
-          {data?.price}
+          {data?.price.toLocaleString()}
           <Text style={styles.currency}> 원</Text>
         </Text>
-        <Text style={styles.updateTime}>실시간 시세 (coingecko)</Text>
+        <Text style={styles.updateTime}>실시간 시세 (CoinGecko)</Text>
       </View>
     </View>
   );
