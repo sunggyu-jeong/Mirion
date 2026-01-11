@@ -5,7 +5,6 @@ import { LivePriceCard } from '@/src/widgets/live-price-card';
 import { VaultDashboard } from '@/src/widgets/vault-status-card/ui/VaultDashboard';
 import { VaultEmptyState } from '@/src/widgets/vault-status-card/ui/VaultEmptyState';
 import { WalletConnectionBanner } from '@/src/widgets/vault-status-card/ui/WalletConnectionBanner';
-import { WalletHeader } from '@/src/widgets/wallet-header';
 import { Ionicons } from '@expo/vector-icons';
 import { useRef } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -19,8 +18,6 @@ export default function HomePage() {
 
   return (
     <View style={styles.container}>
-      <WalletHeader />
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -34,11 +31,10 @@ export default function HomePage() {
         ) : (
           <VaultDashboard />
         )}
-
         <View style={styles.footer}>
           <Ionicons
-            name={'logo-ethereum' as any}
-            size={24}
+            name="information-circle-outline"
+            size={16}
             color="black"
           />
           <Text style={styles.footerText}>자산을 저장하면 설정한 기간 동안 출금이 제한됩니다.</Text>

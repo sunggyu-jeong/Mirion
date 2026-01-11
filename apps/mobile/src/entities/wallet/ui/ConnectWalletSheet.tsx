@@ -14,11 +14,10 @@ interface ConnectWalletSheetProps {
   onConnect: (walletId: string) => void;
 }
 
-//TODO: 지갑 아이콘 추가필요
 const WALLET_OPTIONS: WalletOption[] = [
-  { id: 'metamask', name: 'MetaMask', logo: require('') },
-  { id: 'walletconnect', name: 'WalletConnect', logo: require('') },
-  { id: 'coinbase', name: 'Coinbase Wallet', logo: require('') },
+  { id: 'metamask', name: 'MetaMask', logo: { uri: 'https://via.placeholder.com/40' } },
+  { id: 'walletconnect', name: 'WalletConnect', logo: { uri: 'https://via.placeholder.com/40' } },
+  { id: 'coinbase', name: 'Coinbase Wallet', logo: { uri: 'https://via.placeholder.com/40' } },
 ];
 
 const SHEET_CONFIG = {

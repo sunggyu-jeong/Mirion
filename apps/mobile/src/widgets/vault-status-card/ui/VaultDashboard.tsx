@@ -1,6 +1,5 @@
 import { useVaultInfo } from '@/src/entities/wallet/model/useVaultInfo';
 import { useVaultActions } from '@/src/features/vault/model';
-import { Button } from '@/src/shared';
 import { VaultStatusCard } from '@/src/widgets/vault-status-card/ui/VaultStatusCard';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { formatUnits } from 'viem';
@@ -24,21 +23,6 @@ export const VaultDashboard = () => {
         startDate={startDate}
         unlockDate={unlockDate}
       />
-
-      <View style={styles.btnRow}>
-        <Button
-          label="추가 저장"
-          onPress={() => {}}
-          style={{ flex: 1 }}
-        />
-        <Button
-          label="출금"
-          onPress={withdraw}
-          isLoading={isVaultLoading}
-          variant="ghost"
-          style={{ flex: 1 }}
-        />
-      </View>
     </View>
   );
 };

@@ -1,6 +1,5 @@
 import { timeLockContract } from '@/src/shared';
-import { useAccount } from '@reown/appkit-react-native';
-import { useReadContracts } from 'wagmi';
+import { useAccount, useReadContracts } from 'wagmi';
 
 export const useVaultInfo = () => {
   const { address } = useAccount();

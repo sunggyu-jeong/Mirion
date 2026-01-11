@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { StoreProvider } from '@/src/app/providers/StoreProvider';
 import WagmiProvider from '@/src/app/providers/WagmiProvider';
 import { configureNotificationHandler } from '@/src/shared/lib';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,20 +23,22 @@ export default function RootLayout() {
     configureNotificationHandler();
   }, []);
   return (
-    <WagmiProvider>
-      <QueryClientProvider client={queryClient}>
-        <StoreProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: '#ffffff' },
-            }}
-          >
-            <Stack.Screen name="index" />
-            <Stack.Screen name="(tabs)" />
-          </Stack>
-        </StoreProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <WagmiProvider>
+        <QueryClientProvider client={queryClient}>
+          <StoreProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: '#ffffff' },
+              }}
+            >
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(tabs)" />
+            </Stack>
+          </StoreProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </GestureHandlerRootView>
   );
 }

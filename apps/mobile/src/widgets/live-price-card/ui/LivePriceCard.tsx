@@ -43,7 +43,7 @@ export const LivePriceCard = () => {
           {data?.price}
           <Text style={styles.currency}> 원</Text>
         </Text>
-        <Text style={styles.updateTime}>실시간 시세 (30초마다 갱신)</Text>
+        <Text style={styles.updateTime}>실시간 시세 (coingecko)</Text>
       </View>
     </View>
   );
