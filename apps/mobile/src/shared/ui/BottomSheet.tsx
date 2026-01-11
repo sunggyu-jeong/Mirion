@@ -1,8 +1,8 @@
-import { common, gray } from "@/src/shared/styles";
-import type { BottomSheetBackdropProps, BottomSheetProps } from "@gorhom/bottom-sheet";
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from "@gorhom/bottom-sheet";
-import { forwardRef, useCallback } from "react";
-import { StyleSheet } from "react-native";
+import { common, gray } from '@/src/shared/styles';
+import type { BottomSheetBackdropProps, BottomSheetProps } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import { forwardRef, useCallback } from 'react';
+import { StyleSheet } from 'react-native';
 
 export interface BottomSheetWrapperProps extends Omit<BottomSheetProps, 'children' | 'snapPoints'> {
   children: React.ReactNode;
@@ -22,13 +22,15 @@ const BottomSheetWrapper = forwardRef<BottomSheet, BottomSheetWrapperProps>(
           style={[props.style, styles.overlay]}
         />
       ),
-      []
+      [],
     );
 
     return (
       <BottomSheet
         ref={ref}
         index={-1}
+        detached
+        bottomInset={24}
         snapPoints={snapPoints as (string | number)[]}
         backdropComponent={renderBackdrop}
         backgroundStyle={[styles.background, isDetached && styles.detached, style]}
@@ -39,7 +41,7 @@ const BottomSheetWrapper = forwardRef<BottomSheet, BottomSheetWrapperProps>(
         <BottomSheetView style={styles.content}>{children}</BottomSheetView>
       </BottomSheet>
     );
-  }
+  },
 );
 
 BottomSheetWrapper.displayName = 'BottomSheetWrapper';
@@ -51,6 +53,8 @@ const styles = StyleSheet.create({
   background: {
     backgroundColor: common.white,
     borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
   },
   detached: {
     marginHorizontal: 16,

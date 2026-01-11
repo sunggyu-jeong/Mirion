@@ -1,3 +1,8 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useRef } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useAccount } from 'wagmi';
+
 import { useVaultInfo } from '@/src/entities/wallet/model/useVaultInfo';
 import ConnectWalletSheet from '@/src/entities/wallet/ui/ConnectWalletSheet';
 import { useWalletAuth } from '@/src/features/wallet';
@@ -5,10 +10,6 @@ import { LivePriceCard } from '@/src/widgets/live-price-card';
 import { VaultDashboard } from '@/src/widgets/vault-status-card/ui/VaultDashboard';
 import { VaultEmptyState } from '@/src/widgets/vault-status-card/ui/VaultEmptyState';
 import { WalletConnectionBanner } from '@/src/widgets/vault-status-card/ui/WalletConnectionBanner';
-import { Ionicons } from '@expo/vector-icons';
-import { useRef } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useAccount } from 'wagmi';
 
 export default function HomePage() {
   const { isConnected } = useAccount();
@@ -17,35 +18,38 @@ export default function HomePage() {
   const sheetRef = useRef<any>(null);
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        <LivePriceCard />
+    <>
+      <View style={styles.container}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          <LivePriceCard />
 
-        {!isConnected ? (
-          <WalletConnectionBanner onConnect={() => sheetRef.current?.expand()} />
-        ) : !hasAssets ? (
-          <VaultEmptyState />
-        ) : (
-          <VaultDashboard />
-        )}
-        <View style={styles.footer}>
-          <Ionicons
-            name="information-circle-outline"
-            size={16}
-            color="black"
-          />
-          <Text style={styles.footerText}>자산을 저장하면 설정한 기간 동안 출금이 제한됩니다.</Text>
-        </View>
-      </ScrollView>
-
+          {!isConnected ? (
+            <WalletConnectionBanner onConnect={() => sheetRef.current?.expand()} />
+          ) : !hasAssets ? (
+            <VaultEmptyState />
+          ) : (
+            <VaultDashboard />
+          )}
+          <View style={styles.footer}>
+            <Ionicons
+              name="information-circle-outline"
+              size={16}
+              color="black"
+            />
+            <Text style={styles.footerText}>
+              자산을 저장하면 설정한 기간 동안 출금이 제한됩니다.
+            </Text>
+          </View>
+        </ScrollView>
+      </View>
       <ConnectWalletSheet
         ref={sheetRef}
         onConnect={id => connect(id)}
       />
-    </View>
+    </>
   );
 }
 
