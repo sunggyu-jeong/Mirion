@@ -19,12 +19,10 @@ jobs:
       
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
-      
+    
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      
+
       - name: Configure pnpm (Hoisted)
         run: echo "node-linker=hoisted" > .npmrc
 
@@ -50,8 +48,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Configure pnpm (Hoisted)
         run: echo "node-linker=hoisted" > .npmrc
@@ -86,8 +82,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - name: Configure pnpm (Hoisted)
         run: echo "node-linker=hoisted" > .npmrc
