@@ -22,7 +22,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
       
       - name: Configure pnpm (Hoisted)
         run: echo "node-linker=hoisted" > .npmrc
@@ -50,7 +50,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Configure pnpm (Hoisted)
         run: echo "node-linker=hoisted" > .npmrc
@@ -86,7 +86,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Configure pnpm (Hoisted)
         run: echo "node-linker=hoisted" > .npmrc
