@@ -20,13 +20,17 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
       
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 9 
+        
+      - name: Configure pnpm for Foundry
+        working-directory: apps/contracts
+        run: echo "node-linker=hoisted" > .npmrc
       
       - name: Install Dependencies
         working-directory: apps/contracts
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
         
       - name: Generate Remappings
         working-directory: apps/contracts
@@ -52,7 +56,15 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 9
+
+      - name: Configure pnpm for Foundry
+        working-directory: apps/contracts
+        run: echo "node-linker=hoisted" > .npmrc
+
+      - name: Install Dependencies
+        working-directory: apps/contracts
+        run: pnpm install --no-frozen-lockfile
 
       - name: Deploy to Base Sepolia
         working-directory: apps/contracts
@@ -82,7 +94,15 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 9
+
+      - name: Configure pnpm for Foundry
+        working-directory: apps/contracts
+        run: echo "node-linker=hoisted" > .npmrc
+
+      - name: Install Dependencies
+        working-directory: apps/contracts
+        run: pnpm install --no-frozen-lockfile
 
       - name: Deploy to Base Mainnet
         working-directory: apps/contracts
