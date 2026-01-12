@@ -27,6 +27,10 @@ jobs:
       - name: Install Dependencies
         working-directory: apps/contracts
         run: pnpm install
+        
+      - name: Generate Remappings
+        working-directory: apps/contracts
+        run: forge remappings > remappings.txt
       
       - name: Run Tests
         working-directory: apps/contracts
