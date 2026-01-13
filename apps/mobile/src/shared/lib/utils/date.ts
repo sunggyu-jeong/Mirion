@@ -1,11 +1,12 @@
 import { differenceInDays, format, fromUnixTime, isAfter, startOfDay } from 'date-fns';
 
 export const formatDate = (timestamp: bigint | number): string => {
-  return format(fromUnixTime(Number(timestamp)), 'yyyy.mm.dd');
+  return format(fromUnixTime(Number(timestamp)), 'yyyy.MM.dd');
 };
 
-export const formatYMD = (date: string | number | Date) => format(new Date(date), 'yyyy.MM.dd');
-
+export const formatYMD = (date: string | number | Date) => {
+  return format(new Date(date), 'yyyy.MM.dd');
+};
 export const formatTime = () => format(new Date(), 'HH:mm:ss');
 
 export const getDiffInDays = (start: Date, end: Date) => differenceInDays(end, start);

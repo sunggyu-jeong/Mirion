@@ -9,13 +9,16 @@ export const useDepositMutation = () => {
     hash,
   });
 
-  const deposit = (amount: string, unlockTime: number) => {
-    writeContract({
-      ...timeLockContract,
-      functionName: 'deposit',
-      args: [BigInt(unlockTime)],
-      value: parseEther(amount),
-    });
+  const deposit = (amount: string, unlockTime: number, options?: any) => {
+    writeContract(
+      {
+        ...timeLockContract,
+        functionName: 'deposit',
+        args: [BigInt(unlockTime)],
+        value: parseEther(amount),
+      },
+      options
+    );
   };
 
   return {
