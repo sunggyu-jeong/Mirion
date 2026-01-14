@@ -108,6 +108,8 @@ const ConnectWalletSheet = forwardRef<BottomSheetHandler, ConnectWalletSheetProp
   },
 );
 
+ConnectWalletSheet.displayName = 'ConnectWalletSheet';
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 36,

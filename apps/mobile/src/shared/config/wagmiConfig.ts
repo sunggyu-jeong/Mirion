@@ -2,6 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createConfig, createStorage, http } from 'wagmi';
 import { mainnet, sepolia } from 'wagmi/chains';
 
+//FIXME: WalletConnect 프로젝트 연동 필요
+const projectId = '';
+
 if (typeof window === 'undefined' || !(global as any).CustomEvent) {
   const noop = () => {};
   const globalAny = global as any;
@@ -36,6 +39,21 @@ const storage = createStorage({
 export const config = createConfig({
   chains: [mainnet, sepolia],
   storage,
+  connectors: [
+    walletConnect({
+      projectId,
+      metadata: {
+        name: 'LockFi',
+        description: 'TimeLock Wallet',
+        url: 'https://lockfi.app',
+        icons: [''],
+      },
+      showQrModal: true,
+    }),
+    coinbaseWallet({
+      appName: 'LockFi',
+    }),
+  ],
   transports: {
     [mainnet.id]: http(),
     [sepolia.id]: http(),
