@@ -1,4 +1,7 @@
+import '@walletconnect/react-native-compat';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { coinbaseWallet, walletConnect } from '@wagmi/connectors';
 import { createConfig, createStorage, http } from 'wagmi';
 import { mainnet, sepolia } from 'wagmi/chains';
 
@@ -46,7 +49,7 @@ export const config = createConfig({
         name: 'LockFi',
         description: 'TimeLock Wallet',
         url: 'https://lockfi.app',
-        icons: [''],
+        icons: ['https://avatars.githubusercontent.com/u/37784886'],
       },
       showQrModal: true,
     }),
@@ -58,7 +61,6 @@ export const config = createConfig({
     [mainnet.id]: http(),
     [sepolia.id]: http(),
   },
-  ssr: true,
 });
 
 export function getWagmiConfig() {
