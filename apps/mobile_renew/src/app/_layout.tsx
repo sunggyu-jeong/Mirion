@@ -1,14 +1,13 @@
+import WagmiProvider from '@/app/providers/WagmiProvider';
+import { configureNotificationHandler } from '@/shared';
 import '../shared/lib/utils/shims';
 
-import { PortalProvider } from '@gorhom/portal'; // 1. 추가
+import { PortalProvider } from '@gorhom/portal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { StoreProvider } from '@/src/app/providers/StoreProvider';
-import WagmiProvider from '@/src/app/providers/WagmiProvider';
-import { configureNotificationHandler } from '@/src/shared/lib';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +27,6 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <WagmiProvider>
         <QueryClientProvider client={queryClient}>
-          <StoreProvider>
             <PortalProvider>
               <Stack
                 screenOptions={{
@@ -41,7 +39,6 @@ export default function RootLayout() {
                 <Stack.Screen name="(tabs)" />
               </Stack>
             </PortalProvider>
-          </StoreProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </GestureHandlerRootView>

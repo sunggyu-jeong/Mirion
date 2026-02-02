@@ -1,7 +1,7 @@
-import { formatYMD } from "@/src/shared/lib";
-import { common, gray } from "@/src/shared/styles";
+import { formatYMD } from "@/shared/lib";
+import { common, gray } from "@/shared/styles";
 import { addDays } from "date-fns";
-import { Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface DateSelectorProps {

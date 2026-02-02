@@ -1,6 +1,10 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsx": "react-native",
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -8,8 +12,19 @@
       ]
     },
     "strict": true,
-    "skipLibCheck": true
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "isolatedModules": true
   },
+  "include": [
+    "index.js",
+    "App.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
   "exclude": [
     "node_modules",
     "babel.config.js",

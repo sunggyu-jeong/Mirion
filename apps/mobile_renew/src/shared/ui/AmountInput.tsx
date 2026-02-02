@@ -1,7 +1,6 @@
-import { gray, common } from '@/src/shared/styles';
+import { common, gray } from '@/shared/styles';
 import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
-
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface AmountInputProps {
   value: string;

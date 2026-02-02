@@ -1,7 +1,7 @@
-import { useDeposit } from "@/src/features/deposit";
-import { AmountInput, gray, common } from "@/src/shared";
-import { DateSelector } from "@/src/shared/ui/DateSelector";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { useDeposit } from "@/features/deposit";
+import { AmountInput, common, gray } from "@/shared";
+import { DateSelector } from "@/shared/ui/DateSelector";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export const DepositForm = () => {
   const { formState, actions, status } = useDeposit();

@@ -1,15 +1,11 @@
+import { SavingsCard, SavingsEmptyState, useGetUserHistoryQuery, type HistoryItem } from '@/entities/history';
 import { differenceInDays, fromUnixTime } from 'date-fns';
 import { useEffect, useMemo } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 import { formatUnits } from 'viem';
 import { useAccount } from 'wagmi';
 
-import {
-  HistoryItem,
-  SavingsCard,
-  SavingsEmptyState,
-  useGetUserHistoryQuery,
-} from '@/src/entities/history';
+
 
 export const HistoryList = () => {
   const { address } = useAccount();

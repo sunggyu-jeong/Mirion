@@ -15,10 +15,7 @@ export default function SplashScreen() {
   if (!isReady) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator
-          size="large"
-          color="white"
-        />
+        <ActivityIndicator size="large" color="white" />
       </View>
     );
   }

@@ -1,4 +1,4 @@
-import { scheduleLocalNotification } from "@/src/shared/lib"
+import { scheduleLocalNotification } from "@/shared";
 
 export const useDepositNotification = () => {
   const scheduleMaturityAlarm = async (duration: number)=> {

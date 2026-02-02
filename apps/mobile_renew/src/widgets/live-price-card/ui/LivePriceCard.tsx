@@ -1,4 +1,4 @@
-import { useGetEthPriceQuery } from '@/src/entities/price-tracker';
+import { useGetEthPriceQuery } from '@/entities/price-tracker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 

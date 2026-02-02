@@ -1,8 +1,8 @@
+import type { HistoryItem } from '@/entities/history/model';
+import { config, CONTRACT_ADDRESS, isEmpty } from '@/shared';
 import { getPublicClient } from '@wagmi/core';
 import { parseAbiItem } from 'viem';
 
-import { HistoryItem } from '@/src/entities/history/model';
-import { config, CONTRACT_ADDRESS, isEmpty } from '@/src/shared';
 
 const DEPOSIT_EVENT = parseAbiItem(
   'event Deposit(address indexed user, uint256 amount, uint256 unlockTime)',

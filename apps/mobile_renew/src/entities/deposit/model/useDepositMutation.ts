@@ -1,4 +1,4 @@
-import { timeLockContract } from '@/src/shared/config/contracts';
+import { timeLockContract } from '@/shared';
 import { parseEther } from 'viem';
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 

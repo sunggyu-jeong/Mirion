@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import { getWagmiConfig } from '@/shared';
+import { useMemo, type ReactNode } from 'react';
 import { WagmiProvider as WagmiConfigProvider } from 'wagmi';
 
-import { getWagmiConfig } from '@/src/shared/config/wagmiConfig';
 
-export default function WagmiProvider({ children }: { children: React.ReactNode }) {
+export default function WagmiProvider({ children }: { children: ReactNode }) {
   const wagmiConfig = useMemo(() => {
     try {
       return getWagmiConfig();

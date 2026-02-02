@@ -1,4 +1,4 @@
-import { common, gray } from '@/src/shared/styles';
+import { common, gray } from '@/shared/styles';
 import type { BottomSheetBackdropProps, BottomSheetProps } from '@gorhom/bottom-sheet';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
 import { forwardRef, useCallback } from 'react';

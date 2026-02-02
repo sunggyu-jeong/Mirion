@@ -1,6 +1,6 @@
-import { fetchUserHistory } from '@/src/entities/history/api/fetchTransaction';
-import { HistoryItem } from '@/src/entities/history/model';
-import { baseApi } from '@/src/shared';
+import { fetchUserHistory } from "@/entities/history/api/fetchTransaction";
+import type { HistoryItem } from "@/entities/history/model";
+import { baseApi } from "@/shared";
 
 export const historyApi = baseApi.injectEndpoints({
   endpoints: builder => ({
