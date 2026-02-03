@@ -1,1 +1,1 @@
-export * from "./cryptoApi";
+export * from "./priceApi";
