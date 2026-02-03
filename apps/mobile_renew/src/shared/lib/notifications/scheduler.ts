@@ -1,6 +1,5 @@
-import * as Notifications from 'expo-notifications';
-
-import { requestNotificationPermissions } from '@/src/shared/lib/notifications/permission';
+import { requestNotificationPermissions } from "@/shared/lib/notifications/permission";
+import * as Notifications from "expo-notifications";
 
 interface ScheduleOptions {
   title: string;
@@ -8,7 +7,11 @@ interface ScheduleOptions {
   seconds: number;
 }
 
-export const scheduleLocalNotification = async ({ title, body, seconds }: ScheduleOptions) => {
+export const scheduleLocalNotification = async ({
+  title,
+  body,
+  seconds,
+}: ScheduleOptions) => {
   const hasPermission = await requestNotificationPermissions();
   if (!hasPermission) {
     return false;

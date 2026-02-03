@@ -1,14 +1,16 @@
-import { differenceInDays, startOfDay } from 'date-fns';
-import { useMemo } from 'react';
-
-import { isMatured } from '@/src/shared';
+import { isMatured } from "@/shared";
+import { differenceInDays, startOfDay } from "date-fns";
+import { useMemo } from "react";
 
 interface VaultProgressProps {
   startDate: string;
   unlockDate: string;
 }
 
-export const useVaultProgress = ({ startDate, unlockDate }: VaultProgressProps) => {
+export const useVaultProgress = ({
+  startDate,
+  unlockDate,
+}: VaultProgressProps) => {
   return useMemo(() => {
     const now = startOfDay(new Date());
     const start = startOfDay(new Date(startDate));
@@ -18,7 +20,8 @@ export const useVaultProgress = ({ startDate, unlockDate }: VaultProgressProps) 
     const elapsedDays = differenceInDays(now, start);
     const remaining = differenceInDays(end, now);
 
-    let percentage = totalDays > 0 ? Math.floor((elapsedDays / totalDays) * 100) : 0;
+    let percentage =
+      totalDays > 0 ? Math.floor((elapsedDays / totalDays) * 100) : 0;
 
     percentage = Math.max(0, Math.min(100, percentage));
     return {

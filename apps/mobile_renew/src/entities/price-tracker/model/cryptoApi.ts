@@ -1,4 +1,4 @@
-import { baseApi, formatPrice } from '@/src/shared';
+import { baseApi, formatPrice } from '@/shared';
 import { format } from 'date-fns';
 
 interface CoinGeckoResponse {
