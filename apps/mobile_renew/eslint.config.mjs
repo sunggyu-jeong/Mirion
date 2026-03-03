@@ -1,6 +1,5 @@
 import js from '@eslint/js';
 import globals from 'globals';
-import path from 'path';
 import tseslint from 'typescript-eslint';
 
 import pluginReactHooks from 'eslint-plugin-react-hooks';
@@ -13,15 +12,7 @@ import pluginUnusedImports from 'eslint-plugin-unused-imports';
 
 import configPrettier from 'eslint-config-prettier';
 import pluginPrettier from 'eslint-plugin-prettier';
-
-import { FlatCompat } from '@eslint/eslintrc';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import pluginReact from 'eslint-plugin-react';
 
 export default tseslint.config(
   {
@@ -45,7 +36,6 @@ export default tseslint.config(
   }, 
 
   js.configs.recommended,
-  ...compat.extends('plugin:react/recommended', 'expo'),
 
   configPrettier,
 
@@ -73,6 +63,7 @@ export default tseslint.config(
     },
 
     plugins: {
+      react: pluginReact,
       'react-hooks': pluginReactHooks,
       'react-native': pluginReactNative,
       import: pluginImport,
@@ -103,6 +94,11 @@ export default tseslint.config(
     },
 
     rules: {
+      'react/jsx-no-target-blank': 'warn',
+      'react/no-unescaped-entities': 'warn',
+      'react/no-unknown-property': 'error',
+      'react/jsx-key': 'error',
+
       // React Hooks
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
