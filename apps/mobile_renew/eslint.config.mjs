@@ -27,13 +27,12 @@ export default tseslint.config(
   {
     ignores: [
       'node_modules/',
+      'eslint.config.mjs',
       'dist/',
       'build/',
       'coverage/',
       'android/',
       'ios/',
-      '.expo/',
-      'expo/',
       '*.min.*',
       'supabase',
       '.#',
@@ -43,7 +42,7 @@ export default tseslint.config(
       '**/.pnpm/**',
       '**/node_modules/**',
     ],
-  },
+  }, 
 
   js.configs.recommended,
   ...compat.extends('plugin:react/recommended', 'expo'),
