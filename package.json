@@ -4,11 +4,11 @@
   "private": true,
   "description": "",
   "scripts": {
-    "mobile": "pnpm --filter LockFi start",
-    "android": "pnpm --filter LockFi android",
-    "ios": "pnpm --filter LockFi ios",
-    "lint:mobile": "pnpm --filter LockFi lint",
-    "test:contracts": "pnpm --filter contracts test"
+    "mobile": "pnpm --filter @lockfi/mobile start",
+    "android": "pnpm --filter @lockfi/mobile android",
+    "ios": "pnpm --filter @lockfi/mobile ios",
+    "lint:mobile": "pnpm --filter @lockfi/mobile lint",
+    "test:contracts": "pnpm --filter @lockfi/contracts test"
   },
   "keywords": [],
   "author": "sunggyu-jeong",
