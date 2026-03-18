@@ -23,8 +23,9 @@ module.exports = {
     '^@features/(.*)$': '<rootDir>/src/features/$1',
     '^@entities/(.*)$': '<rootDir>/src/entities/$1',
     '^@shared/(.*)$': '<rootDir>/src/shared/$1',
+    '^@modules/(.*)$': '<rootDir>/modules/$1',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|react-native-safe-area-context)/)',
+    'node_modules/(?!(react-native|@react-native|react-native-safe-area-context|react-native-nitro-modules)/)',
   ],
 };

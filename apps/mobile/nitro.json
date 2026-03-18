@@ -1,0 +1,11 @@
+{
+  "cxxNamespace": ["lockfi", "securekeymanager"],
+  "ios": {
+    "iosModuleName": "LockFi"
+  },
+  "android": {
+    "androidNamespace": ["com", "lockfi", "securekeymanager"],
+    "androidCxxLibName": "SecureKeyManager"
+  },
+  "autolinking": {}
+}

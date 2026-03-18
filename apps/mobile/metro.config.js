@@ -11,6 +11,7 @@ const config = {
       '@features': path.resolve(__dirname, 'src/features'),
       '@entities': path.resolve(__dirname, 'src/entities'),
       '@shared': path.resolve(__dirname, 'src/shared'),
+      '@modules': path.resolve(__dirname, 'modules'),
     },
   },
 };
