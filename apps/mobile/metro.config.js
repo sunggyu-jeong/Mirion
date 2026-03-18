@@ -5,9 +5,10 @@ const config = {
   resolver: {
     extraNodeModules: {
       '@app': path.resolve(__dirname, 'src/app'),
-      '@entities': path.resolve(__dirname, 'src/entities'),
-      '@features': path.resolve(__dirname, 'src/features'),
       '@pages': path.resolve(__dirname, 'src/pages'),
+      '@widgets': path.resolve(__dirname, 'src/widgets'),
+      '@features': path.resolve(__dirname, 'src/features'),
+      '@entities': path.resolve(__dirname, 'src/entities'),
       '@shared': path.resolve(__dirname, 'src/shared'),
     },
   },

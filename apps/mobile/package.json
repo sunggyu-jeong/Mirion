@@ -8,12 +8,15 @@
     "lint": "eslint .",
     "start": "react-native start",
     "start:reset": "react-native start --reset-cache",
-    "test": "jest"
+    "test": "jest",
+    "test:js:coverage": "jest --coverage",
+    "test:android:coverage": "cd android && ./gradlew testDebugUnitTestCoverage",
+    "test:ios:coverage": "xcodebuild test -workspace ios/LockFi.xcworkspace -scheme LockFi -destination 'platform=iOS Simulator,name=iPhone 16' -enableCodeCoverage YES | xcpretty"
   },
   "dependencies": {
+    "@react-native/new-app-screen": "0.84.1",
     "react": "19.2.3",
     "react-native": "0.84.1",
-    "@react-native/new-app-screen": "0.84.1",
     "react-native-safe-area-context": "^5.5.2"
   },
   "devDependencies": {
@@ -29,6 +32,7 @@
     "@react-native/eslint-config": "0.84.1",
     "@react-native/metro-config": "0.84.1",
     "@react-native/typescript-config": "0.84.1",
+    "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.13",
     "@types/react": "^19.2.0",
     "@types/react-test-renderer": "^19.1.0",
