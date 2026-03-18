@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRef } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAccount } from 'wagmi';

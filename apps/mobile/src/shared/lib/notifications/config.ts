@@ -1,13 +1,5 @@
-import * as Notifications from 'expo-notifications';
+import notifee from '@notifee/react-native';
 
 export const configureNotificationHandler = () => {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-      shouldShowBanner: true,
-      shouldShowList: true,
-    }),
-  });
+  notifee.onForegroundEvent(() => {});
 };

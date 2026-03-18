@@ -1,5 +1,5 @@
 import { useGetEthPriceQuery } from '@/src/entities/price-tracker';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 
 export const LivePriceCard = () => {

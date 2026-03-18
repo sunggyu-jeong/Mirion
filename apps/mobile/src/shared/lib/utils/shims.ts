@@ -1,9 +1,3 @@
-import * as Crypto from 'expo-crypto';
-
-if (typeof global.crypto === 'undefined') {
-  (global as any).crypto = Crypto;
-}
-
 if (typeof window === 'undefined') {
   (global as any).window = global;
 }

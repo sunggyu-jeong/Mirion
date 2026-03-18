@@ -1,4 +1,4 @@
-import * as Notifications from 'expo-notifications';
+import notifee, { TriggerType } from '@notifee/react-native';
 
 import { requestNotificationPermissions } from '@/src/shared/lib/notifications/permission';
 
@@ -14,18 +14,22 @@ export const scheduleLocalNotification = async ({ title, body, seconds }: Schedu
     return false;
   }
 
-  await Notifications.scheduleNotificationAsync({
-    content: {
+  const channelId = await notifee.createChannel({
+    id: 'default',
+    name: 'Default Channel',
+  });
+
+  await notifee.createTriggerNotification(
+    {
       title,
       body,
-      sound: true,
+      android: { channelId },
     },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds,
-      repeats: false,
+    {
+      type: TriggerType.TIMESTAMP,
+      timestamp: Date.now() + seconds * 1000,
     },
-  });
+  );
 
   return true;
 };
