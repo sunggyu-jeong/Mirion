@@ -12,7 +12,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Navigation } from '../index'
 
 describe('Navigation', () => {
-  it('creates a native stack navigator', () => {
+  it('네이티브 스택 네비게이터를 생성한다', () => {
     expect(createNativeStackNavigator).toHaveBeenCalledWith(
       expect.objectContaining({
         screens: expect.objectContaining({ Home: expect.any(Function) }),
@@ -20,11 +20,11 @@ describe('Navigation', () => {
     )
   })
 
-  it('creates static navigation from the stack', () => {
+  it('스택으로부터 정적 네비게이션을 생성한다', () => {
     expect(createStaticNavigation).toHaveBeenCalled()
   })
 
-  it('exports Navigation component', () => {
+  it('Navigation 컴포넌트를 export한다', () => {
     expect(Navigation).toBeDefined()
   })
 })

@@ -11,27 +11,27 @@ describe('zustandStorage', () => {
   beforeEach(() => jest.clearAllMocks())
 
   describe('getItem', () => {
-    it('returns string value when key exists', () => {
+    it('키가 존재하면 문자열 값을 반환한다', () => {
       mockStorage.getString.mockReturnValue('stored-value')
       expect(zustandStorage.getItem('key')).toBe('stored-value')
       expect(mockStorage.getString).toHaveBeenCalledWith('key')
     })
 
-    it('returns null when key does not exist', () => {
+    it('키가 존재하지 않으면 null을 반환한다', () => {
       mockStorage.getString.mockReturnValue(undefined)
       expect(zustandStorage.getItem('key')).toBeNull()
     })
   })
 
   describe('setItem', () => {
-    it('delegates to storage.set', () => {
+    it('storage.set에 위임한다', () => {
       zustandStorage.setItem('key', 'value')
       expect(mockStorage.set).toHaveBeenCalledWith('key', 'value')
     })
   })
 
   describe('removeItem', () => {
-    it('delegates to storage.remove', () => {
+    it('storage.remove에 위임한다', () => {
       zustandStorage.removeItem('key')
       expect(mockStorage.remove).toHaveBeenCalledWith('key')
     })

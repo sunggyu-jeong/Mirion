@@ -29,59 +29,59 @@ describe('secureKey', () => {
     m.retrievePrivateKey.mockReset()
   })
 
-  it('initializes by calling createHybridObject with SecureKeyManager', () => {
+  it('SecureKeyManager로 createHybridObject를 호출하여 초기화한다', () => {
     expect(NitroModules.createHybridObject).toHaveBeenCalledWith('SecureKeyManager')
   })
 
   describe('has', () => {
-    it('delegates to manager.hasPrivateKey', () => {
+    it('manager.hasPrivateKey에 위임한다', () => {
       getManager().hasPrivateKey.mockReturnValue(true)
       const result = secureKey.has('wallet-1')
       expect(getManager().hasPrivateKey).toHaveBeenCalledWith('wallet-1')
       expect(result).toBe(true)
     })
 
-    it('returns false when key does not exist', () => {
+    it('키가 존재하지 않으면 false를 반환한다', () => {
       getManager().hasPrivateKey.mockReturnValue(false)
       expect(secureKey.has('wallet-1')).toBe(false)
     })
   })
 
   describe('delete', () => {
-    it('delegates to manager.deletePrivateKey', () => {
+    it('manager.deletePrivateKey에 위임한다', () => {
       getManager().deletePrivateKey.mockReturnValue(true)
       const result = secureKey.delete('wallet-1')
       expect(getManager().deletePrivateKey).toHaveBeenCalledWith('wallet-1')
       expect(result).toBe(true)
     })
 
-    it('returns false when delete fails', () => {
+    it('삭제 실패 시 false를 반환한다', () => {
       getManager().deletePrivateKey.mockReturnValue(false)
       expect(secureKey.delete('wallet-1')).toBe(false)
     })
   })
 
   describe('generate', () => {
-    it('delegates to manager.generateAndStorePrivateKey and returns promise', async () => {
+    it('manager.generateAndStorePrivateKey에 위임하고 Promise를 반환한다', async () => {
       getManager().generateAndStorePrivateKey.mockResolvedValue(true)
       const result = await secureKey.generate('wallet-1')
       expect(getManager().generateAndStorePrivateKey).toHaveBeenCalledWith('wallet-1')
       expect(result).toBe(true)
     })
 
-    it('returns false when generation fails', async () => {
+    it('생성 실패 시 false를 반환한다', async () => {
       getManager().generateAndStorePrivateKey.mockResolvedValue(false)
       expect(await secureKey.generate('wallet-1')).toBe(false)
     })
 
-    it('propagates rejection', async () => {
+    it('에러를 전파한다', async () => {
       getManager().generateAndStorePrivateKey.mockRejectedValue(new Error('keychain error'))
       await expect(secureKey.generate('wallet-1')).rejects.toThrow('keychain error')
     })
   })
 
   describe('retrieve', () => {
-    it('returns hex string when key exists', async () => {
+    it('키가 존재하면 hex 문자열을 반환한다', async () => {
       const hex = 'a'.repeat(64)
       getManager().retrievePrivateKey.mockResolvedValue(hex)
       const result = await secureKey.retrieve('wallet-1')
@@ -89,12 +89,12 @@ describe('secureKey', () => {
       expect(result).toBe(hex)
     })
 
-    it('returns null when key does not exist', async () => {
+    it('키가 존재하지 않으면 null을 반환한다', async () => {
       getManager().retrievePrivateKey.mockResolvedValue(null)
       expect(await secureKey.retrieve('wallet-1')).toBeNull()
     })
 
-    it('propagates rejection', async () => {
+    it('에러를 전파한다', async () => {
       getManager().retrievePrivateKey.mockRejectedValue(new Error('read error'))
       await expect(secureKey.retrieve('wallet-1')).rejects.toThrow('read error')
     })

@@ -12,11 +12,11 @@ import { render } from '@testing-library/react-native'
 import { AppProviders } from '../index'
 
 describe('AppProviders', () => {
-  it('renders without crashing', () => {
+  it('에러 없이 렌더링된다', () => {
     expect(() => render(<AppProviders />)).not.toThrow()
   })
 
-  it('renders Navigation inside SafeAreaProvider', () => {
+  it('SafeAreaProvider 안에 Navigation을 렌더링한다', () => {
     const { toJSON } = render(<AppProviders />)
     expect(toJSON()).not.toBeNull()
   })

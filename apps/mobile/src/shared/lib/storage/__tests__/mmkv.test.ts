@@ -6,11 +6,11 @@ import { createMMKV } from 'react-native-mmkv'
 import { storage } from '../mmkv'
 
 describe('storage', () => {
-  it('creates MMKV instance with lockfi-storage id', () => {
+  it('lockfi-storage id로 MMKV 인스턴스를 생성한다', () => {
     expect(createMMKV).toHaveBeenCalledWith({ id: 'lockfi-storage' })
   })
 
-  it('exposes the MMKV instance', () => {
+  it('생성된 MMKV 인스턴스를 노출한다', () => {
     expect(storage).toBe((createMMKV as jest.Mock).mock.results[0].value)
   })
 })

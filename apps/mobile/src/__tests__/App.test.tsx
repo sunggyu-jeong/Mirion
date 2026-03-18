@@ -11,7 +11,7 @@ function Greeting({ name }: { name: string }) {
 }
 
 describe('Greeting', () => {
-  it('renders the correct greeting text', () => {
+  it('올바른 인사 텍스트를 렌더링한다', () => {
     render(<Greeting name="LockFi" />);
     expect(screen.getByText('Hello, LockFi!')).toBeTruthy();
   });
