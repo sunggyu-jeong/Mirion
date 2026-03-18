@@ -32,13 +32,12 @@ coverage/
 .env.production.local
 .env*.local
 
-.expo/
-web-build/
-
 # apps/mobile/android/
 # apps/mobile/ios/
 
+apps/mobile/android/.gradle/
 apps/mobile/android/app/build/
+apps/mobile/android/app/.cxx/
 apps/mobile/android/app/src/main/assets/
 apps/mobile/ios/Pods/
 apps/mobile/ios/build/
@@ -52,9 +51,8 @@ GoogleService-Info.json
 
 .metro-health-check*
 
-apps/contracts/out/
-apps/contracts/cache/
-
-apps/contracts/broadcast/
+.turbo/
 
 instruction.txt
+
+.claude

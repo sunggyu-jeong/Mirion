@@ -1,26 +1,27 @@
 {
   "name": "time-lock-monorepo",
   "version": "1.0.0",
+  "private": true,
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "mobile": "pnpm --filter mobile start",
-    "android": "pnpm --filter mobile android",
-    "ios": "pnpm --filter mobile ios",
-    "lint:mobile": "pnpm --filter mobile lint",
+    "mobile": "pnpm --filter LockFi start",
+    "android": "pnpm --filter LockFi android",
+    "ios": "pnpm --filter LockFi ios",
+    "lint:mobile": "pnpm --filter LockFi lint",
     "test:contracts": "pnpm --filter contracts test"
   },
   "keywords": [],
   "author": "sunggyu-jeong",
   "license": "ISC",
   "packageManager": "pnpm@10.21.0",
-  "dependencies": {
-    "pnpm": "^10.25.0",
-    "expo": "~54.0.29",
-    "react": "19.1.0",
-    "react-native": "0.81.5"
-  },
   "devDependencies": {
     "turbo": "^2.6.3"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "@react-native/eslint-config>eslint": "9"
+      }
+    }
   }
 }

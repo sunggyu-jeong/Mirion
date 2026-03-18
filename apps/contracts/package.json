@@ -1,6 +1,7 @@
 {
   "name": "contracts",
   "version": "1.0.0",
+  "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,7 +10,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.21.0",
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0"
   }
