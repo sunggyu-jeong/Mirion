@@ -32,9 +32,7 @@ export default tseslint.config(
       'coverage/',
       'android/',
       'ios/',
-      '.expo/',
-      'expo/',
-      '*.min.*',
+'*.min.*',
       'supabase',
       '.#',
       'babel.config.js',
@@ -46,7 +44,7 @@ export default tseslint.config(
   },
 
   js.configs.recommended,
-  ...compat.extends('plugin:react/recommended', 'expo'),
+  ...compat.extends('plugin:react/recommended'),
 
   configPrettier,
 

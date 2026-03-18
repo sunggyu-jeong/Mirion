@@ -3,11 +3,6 @@
 # dependencies
 node_modules/
 
-# Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
 
 # Native
 .kotlin/
@@ -36,10 +31,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-app-example
-
-# generated native folders
-/ios
-/android
 
 .vscode/
+
+instruction.*
+CLAUDE.md
+.claude
