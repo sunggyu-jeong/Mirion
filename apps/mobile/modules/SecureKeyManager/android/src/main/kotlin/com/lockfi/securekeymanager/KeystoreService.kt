@@ -43,6 +43,29 @@ internal class KeystoreService(context: Context) {
     }
   }
 
+  fun storeData(keyId: String, data: String): Boolean {
+    val alias = keyAlias(keyId)
+    ensureKeystoreKey(alias)
+    val dataBytes = data.toByteArray(Charsets.UTF_8)
+    return try {
+      val encoded = encrypt(alias, dataBytes)
+      prefs.edit().putString(keyId, encoded).commit()
+    } finally {
+      dataBytes.fill(0)
+    }
+  }
+
+  fun retrieveData(keyId: String): String? {
+    val alias = keyAlias(keyId)
+    val encoded = prefs.getString(keyId, null) ?: return null
+    return try {
+      val decrypted = decrypt(alias, encoded)
+      String(decrypted, Charsets.UTF_8)
+    } catch (_: Exception) {
+      null
+    }
+  }
+
   fun delete(keyId: String): Boolean {
     val alias = keyAlias(keyId)
     prefs.edit().remove(keyId).commit()

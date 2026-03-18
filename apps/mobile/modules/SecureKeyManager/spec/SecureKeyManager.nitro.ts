@@ -6,4 +6,6 @@ export interface SecureKeyManager
   deletePrivateKey(keyId: string): boolean
   generateAndStorePrivateKey(keyId: string): Promise<boolean>
   retrievePrivateKey(keyId: string): Promise<string | null>
+  storeData(keyId: string, data: string): Promise<boolean>
+  retrieveData(keyId: string): Promise<string | null>
 }

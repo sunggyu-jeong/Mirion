@@ -5,6 +5,8 @@ jest.mock('react-native-nitro-modules', () => ({
       deletePrivateKey: jest.fn(),
       generateAndStorePrivateKey: jest.fn(),
       retrievePrivateKey: jest.fn(),
+      storeData: jest.fn(),
+      retrieveData: jest.fn(),
     }),
   },
 }))
@@ -18,6 +20,8 @@ const getManager = () =>
     deletePrivateKey: jest.Mock
     generateAndStorePrivateKey: jest.Mock
     retrievePrivateKey: jest.Mock
+    storeData: jest.Mock
+    retrieveData: jest.Mock
   }
 
 describe('secureKey', () => {
@@ -27,6 +31,8 @@ describe('secureKey', () => {
     m.deletePrivateKey.mockReset()
     m.generateAndStorePrivateKey.mockReset()
     m.retrievePrivateKey.mockReset()
+    m.storeData.mockReset()
+    m.retrieveData.mockReset()
   })
 
   it('SecureKeyManager로 createHybridObject를 호출하여 초기화한다', () => {
@@ -77,6 +83,44 @@ describe('secureKey', () => {
     it('에러를 전파한다', async () => {
       getManager().generateAndStorePrivateKey.mockRejectedValue(new Error('keychain error'))
       await expect(secureKey.generate('wallet-1')).rejects.toThrow('keychain error')
+    })
+  })
+
+  describe('store', () => {
+    it('manager.storeData에 위임하고 Promise를 반환한다', async () => {
+      getManager().storeData.mockResolvedValue(true)
+      const result = await secureKey.store('session-1', '0xABC123')
+      expect(getManager().storeData).toHaveBeenCalledWith('session-1', '0xABC123')
+      expect(result).toBe(true)
+    })
+
+    it('저장 실패 시 false를 반환한다', async () => {
+      getManager().storeData.mockResolvedValue(false)
+      expect(await secureKey.store('session-1', '0xABC123')).toBe(false)
+    })
+
+    it('에러를 전파한다', async () => {
+      getManager().storeData.mockRejectedValue(new Error('keychain error'))
+      await expect(secureKey.store('session-1', '0xABC123')).rejects.toThrow('keychain error')
+    })
+  })
+
+  describe('retrieveData', () => {
+    it('저장된 문자열 원본을 반환한다', async () => {
+      getManager().retrieveData.mockResolvedValue('0xABC123')
+      const result = await secureKey.retrieveData('session-1')
+      expect(getManager().retrieveData).toHaveBeenCalledWith('session-1')
+      expect(result).toBe('0xABC123')
+    })
+
+    it('데이터가 없으면 null을 반환한다', async () => {
+      getManager().retrieveData.mockResolvedValue(null)
+      expect(await secureKey.retrieveData('session-1')).toBeNull()
+    })
+
+    it('에러를 전파한다', async () => {
+      getManager().retrieveData.mockRejectedValue(new Error('read error'))
+      await expect(secureKey.retrieveData('session-1')).rejects.toThrow('read error')
     })
   })
 

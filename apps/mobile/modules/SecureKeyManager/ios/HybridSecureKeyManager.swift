@@ -45,6 +45,32 @@ public class HybridSecureKeyManager: HybridSecureKeyManagerSpec {
     }
   }
 
+  public func storeData(keyId: String, data: String) throws -> Promise<Bool> {
+    Promise.async { [weak self] in
+      guard let self else { return false }
+      guard let dataBytes = data.data(using: .utf8) else { return false }
+      return try self.storeToKeychain(keyId: keyId, data: dataBytes)
+    }
+  }
+
+  public func retrieveData(keyId: String) throws -> Promise<Variant_NullType_String> {
+    Promise.async { [weak self] in
+      guard let self else { return .first(NullType.null) }
+      var query = self.baseQuery(keyId: keyId)
+      query[kSecReturnData as String] = true
+      var result: AnyObject?
+      let status = SecItemCopyMatching(query as CFDictionary, &result)
+      if status == errSecItemNotFound { return .first(NullType.null) }
+      guard status == errSecSuccess, let data = result as? Data else {
+        throw KeychainError.readFailed(status)
+      }
+      guard let str = String(data: data, encoding: .utf8) else {
+        throw KeychainError.readFailed(errSecInternalError)
+      }
+      return .second(str)
+    }
+  }
+
   private func storeToKeychain(keyId: String, data: Data) throws -> Bool {
     var query = baseQuery(keyId: keyId)
     SecItemDelete(query as CFDictionary)

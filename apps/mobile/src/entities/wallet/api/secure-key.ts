@@ -12,4 +12,8 @@ export const secureKey = {
   generate: (keyId: string): Promise<boolean> => manager.generateAndStorePrivateKey(keyId),
 
   retrieve: (keyId: string): Promise<string | null> => manager.retrievePrivateKey(keyId),
+
+  store: (keyId: string, data: string): Promise<boolean> => manager.storeData(keyId, data),
+
+  retrieveData: (keyId: string): Promise<string | null> => manager.retrieveData(keyId),
 };

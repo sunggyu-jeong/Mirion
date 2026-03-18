@@ -27,6 +27,16 @@ class HybridSecureKeyManager : HybridSecureKeyManagerSpec() {
       else Variant_NullType_String.create(NullType.NULL)
     }
 
+  override fun storeData(keyId: String, data: String): Promise<Boolean> =
+    Promise.async { keystoreService.storeData(keyId, data) }
+
+  override fun retrieveData(keyId: String): Promise<Variant_NullType_String> =
+    Promise.async {
+      val str = keystoreService.retrieveData(keyId)
+      if (str != null) Variant_NullType_String.create(str)
+      else Variant_NullType_String.create(NullType.NULL)
+    }
+
   companion object {
     @Volatile
     private var appContext: Application? = null
