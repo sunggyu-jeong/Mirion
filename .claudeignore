@@ -1,0 +1,8 @@
+apps/mobile/android/app/build/
+apps/mobile/android/.cxx/
+apps/mobile/ios/build/
+apps/mobile/ios/DerivedData/
+apps/mobile/nitrogen/generated/
+node_modules/
+*.log
+.git/

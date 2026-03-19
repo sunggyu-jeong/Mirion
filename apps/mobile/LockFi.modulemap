@@ -1,0 +1,6 @@
+module LockFi {
+  umbrella header "SecureKeyManager-umbrella.h"
+  header "LockFi-Swift-Cxx-Bridge.hpp"
+  export *
+  module * { export * }
+}
