@@ -2,7 +2,7 @@
   "name": "rn-prebuild",
   "version": "0.0.1",
   "private": true,
-  "packageManager": "pnpm@9",
+  "packageManager": "pnpm@10.32.1",
   "dependencies": {
     "react": "19.1.0",
     "react-native": "0.84.1"

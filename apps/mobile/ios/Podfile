@@ -44,5 +44,6 @@ target 'LockFi' do
       end
       File.write(module_map_path, content)
     end
+
   end
 end

@@ -25,7 +25,7 @@ public class HybridSecureKeyManager: HybridSecureKeyManagerSpec {
         throw KeychainError.randomGenerationFailed(status)
       }
       let data = Data(rawBytes)
-      rawBytes.withUnsafeMutableBytes { $0.initialize(repeating: 0) }
+      rawBytes.withUnsafeMutableBytes { _ = $0.initializeMemory(as: UInt8.self, repeating: 0) }
       return try self.storeToKeychain(keyId: keyId, data: data, requiresBiometric: true)
     }
   }

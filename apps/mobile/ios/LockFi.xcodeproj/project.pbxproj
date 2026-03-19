@@ -12,6 +12,7 @@
 		17A63649E67DBB79604A502B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		C3D4E5F6A1B2C3D4E5F6A1B2 /* ReactNativePrebuild in Frameworks */ = {isa = PBXBuildFile; productRef = B2C3D4E5F6A1B2C3D4E5F6A1 /* ReactNativePrebuild */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C80B921A6F3F58F76C31292 /* libPods-LockFi.a in Frameworks */,
+				C3D4E5F6A1B2C3D4E5F6A1B2 /* ReactNativePrebuild in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,6 +120,9 @@
 			dependencies = (
 			);
 			name = LockFi;
+			packageProductDependencies = (
+				B2C3D4E5F6A1B2C3D4E5F6A1 /* ReactNativePrebuild */,
+			);
 			productName = LockFi;
 			productReference = 13B07F961A680F5B00A75B9A /* LockFi.app */;
 			productType = "com.apple.product-type.application";
@@ -144,14 +149,14 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				A1B2C3D4E5F6A1B2C3D4E5F6 /* XCLocalSwiftPackageReference "react_native_prebuild" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* LockFi */,
-			);
-			packageReferences = (
-				A1B2C3D4E5F6A1B2C3D4E5F6 /* XCLocalSwiftPackageReference "../../react_native_prebuild" */,
 			);
 		};
 /* End PBXProject section */
@@ -494,16 +499,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		A1B2C3D4E5F6A1B2C3D4E5F6 /* XCLocalSwiftPackageReference "../../react_native_prebuild" */ = {
+		A1B2C3D4E5F6A1B2C3D4E5F6 /* XCLocalSwiftPackageReference "react_native_prebuild" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../react_native_prebuild;
+			relativePath = ../react_native_prebuild;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		B2C3D4E5F6A1B2C3D4E5F6A1 /* ReactNativePrebuild */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A1B2C3D4E5F6A1B2C3D4E5F6 /* XCLocalSwiftPackageReference "../../react_native_prebuild" */;
+			package = A1B2C3D4E5F6A1B2C3D4E5F6 /* XCLocalSwiftPackageReference "react_native_prebuild" */;
 			productName = ReactNativePrebuild;
 		};
 /* End XCSwiftPackageProductDependency section */
