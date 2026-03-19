@@ -5,10 +5,10 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
     global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
+      branches: 95,
+      functions: 95,
+      lines: 95,
+      statements: 95,
     },
   },
   collectCoverageFrom: [
@@ -27,6 +27,6 @@ module.exports = {
   },
   forceExit: true,
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|react-native-safe-area-context|react-native-nitro-modules|wagmi|viem|@wagmi|@tanstack|@coinbase)/)',
+    'node_modules/(?!(react-native|@react-native|react-native-safe-area-context|react-native-nitro-modules|react-native-biometrics|wagmi|viem|@wagmi|@tanstack|@coinbase)/)',
   ],
 };

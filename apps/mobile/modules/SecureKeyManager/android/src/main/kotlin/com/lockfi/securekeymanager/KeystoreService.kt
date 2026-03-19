@@ -82,6 +82,8 @@ internal class KeystoreService(context: Context) {
       .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
       .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
       .setKeySize(256)
+      .setUserAuthenticationRequired(true)
+      .setUserAuthenticationValidityDurationSeconds(30)
       .build()
     KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE_PROVIDER)
       .apply { init(spec) }

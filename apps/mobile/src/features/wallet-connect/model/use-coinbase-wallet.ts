@@ -1,4 +1,4 @@
-import { configure, initiateHandshake, disconnect } from '@coinbase/wallet-mobile-sdk';
+import { configure, initiateHandshake, resetSession } from '@coinbase/wallet-mobile-sdk';
 
 import { secureKey, useWalletStore } from '@entities/wallet';
 
@@ -15,17 +15,16 @@ export function useCoinbaseWallet() {
   const clearSession = useWalletStore(s => s.clearSession);
 
   const connectWallet = async () => {
-    const results = await initiateHandshake([{ method: 'eth_requestAccounts', params: [] }]);
-    const accounts = results[0]?.result as string[] | undefined;
-    const account = accounts?.[0];
-    if (!account) throw new Error('Coinbase 연결 실패: 계정을 가져올 수 없습니다');
-    await secureKey.store(WALLET_KEY_ID, account);
-    setSession(account, 'coinbase');
-    return account;
+    const [, account] = await initiateHandshake([{ method: 'eth_requestAccounts', params: [] }]);
+    const address = account?.address;
+    if (!address) throw new Error('Coinbase 연결 실패: 계정을 가져올 수 없습니다');
+    await secureKey.store(WALLET_KEY_ID, address);
+    setSession(address, 'coinbase');
+    return address;
   };
 
   const disconnectWallet = () => {
-    disconnect();
+    resetSession();
     secureKey.delete(WALLET_KEY_ID);
     clearSession();
   };

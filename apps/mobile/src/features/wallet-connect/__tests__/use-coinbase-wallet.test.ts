@@ -1,7 +1,7 @@
 jest.mock('@coinbase/wallet-mobile-sdk', () => ({
   configure: jest.fn(),
   initiateHandshake: jest.fn(),
-  disconnect: jest.fn(),
+  resetSession: jest.fn(),
 }));
 
 jest.mock('@entities/wallet', () => ({
@@ -16,7 +16,7 @@ jest.mock('@entities/wallet', () => ({
 }));
 
 import { renderHook, act } from '@testing-library/react-native';
-import { initiateHandshake, disconnect } from '@coinbase/wallet-mobile-sdk';
+import { initiateHandshake, resetSession } from '@coinbase/wallet-mobile-sdk';
 import { secureKey, useWalletStore } from '@entities/wallet';
 import { useCoinbaseWallet } from '../model/use-coinbase-wallet';
 
@@ -36,7 +36,10 @@ beforeEach(() => {
 describe('useCoinbaseWallet', () => {
   describe('connectWallet', () => {
     it('연결 성공 시 address가 스토어에 저장된다', async () => {
-      (initiateHandshake as jest.Mock).mockResolvedValue([{ result: ['0xCB456DEF'] }]);
+      (initiateHandshake as jest.Mock).mockResolvedValue([
+        [],
+        { chain: '1', networkId: 1, address: '0xCB456DEF' },
+      ]);
       (secureKey.store as jest.Mock).mockResolvedValue(true);
 
       const { result } = renderHook(() => useCoinbaseWallet());
@@ -48,7 +51,10 @@ describe('useCoinbaseWallet', () => {
     });
 
     it('연결 성공 시 address를 JSI에 저장한다', async () => {
-      (initiateHandshake as jest.Mock).mockResolvedValue([{ result: ['0xCB456DEF'] }]);
+      (initiateHandshake as jest.Mock).mockResolvedValue([
+        [],
+        { chain: '1', networkId: 1, address: '0xCB456DEF' },
+      ]);
       (secureKey.store as jest.Mock).mockResolvedValue(true);
 
       const { result } = renderHook(() => useCoinbaseWallet());
@@ -59,8 +65,8 @@ describe('useCoinbaseWallet', () => {
       expect(secureKey.store).toHaveBeenCalledWith('cb-session-key', '0xCB456DEF');
     });
 
-    it('계정을 가져올 수 없을 때 에러가 전파된다', async () => {
-      (initiateHandshake as jest.Mock).mockResolvedValue([{ result: [] }]);
+    it('account가 없을 때 에러가 전파된다', async () => {
+      (initiateHandshake as jest.Mock).mockResolvedValue([[], undefined]);
 
       const { result } = renderHook(() => useCoinbaseWallet());
       await expect(
@@ -83,7 +89,7 @@ describe('useCoinbaseWallet', () => {
   });
 
   describe('disconnectWallet', () => {
-    it('disconnect 후 secureKey.delete가 호출된다', () => {
+    it('resetSession 후 secureKey.delete가 호출된다', () => {
       (secureKey.delete as jest.Mock).mockReturnValue(true);
 
       const { result } = renderHook(() => useCoinbaseWallet());
@@ -105,13 +111,13 @@ describe('useCoinbaseWallet', () => {
       expect(mockClearSession).toHaveBeenCalled();
     });
 
-    it('SDK disconnect가 호출된다', () => {
+    it('SDK resetSession이 호출된다', () => {
       const { result } = renderHook(() => useCoinbaseWallet());
       act(() => {
         result.current.disconnectWallet();
       });
 
-      expect(disconnect).toHaveBeenCalled();
+      expect(resetSession).toHaveBeenCalled();
     });
   });
 });

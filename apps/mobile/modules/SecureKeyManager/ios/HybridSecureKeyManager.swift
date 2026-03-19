@@ -1,4 +1,5 @@
 import Foundation
+import LocalAuthentication
 import Security
 import NitroModules
 
@@ -25,15 +26,34 @@ public class HybridSecureKeyManager: HybridSecureKeyManagerSpec {
       }
       let data = Data(rawBytes)
       rawBytes.withUnsafeMutableBytes { $0.initialize(repeating: 0) }
-      return try self.storeToKeychain(keyId: keyId, data: data)
+      return try self.storeToKeychain(keyId: keyId, data: data, requiresBiometric: true)
     }
   }
 
   public func retrievePrivateKey(keyId: String) throws -> Promise<Variant_NullType_String> {
     Promise.async { [weak self] in
       guard let self else { return .first(NullType.null) }
+
+      let context = LAContext()
+      context.touchIDAuthenticationAllowableReuseDuration = 10
+
+      var authSuccess = false
+      var authError: Error?
+      let semaphore = DispatchSemaphore(value: 0)
+      context.evaluatePolicy(
+        .deviceOwnerAuthenticationWithBiometrics,
+        localizedReason: "개인키 접근을 인증합니다"
+      ) { success, error in
+        authSuccess = success
+        authError = error
+        semaphore.signal()
+      }
+      semaphore.wait()
+      guard authSuccess else { throw authError ?? KeychainError.biometricFailed }
+
       var query = self.baseQuery(keyId: keyId)
       query[kSecReturnData as String] = true
+      query[kSecUseAuthenticationContext as String] = context
       var result: AnyObject?
       let status = SecItemCopyMatching(query as CFDictionary, &result)
       if status == errSecItemNotFound { return .first(NullType.null) }
@@ -71,10 +91,23 @@ public class HybridSecureKeyManager: HybridSecureKeyManagerSpec {
     }
   }
 
-  private func storeToKeychain(keyId: String, data: Data) throws -> Bool {
+  private func storeToKeychain(keyId: String, data: Data, requiresBiometric: Bool = false) throws -> Bool {
     var query = baseQuery(keyId: keyId)
     SecItemDelete(query as CFDictionary)
     query[kSecValueData as String] = data
+
+    if requiresBiometric {
+      guard let accessControl = SecAccessControlCreateWithFlags(
+        nil,
+        kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly,
+        .biometryAny,
+        nil
+      ) else { throw KeychainError.writeFailed(errSecParam) }
+      query[kSecAttrAccessControl as String] = accessControl
+    } else {
+      query[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+    }
+
     let status = SecItemAdd(query as CFDictionary, nil)
     guard status == errSecSuccess else { throw KeychainError.writeFailed(status) }
     return true
@@ -85,7 +118,6 @@ public class HybridSecureKeyManager: HybridSecureKeyManagerSpec {
       kSecClass as String: kSecClassGenericPassword,
       kSecAttrService as String: Self.service,
       kSecAttrAccount as String: keyId,
-      kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
     ]
   }
 }
@@ -99,4 +131,5 @@ enum KeychainError: Error {
   case randomGenerationFailed(OSStatus)
   case writeFailed(OSStatus)
   case readFailed(OSStatus)
+  case biometricFailed
 }
