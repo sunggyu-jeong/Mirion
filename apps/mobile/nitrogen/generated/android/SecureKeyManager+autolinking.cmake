@@ -34,9 +34,13 @@ target_sources(
   ../nitrogen/generated/android/SecureKeyManagerOnLoad.cpp
   # Shared Nitrogen C++ sources
   ../nitrogen/generated/shared/c++/HybridSecureKeyManagerSpec.cpp
+  ../nitrogen/generated/shared/c++/HybridMMKVSpec.cpp
+  ../nitrogen/generated/shared/c++/HybridMMKVFactorySpec.cpp
+  ../nitrogen/generated/shared/c++/HybridMMKVPlatformContextSpec.cpp
   # Android-specific Nitrogen C++ sources
   ../nitrogen/generated/android/c++/JHybridSecureKeyManagerSpec.cpp
   ../nitrogen/generated/android/c++/JVariant_NullType_String.cpp
+  ../nitrogen/generated/android/c++/JHybridMMKVPlatformContextSpec.cpp
 )
 
 # From node_modules/react-native/ReactAndroid/cmake-utils/folly-flags.cmake

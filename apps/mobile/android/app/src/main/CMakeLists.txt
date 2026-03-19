@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.22.1)
 project(SecureKeyManager)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(MOBILE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 set(NITROGEN_ROOT "${MOBILE_ROOT}/nitrogen/generated")
 set(MODULE_ROOT "${MOBILE_ROOT}/modules/SecureKeyManager")

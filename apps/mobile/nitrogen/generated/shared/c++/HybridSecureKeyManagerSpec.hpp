@@ -55,6 +55,8 @@ namespace margelo::nitro::lockfi::securekeymanager {
       virtual bool deletePrivateKey(const std::string& keyId) = 0;
       virtual std::shared_ptr<Promise<bool>> generateAndStorePrivateKey(const std::string& keyId) = 0;
       virtual std::shared_ptr<Promise<std::variant<nitro::NullType, std::string>>> retrievePrivateKey(const std::string& keyId) = 0;
+      virtual std::shared_ptr<Promise<bool>> storeData(const std::string& keyId, const std::string& data) = 0;
+      virtual std::shared_ptr<Promise<std::variant<nitro::NullType, std::string>>> retrieveData(const std::string& keyId) = 0;
 
     protected:
       // Hybrid Setup

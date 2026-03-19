@@ -58,6 +58,8 @@ namespace margelo::nitro::lockfi::securekeymanager {
     bool deletePrivateKey(const std::string& keyId) override;
     std::shared_ptr<Promise<bool>> generateAndStorePrivateKey(const std::string& keyId) override;
     std::shared_ptr<Promise<std::variant<nitro::NullType, std::string>>> retrievePrivateKey(const std::string& keyId) override;
+    std::shared_ptr<Promise<bool>> storeData(const std::string& keyId, const std::string& data) override;
+    std::shared_ptr<Promise<std::variant<nitro::NullType, std::string>>> retrieveData(const std::string& keyId) override;
 
   private:
     jni::global_ref<JHybridSecureKeyManagerSpec::JavaPart> _javaPart;

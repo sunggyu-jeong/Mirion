@@ -18,6 +18,8 @@ namespace margelo::nitro::lockfi::securekeymanager {
       prototype.registerHybridMethod("deletePrivateKey", &HybridSecureKeyManagerSpec::deletePrivateKey);
       prototype.registerHybridMethod("generateAndStorePrivateKey", &HybridSecureKeyManagerSpec::generateAndStorePrivateKey);
       prototype.registerHybridMethod("retrievePrivateKey", &HybridSecureKeyManagerSpec::retrievePrivateKey);
+      prototype.registerHybridMethod("storeData", &HybridSecureKeyManagerSpec::storeData);
+      prototype.registerHybridMethod("retrieveData", &HybridSecureKeyManagerSpec::retrieveData);
     });
   }
 

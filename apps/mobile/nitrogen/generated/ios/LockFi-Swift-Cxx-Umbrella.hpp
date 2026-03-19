@@ -8,16 +8,20 @@
 #pragma once
 
 // Forward declarations of C++ defined types
+// Forward declaration of `HybridMMKVPlatformContextSpec` to properly resolve imports.
+namespace margelo::nitro::mmkv { class HybridMMKVPlatformContextSpec; }
 // Forward declaration of `HybridSecureKeyManagerSpec` to properly resolve imports.
 namespace margelo::nitro::lockfi::securekeymanager { class HybridSecureKeyManagerSpec; }
 
 // Include C++ defined types
 #include "HybridSecureKeyManagerSpec.hpp"
+#include <NitroMmkv/HybridMMKVPlatformContextSpec.hpp>
 #include <NitroModules/Null.hpp>
 #include <NitroModules/Promise.hpp>
 #include <NitroModules/Result.hpp>
 #include <exception>
 #include <memory>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -31,6 +35,8 @@ namespace margelo::nitro::lockfi::securekeymanager { class HybridSecureKeyManage
 #include <NitroModules/DateToChronoDate.hpp>
 
 // Forward declarations of Swift defined types
+// Forward declaration of `HybridMMKVPlatformContextSpec_cxx` to properly resolve imports.
+namespace NitroMmkv { class HybridMMKVPlatformContextSpec_cxx; }
 // Forward declaration of `HybridSecureKeyManagerSpec_cxx` to properly resolve imports.
 namespace LockFi { class HybridSecureKeyManagerSpec_cxx; }
 

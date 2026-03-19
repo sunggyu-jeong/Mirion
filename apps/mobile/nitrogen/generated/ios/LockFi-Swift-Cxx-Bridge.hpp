@@ -8,15 +8,20 @@
 #pragma once
 
 // Forward declarations of C++ defined types
+// Forward declaration of `HybridMMKVPlatformContextSpec` to properly resolve imports.
+namespace margelo::nitro::mmkv { class HybridMMKVPlatformContextSpec; }
 // Forward declaration of `HybridSecureKeyManagerSpec` to properly resolve imports.
 namespace margelo::nitro::lockfi::securekeymanager { class HybridSecureKeyManagerSpec; }
 
 // Forward declarations of Swift defined types
+// Forward declaration of `HybridMMKVPlatformContextSpec_cxx` to properly resolve imports.
+namespace NitroMmkv { class HybridMMKVPlatformContextSpec_cxx; }
 // Forward declaration of `HybridSecureKeyManagerSpec_cxx` to properly resolve imports.
 namespace LockFi { class HybridSecureKeyManagerSpec_cxx; }
 
 // Include C++ defined types
 #include "HybridSecureKeyManagerSpec.hpp"
+#include <NitroMmkv/HybridMMKVPlatformContextSpec.hpp>
 #include <NitroModules/Null.hpp>
 #include <NitroModules/Promise.hpp>
 #include <NitroModules/PromiseHolder.hpp>
@@ -24,6 +29,7 @@ namespace LockFi { class HybridSecureKeyManagerSpec_cxx; }
 #include <exception>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -189,6 +195,51 @@ namespace margelo::nitro::lockfi::securekeymanager::bridge::swift {
   }
   inline Result_std__shared_ptr_Promise_std__variant_nitro__NullType__std__string____ create_Result_std__shared_ptr_Promise_std__variant_nitro__NullType__std__string____(const std::exception_ptr& error) noexcept {
     return Result<std::shared_ptr<Promise<std::variant<nitro::NullType, std::string>>>>::withError(error);
+  }
+  
+  // pragma MARK: std::optional<std::string>
+  /**
+   * Specialized version of `std::optional<std::string>`.
+   */
+  using std__optional_std__string_ = std::optional<std::string>;
+  inline std::optional<std::string> create_std__optional_std__string_(const std::string& value) noexcept {
+    return std::optional<std::string>(value);
+  }
+  inline bool has_value_std__optional_std__string_(const std::optional<std::string>& optional) noexcept {
+    return optional.has_value();
+  }
+  inline std::string get_std__optional_std__string_(const std::optional<std::string>& optional) noexcept {
+    return optional.value();
+  }
+  
+  // pragma MARK: std::shared_ptr<margelo::nitro::mmkv::HybridMMKVPlatformContextSpec>
+  /**
+   * Specialized version of `std::shared_ptr<margelo::nitro::mmkv::HybridMMKVPlatformContextSpec>`.
+   */
+  using std__shared_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_ = std::shared_ptr<margelo::nitro::mmkv::HybridMMKVPlatformContextSpec>;
+  std::shared_ptr<margelo::nitro::mmkv::HybridMMKVPlatformContextSpec> create_std__shared_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_(void* NON_NULL swiftUnsafePointer) noexcept;
+  void* NON_NULL get_std__shared_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_(std__shared_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_ cppType);
+  
+  // pragma MARK: std::weak_ptr<margelo::nitro::mmkv::HybridMMKVPlatformContextSpec>
+  using std__weak_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_ = std::weak_ptr<margelo::nitro::mmkv::HybridMMKVPlatformContextSpec>;
+  inline std__weak_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_ weakify_std__shared_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_(const std::shared_ptr<margelo::nitro::mmkv::HybridMMKVPlatformContextSpec>& strong) noexcept { return strong; }
+  
+  // pragma MARK: Result<std::string>
+  using Result_std__string_ = Result<std::string>;
+  inline Result_std__string_ create_Result_std__string_(const std::string& value) noexcept {
+    return Result<std::string>::withValue(value);
+  }
+  inline Result_std__string_ create_Result_std__string_(const std::exception_ptr& error) noexcept {
+    return Result<std::string>::withError(error);
+  }
+  
+  // pragma MARK: Result<std::optional<std::string>>
+  using Result_std__optional_std__string__ = Result<std::optional<std::string>>;
+  inline Result_std__optional_std__string__ create_Result_std__optional_std__string__(const std::optional<std::string>& value) noexcept {
+    return Result<std::optional<std::string>>::withValue(value);
+  }
+  inline Result_std__optional_std__string__ create_Result_std__optional_std__string__(const std::exception_ptr& error) noexcept {
+    return Result<std::optional<std::string>>::withError(error);
   }
 
 } // namespace margelo::nitro::lockfi::securekeymanager::bridge::swift

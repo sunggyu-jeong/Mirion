@@ -101,6 +101,22 @@ namespace margelo::nitro::lockfi::securekeymanager {
       auto __value = std::move(__result.value());
       return __value;
     }
+    inline std::shared_ptr<Promise<bool>> storeData(const std::string& keyId, const std::string& data) override {
+      auto __result = _swiftPart.storeData(keyId, data);
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+      auto __value = std::move(__result.value());
+      return __value;
+    }
+    inline std::shared_ptr<Promise<std::variant<nitro::NullType, std::string>>> retrieveData(const std::string& keyId) override {
+      auto __result = _swiftPart.retrieveData(keyId);
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+      auto __value = std::move(__result.value());
+      return __value;
+    }
 
   private:
     LockFi::HybridSecureKeyManagerSpec_cxx _swiftPart;

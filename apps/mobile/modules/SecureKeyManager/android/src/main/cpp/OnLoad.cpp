@@ -18,9 +18,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
         static auto cls = make_global(
           findClassStatic("com/lockfi/securekeymanager/HybridSecureKeyManager")
         );
-        auto constructor = cls->getConstructor<JObject()>();
-        auto javaObj = cls->newObject(constructor);
-        auto javaPart = dynamic_ref_cast<JHybridSecureKeyManagerSpec::JavaPart>(javaObj);
+        static auto ctor = cls->getConstructor<JHybridSecureKeyManagerSpec::JavaPart::javaobject()>();
+        auto rawObj = cls->newObject(ctor);
+        auto javaPart = static_ref_cast<JHybridSecureKeyManagerSpec::JavaPart>(std::move(rawObj));
         return std::make_shared<JHybridSecureKeyManagerSpec>(javaPart);
       }
     );

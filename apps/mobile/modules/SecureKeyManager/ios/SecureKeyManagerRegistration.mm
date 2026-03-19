@@ -2,7 +2,7 @@
 #import "LockFi-Swift-Cxx-Bridge.hpp"
 #import <NitroModules/HybridObjectRegistry.hpp>
 
-extern "C" void* SecureKeyManagerFactory_create();
+extern "C" void* SecureKeyManagerFactory_create() noexcept;
 
 __attribute__((constructor))
 static void registerSecureKeyManager() {

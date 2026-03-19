@@ -17,6 +17,8 @@ public protocol HybridSecureKeyManagerSpec_protocol: HybridObject {
   func deletePrivateKey(keyId: String) throws -> Bool
   func generateAndStorePrivateKey(keyId: String) throws -> Promise<Bool>
   func retrievePrivateKey(keyId: String) throws -> Promise<Variant_NullType_String>
+  func storeData(keyId: String, data: String) throws -> Promise<Bool>
+  func retrieveData(keyId: String) throws -> Promise<Variant_NullType_String>
 }
 
 public extension HybridSecureKeyManagerSpec_protocol {

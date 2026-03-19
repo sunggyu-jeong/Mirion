@@ -10,6 +10,7 @@
 // Include C++ implementation defined types
 #include "HybridSecureKeyManagerSpecSwift.hpp"
 #include "LockFi-Swift-Cxx-Umbrella.hpp"
+#include <NitroMmkv/NitroMmkv-Swift-Cxx-Bridge.hpp>
 #include <NitroModules/NitroDefines.hpp>
 
 namespace margelo::nitro::lockfi::securekeymanager::bridge::swift {
@@ -52,6 +53,16 @@ namespace margelo::nitro::lockfi::securekeymanager::bridge::swift {
     #endif
     LockFi::HybridSecureKeyManagerSpec_cxx& swiftPart = swiftWrapper->getSwiftPart();
     return swiftPart.toUnsafe();
+  }
+  
+  // pragma MARK: std::shared_ptr<margelo::nitro::mmkv::HybridMMKVPlatformContextSpec>
+  std::shared_ptr<margelo::nitro::mmkv::HybridMMKVPlatformContextSpec> create_std__shared_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_(void* NON_NULL swiftUnsafePointer) noexcept {
+    // Implemented in NitroMmkv
+    return margelo::nitro::mmkv::bridge::swift::create_std__shared_ptr_HybridMMKVPlatformContextSpec_(swiftUnsafePointer);
+  }
+  void* NON_NULL get_std__shared_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_(std__shared_ptr_margelo__nitro__mmkv__HybridMMKVPlatformContextSpec_ cppType) {
+    // Implemented in NitroMmkv
+    return margelo::nitro::mmkv::bridge::swift::get_std__shared_ptr_HybridMMKVPlatformContextSpec_(cppType);
   }
 
 } // namespace margelo::nitro::lockfi::securekeymanager::bridge::swift

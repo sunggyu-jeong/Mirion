@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => min_ios_version_supported }
   s.source       = { :path => "." }
 
-  nitrogen_root = "#{__dir__}/../../nitrogen/generated"
+  nitrogen_root = "../../nitrogen/generated"
 
   s.source_files = [
     "ios/*.{swift,h,mm}",

@@ -45,6 +45,14 @@ abstract class HybridSecureKeyManagerSpec: HybridObject() {
   @DoNotStrip
   @Keep
   abstract fun retrievePrivateKey(keyId: String): Promise<Variant_NullType_String>
+  
+  @DoNotStrip
+  @Keep
+  abstract fun storeData(keyId: String, data: String): Promise<Boolean>
+  
+  @DoNotStrip
+  @Keep
+  abstract fun retrieveData(keyId: String): Promise<Variant_NullType_String>
 
   // Default implementation of `HybridObject.toString()`
   override fun toString(): String {
