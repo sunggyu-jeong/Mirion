@@ -1,0 +1,9 @@
+node_modules/
+build/
+archives/
+Frameworks/
+Pods/
+*.xcworkspace
+*.xcodeproj
+Podfile.lock
+Package.swift
