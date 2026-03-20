@@ -1,8 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-apply plugin: "jacoco"
-apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -10,13 +8,9 @@ apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.grad
  */
 react {
     /* Folders */
-    //   The root of your project, i.e. where "package.json" lives. Default is '../..'
     root = file("../../")
-    //   The folder where the react-native NPM package is. Default is ../../node_modules/react-native
     reactNativeDir = file("../../../../node_modules/react-native")
-    //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen
     codegenDir = file("../../../../node_modules/@react-native/codegen")
-    //   The cli.js file which is the React Native CLI entrypoint. Default is ../../node_modules/react-native/cli.js
     cliFile = file("../../../../node_modules/react-native/cli.js")
 
     /* Variants */
@@ -74,20 +68,6 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
-apply from: '../../nitrogen/generated/android/SecureKeyManager+autolinking.gradle'
-
-// Add nitrogen-generated and module kotlin sources (monorepo path fix)
-android {
-    sourceSets {
-        main {
-            java.srcDirs += [
-                "../../nitrogen/generated/android/kotlin",
-                "../../modules/SecureKeyManager/android/src/main/kotlin",
-            ]
-        }
-    }
-}
-
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -100,17 +80,6 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        externalNativeBuild {
-            cmake {
-                arguments "-DANDROID_STL=c++_shared"
-            }
-        }
-    }
-
-    externalNativeBuild {
-        cmake {
-            path "src/main/CMakeLists.txt"
-        }
     }
     signingConfigs {
         debug {
@@ -120,14 +89,9 @@ android {
             keyPassword 'android'
         }
     }
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
-
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            testCoverageEnabled true
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -139,28 +103,7 @@ android {
     }
 }
 
-jacoco {
-    toolVersion = "0.8.11"
-}
-
-task testDebugUnitTestCoverage(type: JacocoReport, dependsOn: "testDebugUnitTest") {
-    group = "Reporting"
-    reports {
-        xml.required = true
-        html.required = true
-        html.outputLocation = layout.buildDirectory.dir("reports/jacoco/html")
-    }
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*']
-    def debugTree = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter)
-    def mainSrc = "${project.projectDir}/src/main/java"
-    sourceDirectories.setFrom(files([mainSrc]))
-    classDirectories.setFrom(files([debugTree]))
-    executionData.setFrom(fileTree(dir: "${buildDir}", includes: ["outputs/unit_test_code_coverage/debugUnitTest/*.exec"]))
-}
-
 dependencies {
-    testImplementation 'junit:junit:4.13.2'
-
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 

@@ -17,8 +17,6 @@ end
 target 'LockFi' do
   config = use_native_modules!
 
-  pod 'LockFi', :path => '..'
-
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
@@ -32,18 +30,5 @@ target 'LockFi' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
-
-    module_map_path = "#{installer.sandbox.root}/Target Support Files/LockFi/LockFi.modulemap"
-    if File.exist?(module_map_path)
-      content = File.read(module_map_path)
-      unless content.include?('LockFi-Swift-Cxx-Bridge.hpp')
-        content = content.gsub(
-          'umbrella header "LockFi-umbrella.h"',
-          'umbrella header "LockFi-umbrella.h"' + "\n  header \"LockFi-Swift-Cxx-Bridge.hpp\""
-        )
-      end
-      File.write(module_map_path, content)
-    end
-
   end
 end
