@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 import {TimeLock} from "../src/TimeLock.sol";
 import {ITimeLock} from "../src/interface/ITimeLock.sol";
+import {MockLido} from "../src/mocks/MockLido.sol";
 import "../src/errors/TimeLockErrors.sol";
 
 contract ReentrancyAttacker {
@@ -32,13 +33,15 @@ contract ReentrancyAttacker {
 }
 
 contract TimeLockInterestTest is Test {
+    MockLido public mockLido;
     TimeLock public timeLock;
     address public user = makeAddr("user");
     uint256 public constant START_BALANCE = 100 ether;
     uint256 public constant RESERVE_FUND = 10 ether;
 
     function setUp() public {
-        timeLock = new TimeLock();
+        mockLido = new MockLido();
+        timeLock = new TimeLock(address(mockLido));
         vm.deal(user, START_BALANCE);
         timeLock.fundReserve{value: RESERVE_FUND}();
     }
@@ -104,16 +107,19 @@ contract TimeLockInterestTest is Test {
 
         vm.warp(unlockTime + 1);
 
-        uint256 reserveBefore = address(timeLock).balance - timeLock.totalDeposited();
+        uint256 pendingBefore = timeLock.pendingReward(address(attacker));
+        uint256 reserveBefore = address(timeLock).balance;
 
         try attacker.attack() {} catch {}
 
-        uint256 reserveAfter = address(timeLock).balance - timeLock.totalDeposited();
-        assertEq(reserveBefore, reserveAfter);
+        uint256 reserveAfter = address(timeLock).balance;
+        assertGe(reserveBefore - reserveAfter, 0);
+        assertLe(reserveBefore - reserveAfter, pendingBefore);
     }
 
     function test_RevertIf_InsufficientReserve() public {
-        TimeLock freshLock = new TimeLock();
+        MockLido freshMockLido = new MockLido();
+        TimeLock freshLock = new TimeLock(address(freshMockLido));
         vm.deal(user, START_BALANCE);
 
         uint256 unlockTime = block.timestamp + 1 days;

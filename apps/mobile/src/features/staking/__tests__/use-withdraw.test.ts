@@ -97,7 +97,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(mockIsSensorAvailable).not.toHaveBeenCalled()
@@ -110,7 +110,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(result.current.txState).toBe('error')
@@ -123,7 +123,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(result.current.txState).toBe('error')
@@ -139,7 +139,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(mockWriteContract).toHaveBeenCalledWith(
@@ -154,7 +154,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(result.current.txState).toBe('idle')
@@ -167,7 +167,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(result.current.txState).toBe('success')
@@ -177,7 +177,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(mockWriteContract).toHaveBeenCalledWith(
@@ -189,7 +189,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(mockOptimisticWithdraw).toHaveBeenCalled()
@@ -199,7 +199,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(savePendingTx).toHaveBeenCalledWith(
@@ -212,7 +212,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(clearPendingTx).toHaveBeenCalledWith(TEST_ADDRESS)
@@ -225,7 +225,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(result.current.txState).toBe('error')
@@ -239,7 +239,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
 
       expect(result.current.txState).toBe('idle')
@@ -253,7 +253,7 @@ describe('useWithdraw', () => {
       const { result } = renderHook(() => useWithdraw())
 
       await act(async () => {
-        await result.current.withdraw(TEST_KEY_ID)
+        await result.current.withdraw(TEST_KEY_ID, true)
       })
       act(() => result.current.reset())
 

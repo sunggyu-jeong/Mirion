@@ -17,6 +17,7 @@ module.exports = {
     '!src/**/index.ts',
   ],
   moduleNameMapper: {
+    '^react-native-config$': '<rootDir>/src/__mocks__/react-native-config.ts',
     '^@app/(.*)$': '<rootDir>/src/app/$1',
     '^@pages/(.*)$': '<rootDir>/src/pages/$1',
     '^@widgets/(.*)$': '<rootDir>/src/widgets/$1',
@@ -27,6 +28,6 @@ module.exports = {
   },
   forceExit: true,
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|react-native-safe-area-context|react-native-nitro-modules|react-native-biometrics|wagmi|viem|@wagmi|@tanstack|@coinbase)/)',
+    'node_modules/(?!(react-native|@react-native|react-native-safe-area-context|react-native-nitro-modules|react-native-biometrics|react-native-config|wagmi|viem|@wagmi|@tanstack|@coinbase)/)',
   ],
 };

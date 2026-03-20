@@ -1,38 +1,29 @@
 import { useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import ReactNativeBiometrics from 'react-native-biometrics'
-import { UserRejectedRequestError } from 'viem'
-import type { Address } from 'viem'
+import { encodeFunctionData, hashMessage, type Address } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
 
 import { timeLockContract } from '@shared/api/contracts'
-import { publicClient, createWalletClientFromKey } from '@shared/lib/web3/client'
-import { secureKey } from '@entities/wallet'
+import { publicClient } from '@shared/lib/web3/client'
+import { secureKey, useWalletStore } from '@entities/wallet'
 import { useLockStore } from '@entities/lock'
-import { useWalletStore } from '@entities/wallet'
 
-import {
-  savePendingTx,
-  clearPendingTx,
-  mapContractError,
-  scheduleRefetch,
-} from './staking-utils'
+import { savePendingTx, clearPendingTx, mapContractError, scheduleRefetch } from './staking-utils'
 import type { TxState } from './staking-utils'
 
-export function useWithdraw() {
+const BACKEND_URL = process.env.BACKEND_URL ?? 'http://localhost:3000'
+
+export function useGaslessDeposit() {
   const [txState, setTxState] = useState<TxState>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [needsDisclaimer, setNeedsDisclaimer] = useState(false)
   const isSubmitting = useRef(false)
   const queryClient = useQueryClient()
-  const { address } = useWalletStore()
-  const { optimisticWithdraw } = useLockStore()
+  const address = useWalletStore((s) => s.address)
+  const optimisticDeposit = useLockStore((s) => s.optimisticDeposit)
 
-  const withdraw = async (keyId: string, disclaimerAccepted: boolean) => {
+  const gaslessDeposit = async (amountWei: bigint, unlockTime: bigint, keyId: string) => {
     if (isSubmitting.current || !address) return
-    if (!disclaimerAccepted) {
-      setNeedsDisclaimer(true)
-      return
-    }
     isSubmitting.current = true
     setErrorMessage(null)
 
@@ -43,7 +34,7 @@ export function useWithdraw() {
       if (!available) throw new Error('biometric_unavailable')
 
       const { success } = await rnBiometrics.simplePrompt({
-        promptMessage: '출금을 위해 생체 인증이 필요합니다',
+        promptMessage: '가스비 대납 예치를 위해 생체 인증이 필요합니다',
       })
       if (!success) {
         setTxState('idle')
@@ -56,26 +47,47 @@ export function useWithdraw() {
         privateKey = await secureKey.retrieve(keyId)
         if (!privateKey) throw new Error('key_not_found')
 
-        const walletClient = createWalletClientFromKey(`0x${privateKey}`)
+        const calldata = encodeFunctionData({
+          abi: timeLockContract.abi,
+          functionName: 'deposit',
+          args: [unlockTime],
+        })
+
+        const account = privateKeyToAccount(`0x${privateKey}` as `0x${string}`)
+        const signedHash = await account.signMessage({
+          message: { raw: hashMessage(calldata) as `0x${string}` },
+        })
+
         const fees = await publicClient.estimateFeesPerGas()
 
-        const txHash = await walletClient.writeContract({
-          ...timeLockContract,
-          functionName: 'withdraw',
-          ...(fees.maxFeePerGas && { maxFeePerGas: (fees.maxFeePerGas * 110n) / 100n }),
-          ...(fees.maxPriorityFeePerGas && {
-            maxPriorityFeePerGas: (fees.maxPriorityFeePerGas * 110n) / 100n,
+        const response = await fetch(`${BACKEND_URL}/api/relay`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userAddress: address,
+            fnName: 'deposit',
+            calldata,
+            signedHash,
+            value: amountWei.toString(),
+            maxFeePerGas: fees.maxFeePerGas
+              ? ((fees.maxFeePerGas * 110n) / 100n).toString()
+              : undefined,
           }),
         })
 
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error ?? 'relay failed')
+
+        const txHash = data.txHash as `0x${string}`
+
         savePendingTx(address as Address, {
           txHash,
-          type: 'withdraw',
+          type: 'deposit',
           timestamp: Date.now(),
           status: 'pending',
         })
 
-        optimisticWithdraw()
+        optimisticDeposit(amountWei, unlockTime)
         setTxState('pending')
 
         try {
@@ -88,16 +100,11 @@ export function useWithdraw() {
           scheduleRefetch(queryClient, address as Address)
           setTxState('success')
         } catch {
-          // receipt timeout - MMKV에 txHash 보관 중, use-pending-tx가 복구
         }
       } finally {
         privateKey = null
       }
     } catch (error) {
-      if (error instanceof UserRejectedRequestError) {
-        setTxState('idle')
-        return
-      }
       setTxState('error')
       setErrorMessage(mapContractError(error))
     } finally {
@@ -108,8 +115,7 @@ export function useWithdraw() {
   const reset = () => {
     setTxState('idle')
     setErrorMessage(null)
-    setNeedsDisclaimer(false)
   }
 
-  return { withdraw, txState, errorMessage, needsDisclaimer, reset }
+  return { gaslessDeposit, txState, errorMessage, reset }
 }

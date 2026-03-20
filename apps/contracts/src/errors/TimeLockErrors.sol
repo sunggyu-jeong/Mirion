@@ -11,3 +11,6 @@ error TimeLock__InvalidFee();
 error TimeLock__NoReward();
 error TimeLock__InsufficientReserve();
 error TimeLock__InvalidRate();
+error TimeLock__DisclaimerNotAccepted();
+error TimeLock__NotRelayer();
+error TimeLock__InsufficientBalance();
