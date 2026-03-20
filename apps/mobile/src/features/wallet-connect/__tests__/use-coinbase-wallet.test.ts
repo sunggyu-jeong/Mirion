@@ -25,22 +25,23 @@ const mockClearSession = jest.fn();
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (useWalletStore as unknown as jest.Mock).mockImplementation((selector: Function) =>
-    selector({
-      setSession: mockSetSession,
-      clearSession: mockClearSession,
-    }),
+  jest.mocked(useWalletStore).mockImplementation(
+    ((selector: (state: unknown) => unknown) =>
+      selector({
+        setSession: mockSetSession,
+        clearSession: mockClearSession,
+      })) as never,
   );
 });
 
 describe('useCoinbaseWallet', () => {
   describe('connectWallet', () => {
     it('연결 성공 시 address가 스토어에 저장된다', async () => {
-      (initiateHandshake as jest.Mock).mockResolvedValue([
+      jest.mocked(initiateHandshake).mockResolvedValue([
         [],
         { chain: '1', networkId: 1, address: '0xCB456DEF' },
       ]);
-      (secureKey.store as jest.Mock).mockResolvedValue(true);
+      jest.mocked(secureKey.store).mockResolvedValue(true);
 
       const { result } = renderHook(() => useCoinbaseWallet());
       await act(async () => {
@@ -51,11 +52,11 @@ describe('useCoinbaseWallet', () => {
     });
 
     it('연결 성공 시 address를 JSI에 저장한다', async () => {
-      (initiateHandshake as jest.Mock).mockResolvedValue([
+      jest.mocked(initiateHandshake).mockResolvedValue([
         [],
         { chain: '1', networkId: 1, address: '0xCB456DEF' },
       ]);
-      (secureKey.store as jest.Mock).mockResolvedValue(true);
+      jest.mocked(secureKey.store).mockResolvedValue(true);
 
       const { result } = renderHook(() => useCoinbaseWallet());
       await act(async () => {
@@ -66,7 +67,7 @@ describe('useCoinbaseWallet', () => {
     });
 
     it('account가 없을 때 에러가 전파된다', async () => {
-      (initiateHandshake as jest.Mock).mockResolvedValue([[], undefined]);
+      jest.mocked(initiateHandshake).mockResolvedValue([[], undefined]);
 
       const { result } = renderHook(() => useCoinbaseWallet());
       await expect(
@@ -77,7 +78,7 @@ describe('useCoinbaseWallet', () => {
     });
 
     it('initiateHandshake 실패 시 에러가 전파된다', async () => {
-      (initiateHandshake as jest.Mock).mockRejectedValue(new Error('SDK 오류'));
+      jest.mocked(initiateHandshake).mockRejectedValue(new Error('SDK 오류'));
 
       const { result } = renderHook(() => useCoinbaseWallet());
       await expect(
@@ -90,7 +91,7 @@ describe('useCoinbaseWallet', () => {
 
   describe('disconnectWallet', () => {
     it('resetSession 후 secureKey.delete가 호출된다', () => {
-      (secureKey.delete as jest.Mock).mockReturnValue(true);
+      jest.mocked(secureKey.delete).mockReturnValue(true);
 
       const { result } = renderHook(() => useCoinbaseWallet());
       act(() => {
@@ -101,7 +102,7 @@ describe('useCoinbaseWallet', () => {
     });
 
     it('disconnect 후 clearSession이 호출된다', () => {
-      (secureKey.delete as jest.Mock).mockReturnValue(true);
+      jest.mocked(secureKey.delete).mockReturnValue(true);
 
       const { result } = renderHook(() => useCoinbaseWallet());
       act(() => {

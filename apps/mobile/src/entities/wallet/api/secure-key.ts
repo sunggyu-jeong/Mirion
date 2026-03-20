@@ -2,18 +2,24 @@ import { NitroModules } from 'react-native-nitro-modules';
 
 import type { SecureKeyManager } from '@modules/SecureKeyManager/spec/SecureKeyManager.nitro';
 
-const manager = NitroModules.createHybridObject<SecureKeyManager>('SecureKeyManager');
+let _manager: SecureKeyManager | null = null;
+const getManager = (): SecureKeyManager => {
+  if (!_manager) {
+    _manager = NitroModules.createHybridObject<SecureKeyManager>('SecureKeyManager');
+  }
+  return _manager;
+};
 
 export const secureKey = {
-  has: (keyId: string): boolean => manager.hasPrivateKey(keyId),
+  has: (keyId: string): boolean => getManager().hasPrivateKey(keyId),
 
-  delete: (keyId: string): boolean => manager.deletePrivateKey(keyId),
+  delete: (keyId: string): boolean => getManager().deletePrivateKey(keyId),
 
-  generate: (keyId: string): Promise<boolean> => manager.generateAndStorePrivateKey(keyId),
+  generate: (keyId: string): Promise<boolean> => getManager().generateAndStorePrivateKey(keyId),
 
-  retrieve: (keyId: string): Promise<string | null> => manager.retrievePrivateKey(keyId),
+  retrieve: (keyId: string): Promise<string | null> => getManager().retrievePrivateKey(keyId),
 
-  store: (keyId: string, data: string): Promise<boolean> => manager.storeData(keyId, data),
+  store: (keyId: string, data: string): Promise<boolean> => getManager().storeData(keyId, data),
 
-  retrieveData: (keyId: string): Promise<string | null> => manager.retrieveData(keyId),
+  retrieveData: (keyId: string): Promise<string | null> => getManager().retrieveData(keyId),
 };

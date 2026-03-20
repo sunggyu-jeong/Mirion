@@ -25,14 +25,14 @@ const mockSignMessage = jest.fn();
 
 beforeEach(() => {
   jest.clearAllMocks();
-  (ReactNativeBiometrics as jest.Mock).mockImplementation(() => ({
+  jest.mocked(ReactNativeBiometrics).mockImplementation(() => ({
     isSensorAvailable: mockIsSensorAvailable,
     simplePrompt: mockSimplePrompt,
-  }));
+  }) as unknown as ReactNativeBiometrics);
   mockIsSensorAvailable.mockResolvedValue({ available: true, biometryType: 'FaceID' });
   mockSimplePrompt.mockResolvedValue({ success: true });
-  (secureKey.retrieve as jest.Mock).mockResolvedValue('a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4');
-  (privateKeyToAccount as jest.Mock).mockReturnValue({ signMessage: mockSignMessage });
+  jest.mocked(secureKey.retrieve).mockResolvedValue('a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4');
+  jest.mocked(privateKeyToAccount).mockReturnValue({ signMessage: mockSignMessage } as never);
   mockSignMessage.mockResolvedValue('0xsignature');
 });
 
@@ -74,7 +74,7 @@ describe('useSignTransaction', () => {
     });
 
     it('개인키가 null일 때 key_not_found 에러를 던진다', async () => {
-      (secureKey.retrieve as jest.Mock).mockResolvedValue(null);
+      jest.mocked(secureKey.retrieve).mockResolvedValue(null);
 
       const { result } = renderHook(() => useSignTransaction());
 
@@ -96,7 +96,7 @@ describe('useSignTransaction', () => {
     });
 
     it('개인키에 0x prefix를 붙여 privateKeyToAccount를 호출한다', async () => {
-      (secureKey.retrieve as jest.Mock).mockResolvedValue('deadbeef');
+      jest.mocked(secureKey.retrieve).mockResolvedValue('deadbeef');
 
       const { result } = renderHook(() => useSignTransaction());
 
@@ -142,7 +142,7 @@ describe('useSignTransaction', () => {
     });
 
     it('secureKey.retrieve 에러 시 에러가 전파된다', async () => {
-      (secureKey.retrieve as jest.Mock).mockRejectedValue(new Error('Keychain 접근 실패'));
+      jest.mocked(secureKey.retrieve).mockRejectedValue(new Error('Keychain 접근 실패'));
 
       const { result } = renderHook(() => useSignTransaction());
 

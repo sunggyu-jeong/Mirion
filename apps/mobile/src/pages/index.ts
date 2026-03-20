@@ -1,1 +1,1 @@
-export {};
+export { StakingScreen } from './staking'

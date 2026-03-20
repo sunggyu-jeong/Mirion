@@ -1,22 +1,18 @@
-import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
-import { Text, View } from 'react-native';
+import { createStaticNavigation, StaticParamList } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import React from 'react'
 
-function PlaceholderScreen() {
-  return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-base text-gray-800">LockFi</Text>
-    </View>
-  );
-}
+import { StakingScreen } from '@pages/staking'
 
 const RootStack = createNativeStackNavigator({
   screens: {
-    Home: PlaceholderScreen,
+    Staking: {
+      screen: StakingScreen,
+      options: { headerShown: false },
+    },
   },
-});
+})
 
-export type RootStackParamList = StaticParamList<typeof RootStack>;
+export type RootStackParamList = StaticParamList<typeof RootStack>
 
-export const Navigation = createStaticNavigation(RootStack);
+export const Navigation = createStaticNavigation(RootStack)

@@ -16,10 +16,10 @@ jest.mock('react-native-nitro-modules', () => ({
 import { secureKey } from '../api/secure-key'
 import { useWalletStore } from '../model/wallet.store'
 
-const mockHas = secureKey.has as jest.Mock
-const mockDelete = secureKey.delete as jest.Mock
-const mockGenerate = secureKey.generate as jest.Mock
-const mockRetrieveData = secureKey.retrieveData as jest.Mock
+const mockHas = jest.mocked(secureKey.has)
+const mockDelete = jest.mocked(secureKey.delete)
+const mockGenerate = jest.mocked(secureKey.generate)
+const mockRetrieveData = jest.mocked(secureKey.retrieveData)
 
 describe('useWalletStore', () => {
   beforeEach(() => {

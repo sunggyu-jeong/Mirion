@@ -7,6 +7,10 @@ jest.mock('@react-navigation/native-stack', () => ({
   createNativeStackNavigator: jest.fn(() => ({ screens: {} })),
 }))
 
+jest.mock('@pages/staking', () => ({
+  StakingScreen: () => null,
+}))
+
 import { createStaticNavigation } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Navigation } from '../index'
@@ -15,7 +19,7 @@ describe('Navigation', () => {
   it('네이티브 스택 네비게이터를 생성한다', () => {
     expect(createNativeStackNavigator).toHaveBeenCalledWith(
       expect.objectContaining({
-        screens: expect.objectContaining({ Home: expect.any(Function) }),
+        screens: expect.objectContaining({ Staking: expect.any(Object) }),
       })
     )
   })

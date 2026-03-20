@@ -15,7 +15,7 @@ import { NitroModules } from 'react-native-nitro-modules'
 import { secureKey } from '../api/secure-key'
 
 const getManager = () =>
-  (NitroModules.createHybridObject as jest.Mock).mock.results[0].value as {
+  jest.mocked(NitroModules.createHybridObject).mock.results[0].value as {
     hasPrivateKey: jest.Mock
     deletePrivateKey: jest.Mock
     generateAndStorePrivateKey: jest.Mock
@@ -23,6 +23,11 @@ const getManager = () =>
     storeData: jest.Mock
     retrieveData: jest.Mock
   }
+
+beforeAll(() => {
+  secureKey.has('__init__')
+  getManager().hasPrivateKey.mockReturnValue(false)
+})
 
 describe('secureKey', () => {
   beforeEach(() => {
@@ -35,8 +40,14 @@ describe('secureKey', () => {
     m.retrieveData.mockReset()
   })
 
-  it('SecureKeyManager로 createHybridObject를 호출하여 초기화한다', () => {
+  it('첫 메서드 호출 시 SecureKeyManager로 createHybridObject를 초기화한다', () => {
     expect(NitroModules.createHybridObject).toHaveBeenCalledWith('SecureKeyManager')
+  })
+
+  it('createHybridObject는 한 번만 호출된다', () => {
+    secureKey.has('test')
+    secureKey.has('test')
+    expect(NitroModules.createHybridObject).toHaveBeenCalledTimes(1)
   })
 
   describe('has', () => {

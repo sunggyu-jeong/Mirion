@@ -11,6 +11,6 @@ describe('storage', () => {
   })
 
   it('생성된 MMKV 인스턴스를 노출한다', () => {
-    expect(storage).toBe((createMMKV as jest.Mock).mock.results[0].value)
+    expect(storage).toBe(jest.mocked(createMMKV).mock.results[0].value)
   })
 })
