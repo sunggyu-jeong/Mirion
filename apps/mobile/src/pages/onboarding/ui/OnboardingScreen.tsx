@@ -1,12 +1,12 @@
+import { useAppNavigation } from '@shared/lib/navigation';
+import { PrimaryButton } from '@shared/ui';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-type OnboardingScreenProps = {
-  onConnectWallet?: () => void;
-};
+export function OnboardingScreen() {
+  const { toWalletConnect } = useAppNavigation();
 
-export function OnboardingScreen({ onConnectWallet }: OnboardingScreenProps) {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 items-center justify-center">
@@ -21,13 +21,11 @@ export function OnboardingScreen({ onConnectWallet }: OnboardingScreenProps) {
         </View>
       </View>
       <View className="px-5 pb-8">
-        <TouchableOpacity
-          className="h-[52px] bg-[#2b7fff] rounded-lg w-full items-center justify-center"
-          onPress={onConnectWallet}
-          activeOpacity={0.8}
-        >
-          <Text className="text-[16px] text-[#f8fafc]">내 지갑 연결하고 시작하기</Text>
-        </TouchableOpacity>
+        <PrimaryButton
+          label="내 지갑 연결하고 시작하기"
+          onPress={toWalletConnect}
+          height={52}
+        />
       </View>
     </SafeAreaView>
   );
