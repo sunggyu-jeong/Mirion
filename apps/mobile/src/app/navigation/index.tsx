@@ -2,6 +2,7 @@ import { OnboardingScreen } from '@pages/onboarding';
 import { SplashScreen } from '@pages/splash';
 import { StakingScreen } from '@pages/staking';
 import { WalletConnectScreen } from '@pages/wallet-connect';
+import { WalletConnectingScreen } from '@pages/wallet-connecting';
 import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -21,6 +22,10 @@ const RootStack = createNativeStackNavigator({
     WalletConnect: {
       screen: WalletConnectScreen,
       options: { presentation: 'transparentModal', animation: 'none' },
+    },
+    WalletConnecting: {
+      screen: WalletConnectingScreen,
+      options: { animation: 'slide_from_right' },
     },
     Staking: {
       screen: StakingScreen,

@@ -15,7 +15,7 @@ type WalletType = 'metamask' | 'coinbase';
 
 export function WalletConnectScreen() {
   const [selected, setSelected] = useState<WalletType>('metamask');
-  const { goBack } = useAppNavigation();
+  const { goBack, toWalletConnecting } = useAppNavigation();
 
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const sheetTranslateY = useRef(new Animated.Value(SHEET_HEIGHT)).current;
@@ -48,6 +48,23 @@ export function WalletConnectScreen() {
         useNativeDriver: true,
       }),
     ]).start(goBack);
+  };
+
+  const handleConnect = () => {
+    Animated.parallel([
+      Animated.timing(sheetTranslateY, {
+        toValue: SHEET_HEIGHT,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      toWalletConnecting(selected);
+    });
   };
 
   const panResponder = useRef(
@@ -113,6 +130,7 @@ export function WalletConnectScreen() {
             <PrimaryButton
               label="연결하기"
               height={44}
+              onPress={handleConnect}
             />
           </View>
           <Text className="text-[12px] text-[#62748e] text-center leading-[1.5]">
