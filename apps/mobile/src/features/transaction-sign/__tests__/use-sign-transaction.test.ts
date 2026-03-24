@@ -13,10 +13,11 @@ jest.mock('viem/accounts', () => ({
   privateKeyToAccount: jest.fn(),
 }));
 
-import { renderHook, act } from '@testing-library/react-native';
-import ReactNativeBiometrics from 'react-native-biometrics';
 import { secureKey } from '@entities/wallet';
+import { act, renderHook } from '@testing-library/react-native';
+import ReactNativeBiometrics from 'react-native-biometrics';
 import { privateKeyToAccount } from 'viem/accounts';
+
 import { useSignTransaction } from '../model/use-sign-transaction';
 
 const mockIsSensorAvailable = jest.fn();
@@ -25,10 +26,13 @@ const mockSignMessage = jest.fn();
 
 beforeEach(() => {
   jest.clearAllMocks();
-  jest.mocked(ReactNativeBiometrics).mockImplementation(() => ({
-    isSensorAvailable: mockIsSensorAvailable,
-    simplePrompt: mockSimplePrompt,
-  }) as unknown as ReactNativeBiometrics);
+  jest.mocked(ReactNativeBiometrics).mockImplementation(
+    () =>
+      ({
+        isSensorAvailable: mockIsSensorAvailable,
+        simplePrompt: mockSimplePrompt,
+      }) as unknown as ReactNativeBiometrics,
+  );
   mockIsSensorAvailable.mockResolvedValue({ available: true, biometryType: 'FaceID' });
   mockSimplePrompt.mockResolvedValue({ success: true });
   jest.mocked(secureKey.retrieve).mockResolvedValue('a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4');

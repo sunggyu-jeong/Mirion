@@ -1,20 +1,22 @@
+import type { RootStackParamList } from '@app/navigation';
 import { useNavigation } from '@react-navigation/native';
+import type { NavigationProp } from '@react-navigation/native';
 
 export function useAppNavigation() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return {
-    toOnboarding: () => navigation.reset({ index: 0, routes: [{ name: 'Onboarding' as never }] }),
-    toWalletConnect: () => navigation.navigate('WalletConnect' as never),
+    toOnboarding: () => navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] }),
+    toWalletConnect: () => navigation.navigate('WalletConnect'),
     toWalletConnecting: (walletType: 'metamask' | 'coinbase') =>
       navigation.reset({
         index: 1,
         routes: [
-          { name: 'Onboarding' as never },
-          { name: 'WalletConnecting' as never, params: { walletType } as never },
+          { name: 'Onboarding' },
+          { name: 'WalletConnecting', params: { walletType } },
         ],
       }),
-    toStaking: () => navigation.navigate('Staking' as never),
+    toStaking: () => navigation.reset({ index: 0, routes: [{ name: 'Staking' }] }),
     goBack: () => navigation.goBack(),
   };
 }

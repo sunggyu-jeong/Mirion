@@ -1,3 +1,3 @@
-export { useWalletConnect, useCoinbaseWallet } from './wallet-connect';
+export { useClaimInterest, useDeposit, useLockInfo, usePendingTx, useWithdraw } from './staking';
 export { useSignTransaction } from './transaction-sign';
-export { useDeposit, useWithdraw, useClaimInterest, useLockInfo, usePendingTx } from './staking';
+export { useCoinbaseWallet, useWalletConnect } from './wallet-connect';

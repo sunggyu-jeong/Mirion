@@ -185,4 +185,4 @@ export const timeLockAbi = [
   { type: 'error', name: 'TimeLock__NoReward', inputs: [] },
   { type: 'error', name: 'TimeLock__TransferFailed', inputs: [] },
   { type: 'error', name: 'TimeLock__ZeroAmount', inputs: [] },
-] as const
+] as const;

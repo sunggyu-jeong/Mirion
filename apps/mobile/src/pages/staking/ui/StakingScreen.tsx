@@ -1,4 +1,13 @@
-import React, { useState } from 'react'
+import { useLockStore } from '@entities/lock';
+import { useWalletStore } from '@entities/wallet';
+import {
+  useClaimInterest,
+  useDeposit,
+  useLockInfo,
+  usePendingTx,
+  useWithdraw,
+} from '@features/staking';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -7,19 +16,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native'
-import { formatEther, parseEther } from 'viem'
-import type { Address } from 'viem'
-
-import { useWalletStore } from '@entities/wallet'
-import { useLockStore } from '@entities/lock'
-import {
-  useDeposit,
-  useWithdraw,
-  useClaimInterest,
-  useLockInfo,
-  usePendingTx,
-} from '@features/staking'
+} from 'react-native';
+import type { Address } from 'viem';
+import { formatEther, parseEther } from 'viem';
 
 const TX_STATE_LABELS: Record<string, string> = {
   biometric: '생체 인증 중...',
@@ -27,50 +26,64 @@ const TX_STATE_LABELS: Record<string, string> = {
   pending: '블록체인 처리 중...',
   success: '완료되었습니다.',
   error: '오류가 발생했습니다.',
-}
+};
 
 export function StakingScreen() {
-  const { address } = useWalletStore()
-  const { balance, unlockTime, pendingReward } = useLockStore()
+  const { address } = useWalletStore();
+  const { balance, unlockTime, pendingReward } = useLockStore();
 
-  const [amountInput, setAmountInput] = useState('')
-  const [daysInput, setDaysInput] = useState('')
+  const [amountInput, setAmountInput] = useState('');
+  const [daysInput, setDaysInput] = useState('');
 
-  const { deposit, txState: depositState, errorMessage: depositError, reset: resetDeposit } = useDeposit()
-  const { withdraw, txState: withdrawState, errorMessage: withdrawError, reset: resetWithdraw } = useWithdraw()
-  const { claimInterest, txState: claimState, errorMessage: claimError, reset: resetClaim } = useClaimInterest()
+  const {
+    deposit,
+    txState: depositState,
+    errorMessage: depositError,
+    reset: resetDeposit,
+  } = useDeposit();
+  const {
+    withdraw,
+    txState: withdrawState,
+    errorMessage: withdrawError,
+    reset: resetWithdraw,
+  } = useWithdraw();
+  const {
+    claimInterest,
+    txState: claimState,
+    errorMessage: claimError,
+    reset: resetClaim,
+  } = useClaimInterest();
 
-  const keyId = address ?? ''
+  const keyId = address ?? '';
 
-  useLockInfo(address as Address | null)
-  const { pendingTx, isRecovering } = usePendingTx(address as Address | null)
+  useLockInfo(address as Address | null);
+  const { pendingTx, isRecovering } = usePendingTx(address as Address | null);
 
-  const now = Math.floor(Date.now() / 1000)
-  const isUnlocked = unlockTime > 0n && BigInt(now) >= unlockTime
-  const hasBalance = balance > 0n
-  const hasPendingReward = pendingReward > 0n
+  const now = Math.floor(Date.now() / 1000);
+  const isUnlocked = unlockTime > 0n && BigInt(now) >= unlockTime;
+  const hasBalance = balance > 0n;
+  const hasPendingReward = pendingReward > 0n;
   const isBusy =
-    depositState !== 'idle' ||
-    withdrawState !== 'idle' ||
-    claimState !== 'idle' ||
-    isRecovering
+    depositState !== 'idle' || withdrawState !== 'idle' || claimState !== 'idle' || isRecovering;
 
   const handleDeposit = () => {
-    const amount = parseFloat(amountInput)
-    const days = parseInt(daysInput, 10)
+    const amount = parseFloat(amountInput);
+    const days = parseInt(daysInput, 10);
     if (!amount || amount <= 0 || !days || days <= 0) {
-      Alert.alert('입력 오류', '올바른 금액과 잠금 기간을 입력하세요.')
-      return
+      Alert.alert('입력 오류', '올바른 금액과 잠금 기간을 입력하세요.');
+      return;
     }
-    const amountWei = parseEther(amountInput)
-    const unlockTimestamp = BigInt(now + days * 86400)
-    deposit(amountWei, unlockTimestamp, keyId)
-  }
+    const amountWei = parseEther(amountInput);
+    const unlockTimestamp = BigInt(now + days * 86400);
+    deposit(amountWei, unlockTimestamp, keyId);
+  };
 
   const formatUnlockTime = (timestamp: bigint) => {
-    if (timestamp === 0n) return '-'
-    return new Date(Number(timestamp) * 1000).toLocaleString('ko-KR')
-  }
+    if (timestamp === 0n) {
+      return '-';
+    }
+    return new Date(Number(timestamp) * 1000).toLocaleString('ko-KR');
+  };
 
   const activeTxLabel =
     depositState !== 'idle'
@@ -79,13 +92,16 @@ export function StakingScreen() {
         ? TX_STATE_LABELS[withdrawState]
         : claimState !== 'idle'
           ? TX_STATE_LABELS[claimState]
-          : null
+          : null;
 
   return (
     <ScrollView className="flex-1 bg-gray-950">
       <View className="px-5 pt-12 pb-8">
         <Text className="text-2xl font-bold text-white mb-1">LockFi</Text>
-        <Text className="text-xs text-gray-500 mb-6" numberOfLines={1}>
+        <Text
+          className="text-xs text-gray-500 mb-6"
+          numberOfLines={1}
+        >
           {address ?? '지갑 미연결'}
         </Text>
 
@@ -107,10 +123,16 @@ export function StakingScreen() {
 
         {isRecovering && pendingTx && (
           <View className="bg-yellow-900/40 border border-yellow-700 rounded-xl p-4 mb-4 flex-row items-center gap-3">
-            <ActivityIndicator color="#facc15" size="small" />
+            <ActivityIndicator
+              color="#facc15"
+              size="small"
+            />
             <View className="flex-1">
               <Text className="text-yellow-300 text-sm font-medium">트랜잭션 복구 중</Text>
-              <Text className="text-yellow-500 text-xs mt-0.5" numberOfLines={1}>
+              <Text
+                className="text-yellow-500 text-xs mt-0.5"
+                numberOfLines={1}
+              >
                 {pendingTx.txHash}
               </Text>
             </View>
@@ -159,7 +181,7 @@ export function StakingScreen() {
         <View className="flex-row gap-3 mb-4">
           <TouchableOpacity
             className={`flex-1 rounded-xl py-4 items-center ${!hasBalance || !isUnlocked || isBusy ? 'bg-gray-700' : 'bg-purple-600'}`}
-            onPress={() => withdraw(keyId)}
+            onPress={() => withdraw(keyId, true)}
             disabled={!hasBalance || !isUnlocked || isBusy}
           >
             {withdrawState === 'biometric' || withdrawState === 'broadcasting' ? (
@@ -190,14 +212,17 @@ export function StakingScreen() {
         {withdrawError && (
           <Text className="text-red-400 text-sm text-center mb-2">{withdrawError}</Text>
         )}
-        {claimError && (
-          <Text className="text-red-400 text-sm text-center mb-2">{claimError}</Text>
-        )}
+        {claimError && <Text className="text-red-400 text-sm text-center mb-2">{claimError}</Text>}
 
         {activeTxLabel && (
           <View className="flex-row items-center justify-center gap-2 py-3">
-            {depositState === 'pending' || withdrawState === 'pending' || claimState === 'pending' ? (
-              <ActivityIndicator color="#60a5fa" size="small" />
+            {depositState === 'pending' ||
+            withdrawState === 'pending' ||
+            claimState === 'pending' ? (
+              <ActivityIndicator
+                color="#60a5fa"
+                size="small"
+              />
             ) : null}
             <Text className="text-blue-400 text-sm">{activeTxLabel}</Text>
           </View>
@@ -207,9 +232,9 @@ export function StakingScreen() {
           <TouchableOpacity
             className="items-center py-2"
             onPress={() => {
-              resetDeposit()
-              resetWithdraw()
-              resetClaim()
+              resetDeposit();
+              resetWithdraw();
+              resetClaim();
             }}
           >
             <Text className="text-gray-500 text-sm">닫기</Text>
@@ -217,5 +242,5 @@ export function StakingScreen() {
         )}
       </View>
     </ScrollView>
-  )
+  );
 }

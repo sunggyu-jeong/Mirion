@@ -1,41 +1,52 @@
-import { useEffect } from 'react'
-import { AppState, type AppStateStatus } from 'react-native'
-import { useConnect, useDisconnect, useAccount } from 'wagmi'
-
-import { secureKey, useWalletStore } from '@entities/wallet'
-
-const WALLET_KEY_ID = 'wc-session-key'
+import { secureKey, useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
+import MetaMaskSDK from '@metamask/sdk';
+import { useEffect, useRef, useState } from 'react';
+import { AppState, type AppStateStatus } from 'react-native';
 
 export function useWalletConnect() {
-  const { connectAsync, connectors, isPending, error } = useConnect()
-  const { disconnectAsync } = useDisconnect()
-  const { address, isConnected } = useAccount()
-  const setSession = useWalletStore(s => s.setSession)
-  const clearSession = useWalletStore(s => s.clearSession)
-  const syncSession = useWalletStore(s => s.syncSession)
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const address = useWalletStore(s => s.address);
+  const isConnected = useWalletStore(s => s.isConnected);
+  const setSession = useWalletStore(s => s.setSession);
+  const clearSession = useWalletStore(s => s.clearSession);
+  const syncSession = useWalletStore(s => s.syncSession);
+  const sdkRef = useRef(
+    new MetaMaskSDK({ dappMetadata: { name: 'LockFi', url: 'https://lockfi.app' } }),
+  );
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
-        syncSession(WALLET_KEY_ID)
+        syncSession(WC_SESSION_KEY);
       }
-    })
-    return () => sub.remove()
-  }, [syncSession])
+    });
+    return () => sub.remove();
+  }, [syncSession]);
 
   const connectWallet = async () => {
-    const connector = connectors[0]
-    const result = await connectAsync({ connector })
-    await secureKey.store(WALLET_KEY_ID, result.accounts[0])
-    setSession(result.accounts[0], 'walletconnect')
-    return result
-  }
+    setIsPending(true);
+    setError(null);
+    try {
+      const ethereum = sdkRef.current.getProvider();
+      const accounts = (await ethereum.request({ method: 'eth_requestAccounts' })) as string[];
+      const account = accounts[0];
+      await secureKey.store(WC_SESSION_KEY, account);
+      setSession(account, 'walletconnect');
+      return account;
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error(String(e)));
+      throw e;
+    } finally {
+      setIsPending(false);
+    }
+  };
 
-  const disconnectWallet = async () => {
-    secureKey.delete(WALLET_KEY_ID)
-    clearSession()
-    await disconnectAsync()
-  }
+  const disconnectWallet = () => {
+    sdkRef.current.disconnect();
+    secureKey.delete(WC_SESSION_KEY);
+    clearSession();
+  };
 
-  return { connectWallet, disconnectWallet, address, isConnected, isPending, error }
+  return { connectWallet, disconnectWallet, address, isConnected, isPending, error };
 }

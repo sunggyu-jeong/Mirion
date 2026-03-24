@@ -1,1 +1,1 @@
-export { StakingScreen } from './ui/StakingScreen'
+export { StakingScreen } from './ui/StakingScreen';

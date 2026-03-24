@@ -1,11 +1,12 @@
-import { renderHook, act } from '@testing-library/react-native';
+import { act, renderHook } from '@testing-library/react-native';
 import { AppState } from 'react-native';
 
-jest.mock('wagmi', () => ({
-  useConnect: jest.fn(),
-  useDisconnect: jest.fn(),
-  useAccount: jest.fn(),
-}));
+jest.mock('@metamask/sdk', () =>
+  jest.fn().mockImplementation(() => ({
+    getProvider: jest.fn().mockReturnValue({ request: jest.fn() }),
+    disconnect: jest.fn(),
+  })),
+);
 
 jest.mock('@entities/wallet', () => ({
   secureKey: {
@@ -16,38 +17,34 @@ jest.mock('@entities/wallet', () => ({
     retrieveData: jest.fn(),
   },
   useWalletStore: jest.fn(),
+  WC_SESSION_KEY: 'wc-session-key',
 }));
 
-import { useConnect, useDisconnect, useAccount } from 'wagmi';
+import MetaMaskSDK from '@metamask/sdk';
 import { secureKey, useWalletStore } from '@entities/wallet';
+
 import { useWalletConnect } from '../model/use-wallet-connect';
 
-const mockConnectAsync = jest.fn();
-const mockDisconnectAsync = jest.fn();
 const mockSetSession = jest.fn();
 const mockClearSession = jest.fn();
 const mockSyncSession = jest.fn();
-
-const mockConnector = { id: 'walletConnect', name: 'WalletConnect' };
+const mockRequest = jest.fn();
+const mockDisconnect = jest.fn();
 
 beforeEach(() => {
   jest.clearAllMocks();
-  jest.mocked(useConnect).mockReturnValue({
-    connectAsync: mockConnectAsync,
-    connectors: [mockConnector],
-    isPending: false,
-    error: null,
-  } as never);
-  jest.mocked(useDisconnect).mockReturnValue({ disconnectAsync: mockDisconnectAsync } as never);
-  jest.mocked(useAccount).mockReturnValue({ address: undefined, isConnected: false } as never);
-  jest.mocked(useWalletStore).mockImplementation(
-    ((selector: (state: unknown) => unknown) =>
-      selector({
-        setSession: mockSetSession,
-        clearSession: mockClearSession,
-        syncSession: mockSyncSession,
-      })) as never,
-  );
+  jest.mocked(MetaMaskSDK).mockImplementation(() => ({
+    getProvider: () => ({ request: mockRequest }),
+    disconnect: mockDisconnect,
+  }) as never);
+  jest.mocked(useWalletStore).mockImplementation(((selector: (state: unknown) => unknown) =>
+    selector({
+      address: undefined,
+      isConnected: false,
+      setSession: mockSetSession,
+      clearSession: mockClearSession,
+      syncSession: mockSyncSession,
+    })) as never);
 });
 
 describe('useWalletConnect', () => {
@@ -65,7 +62,7 @@ describe('useWalletConnect', () => {
 
   describe('connectWallet', () => {
     it('연결 성공 시 address를 JSI에 저장한다', async () => {
-      mockConnectAsync.mockResolvedValue({ accounts: ['0xABC123'] });
+      mockRequest.mockResolvedValue(['0xABC123']);
       jest.mocked(secureKey.store).mockResolvedValue(true);
 
       const { result } = renderHook(() => useWalletConnect());
@@ -77,7 +74,7 @@ describe('useWalletConnect', () => {
     });
 
     it('연결 성공 시 address가 스토어에 저장된다', async () => {
-      mockConnectAsync.mockResolvedValue({ accounts: ['0xABC123'] });
+      mockRequest.mockResolvedValue(['0xABC123']);
       jest.mocked(secureKey.store).mockResolvedValue(true);
 
       const { result } = renderHook(() => useWalletConnect());
@@ -89,7 +86,7 @@ describe('useWalletConnect', () => {
     });
 
     it('연결 실패 시 에러가 전파된다', async () => {
-      mockConnectAsync.mockRejectedValue(new Error('연결 거부됨'));
+      mockRequest.mockRejectedValue(new Error('연결 거부됨'));
 
       const { result } = renderHook(() => useWalletConnect());
       await expect(
@@ -100,7 +97,7 @@ describe('useWalletConnect', () => {
     });
 
     it('연결 실패 시 secureKey.store가 호출되지 않는다', async () => {
-      mockConnectAsync.mockRejectedValue(new Error('연결 거부됨'));
+      mockRequest.mockRejectedValue(new Error('연결 거부됨'));
 
       const { result } = renderHook(() => useWalletConnect());
       await act(async () => {
@@ -112,25 +109,23 @@ describe('useWalletConnect', () => {
   });
 
   describe('disconnectWallet', () => {
-    it('disconnect 호출 시 secureKey.delete가 호출된다', async () => {
+    it('disconnect 호출 시 secureKey.delete가 호출된다', () => {
       jest.mocked(secureKey.delete).mockReturnValue(true);
-      mockDisconnectAsync.mockResolvedValue(undefined);
 
       const { result } = renderHook(() => useWalletConnect());
-      await act(async () => {
-        await result.current.disconnectWallet();
+      act(() => {
+        result.current.disconnectWallet();
       });
 
       expect(secureKey.delete).toHaveBeenCalledWith('wc-session-key');
     });
 
-    it('disconnect 후 clearSession이 호출된다', async () => {
+    it('disconnect 후 clearSession이 호출된다', () => {
       jest.mocked(secureKey.delete).mockReturnValue(true);
-      mockDisconnectAsync.mockResolvedValue(undefined);
 
       const { result } = renderHook(() => useWalletConnect());
-      await act(async () => {
-        await result.current.disconnectWallet();
+      act(() => {
+        result.current.disconnectWallet();
       });
 
       expect(mockClearSession).toHaveBeenCalled();
@@ -145,7 +140,9 @@ describe('useWalletConnect', () => {
 
       act(() => {
         const handlers = jest.mocked(AppState.addEventListener).mock.calls;
-        const changeHandler = handlers.find((args) => args[0] === 'change')?.[1] as ((state: string) => void) | undefined;
+        const changeHandler = handlers.find(args => args[0] === 'change')?.[1] as
+          | ((state: string) => void)
+          | undefined;
         changeHandler?.('active');
       });
 
@@ -157,7 +154,9 @@ describe('useWalletConnect', () => {
 
       act(() => {
         const handlers = jest.mocked(AppState.addEventListener).mock.calls;
-        const changeHandler = handlers.find((args) => args[0] === 'change')?.[1] as ((state: string) => void) | undefined;
+        const changeHandler = handlers.find(args => args[0] === 'change')?.[1] as
+          | ((state: string) => void)
+          | undefined;
         changeHandler?.('background');
       });
 

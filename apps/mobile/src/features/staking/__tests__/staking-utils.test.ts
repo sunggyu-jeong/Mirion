@@ -24,18 +24,19 @@ jest.mock('@shared/lib/storage', () => ({
   },
 }));
 
+import type { TxRecord } from '@entities/lock';
+import { storage } from '@shared/lib/storage';
 import type { Address } from 'viem';
 import { ContractFunctionExecutionError, ContractFunctionRevertedError } from 'viem';
-import { storage } from '@shared/lib/storage';
+
 import {
-  savePendingTx,
-  loadPendingTx,
   clearPendingTx,
+  loadPendingTx,
   mapContractError,
-  withRetry,
+  savePendingTx,
   scheduleRefetch,
+  withRetry,
 } from '../model/staking-utils';
-import type { TxRecord } from '@entities/lock';
 
 const mockStorage = storage as unknown as {
   getString: jest.Mock;
@@ -101,31 +102,31 @@ describe('clearPendingTx', () => {
 const makeRevertedError = (errorName: string) =>
   Object.assign(Object.create(ContractFunctionRevertedError.prototype), {
     data: { errorName },
-  }) as InstanceType<typeof ContractFunctionRevertedError>
+  }) as InstanceType<typeof ContractFunctionRevertedError>;
 
 const makeExecError = (cause: unknown) =>
   Object.assign(Object.create(ContractFunctionExecutionError.prototype), {
     cause,
-  }) as InstanceType<typeof ContractFunctionExecutionError>
+  }) as InstanceType<typeof ContractFunctionExecutionError>;
 
 describe('mapContractError', () => {
   it('TimeLock__Locked 에러를 한국어 메시지로 변환한다', () => {
-    const execError = makeExecError(makeRevertedError('TimeLock__Locked'))
+    const execError = makeExecError(makeRevertedError('TimeLock__Locked'));
     expect(mapContractError(execError)).toBe('아직 잠금 해제 시간이 되지 않았습니다.');
   });
 
   it('TimeLock__NoBalance 에러를 한국어 메시지로 변환한다', () => {
-    const execError = makeExecError(makeRevertedError('TimeLock__NoBalance'))
+    const execError = makeExecError(makeRevertedError('TimeLock__NoBalance'));
     expect(mapContractError(execError)).toBe('예치된 잔액이 없습니다.');
   });
 
   it('TimeLock__NoReward 에러를 한국어 메시지로 변환한다', () => {
-    const execError = makeExecError(makeRevertedError('TimeLock__NoReward'))
+    const execError = makeExecError(makeRevertedError('TimeLock__NoReward'));
     expect(mapContractError(execError)).toBe('수령할 이자가 없습니다.');
   });
 
   it('알 수 없는 컨트랙트 에러는 기본 메시지를 반환한다', () => {
-    const execError = makeExecError(makeRevertedError('TimeLock__Unknown'))
+    const execError = makeExecError(makeRevertedError('TimeLock__Unknown'));
     expect(mapContractError(execError)).toBe('알 수 없는 오류가 발생했습니다.');
   });
 
@@ -151,7 +152,7 @@ describe('mapContractError', () => {
   });
 
   it('ContractFunctionExecutionError이지만 cause가 ContractFunctionRevertedError가 아니면 기본 메시지를 반환한다', () => {
-    const execError = makeExecError(new Error('unknown cause'))
+    const execError = makeExecError(new Error('unknown cause'));
     expect(mapContractError(execError)).toBe('알 수 없는 오류가 발생했습니다.');
   });
 });

@@ -14,7 +14,7 @@
     "test:ios:coverage": "xcodebuild test -workspace ios/LockFi.xcworkspace -scheme LockFi -destination 'platform=iOS Simulator,name=iPhone 16' -enableCodeCoverage YES | xcpretty"
   },
   "dependencies": {
-    "@coinbase/wallet-mobile-sdk": "^1.1.2",
+    "@metamask/sdk": "^0.34.0",
     "@react-native/new-app-screen": "0.84.1",
     "@react-navigation/native": "^7.1.33",
     "@react-navigation/native-stack": "^7.14.5",
@@ -33,7 +33,6 @@
     "react-native-worklets": "0.8.1",
     "tailwindcss": "^3.4.19",
     "viem": "^2.47.5",
-    "wagmi": "^3.5.0",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
@@ -53,6 +52,7 @@
     "@types/jest": "^29.5.13",
     "@types/react": "^19.2.0",
     "@types/react-test-renderer": "^19.1.0",
+    "babel-plugin-transform-import-meta": "^2.3.3",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-import-resolver-typescript": "^3.7.0",

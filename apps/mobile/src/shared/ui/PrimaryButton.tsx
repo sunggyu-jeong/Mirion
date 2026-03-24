@@ -1,5 +1,11 @@
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { Pressable, Text } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 type PrimaryButtonProps = {
   label: string;
@@ -16,15 +22,29 @@ export function PrimaryButton({
 }: PrimaryButtonProps) {
   const bg = variant === 'primary' ? 'bg-[#2b7fff]' : 'bg-[#f1f5f9]';
   const textColor = variant === 'primary' ? 'text-[#f8fafc]' : 'text-[#1d293d]';
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   return (
-    <TouchableOpacity
-      className={`${bg} rounded-lg w-full items-center justify-center`}
-      style={{ height }}
+    <Pressable
+      className="w-full"
       onPress={onPress}
-      activeOpacity={0.8}
+      onPressIn={() => {
+        scale.value = withTiming(0.96, { duration: 80 });
+      }}
+      onPressOut={() => {
+        scale.value = withTiming(1, { duration: 150, easing: Easing.out(Easing.quad) });
+      }}
     >
-      <Text className={`text-[16px] ${textColor}`}>{label}</Text>
-    </TouchableOpacity>
+      <Animated.View
+        className={`${bg} rounded-lg w-full items-center justify-center`}
+        style={[animatedStyle, { height }]}
+      >
+        <Text className={`text-[16px] ${textColor}`}>{label}</Text>
+      </Animated.View>
+    </Pressable>
   );
 }

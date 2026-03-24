@@ -1,7 +1,10 @@
+import type { RootStackParamList } from '@app/navigation';
+import { useCoinbaseWallet, useWalletConnect } from '@features/wallet-connect';
+import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { PrimaryButton } from '@shared/ui';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,13 +19,41 @@ const WALLET_LABELS: Record<WalletType, string> = {
 };
 
 export function WalletConnectingScreen() {
-  const { goBack } = useAppNavigation();
-  const route = useRoute();
-  const walletType = ((route.params as any)?.walletType ?? 'metamask') as WalletType;
+  const { goBack, toStaking } = useAppNavigation();
+  const route = useRoute<RouteProp<RootStackParamList, 'WalletConnecting'>>();
+  const walletType = route.params?.walletType ?? 'metamask';
+
+  const { connectWallet: connectMetaMask } = useWalletConnect();
+  const { connectWallet: connectCoinbase } = useCoinbaseWallet();
+
   const opacity = useSharedValue(0);
+  const cancelled = useRef(false);
 
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 350 });
+
+    const connect = async () => {
+      try {
+        if (walletType === 'metamask') {
+          await connectMetaMask();
+        } else {
+          await connectCoinbase();
+        }
+        if (!cancelled.current) {
+          toStaking();
+        }
+      } catch {
+        if (!cancelled.current) {
+          goBack();
+        }
+      }
+    };
+
+    connect();
+
+    return () => {
+      cancelled.current = true;
+    };
   }, []);
 
   const fadeStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));

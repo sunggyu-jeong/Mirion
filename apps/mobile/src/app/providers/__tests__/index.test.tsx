@@ -1,23 +1,42 @@
+jest.mock('wagmi', () => ({
+  createConfig: jest.fn(() => ({})),
+  WagmiProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+jest.mock('wagmi/connectors', () => ({
+  metaMask: jest.fn(() => ({})),
+}));
+
+jest.mock('viem', () => ({
+  http: jest.fn(() => ({})),
+}));
+
+jest.mock('@shared/api/contracts', () => ({
+  CHAIN: { id: 84532 },
+}));
+
 jest.mock('react-native-safe-area-context', () => ({
   SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
-}))
+  SafeAreaView: require('react-native').View,
+}));
 
 jest.mock('../../navigation', () => {
-  const { View } = require('react-native')
-  return { Navigation: () => <View testID="navigation" /> }
-})
+  const { View } = require('react-native');
+  return { Navigation: () => <View testID="navigation" /> };
+});
 
-import React from 'react'
-import { render } from '@testing-library/react-native'
-import { AppProviders } from '../index'
+import { render } from '@testing-library/react-native';
+import React from 'react';
+
+import { AppProviders } from '../index';
 
 describe('AppProviders', () => {
   it('에러 없이 렌더링된다', () => {
-    expect(() => render(<AppProviders />)).not.toThrow()
-  })
+    expect(() => render(<AppProviders />)).not.toThrow();
+  });
 
-  it('SafeAreaProvider 안에 Navigation을 렌더링한다', () => {
-    const { toJSON } = render(<AppProviders />)
-    expect(toJSON()).not.toBeNull()
-  })
-})
+  it('Navigation 컴포넌트를 렌더링한다', () => {
+    const { getByTestId } = render(<AppProviders />);
+    expect(getByTestId('navigation')).toBeTruthy();
+  });
+});

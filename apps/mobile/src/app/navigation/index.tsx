@@ -33,6 +33,14 @@ const RootStack = createNativeStackNavigator({
   },
 });
 
-export type RootStackParamList = StaticParamList<typeof RootStack>;
+export type RootStackParamList = StaticParamList<typeof RootStack> & {
+  WalletConnecting: { walletType: 'metamask' | 'coinbase' };
+};
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
 
 export const Navigation = createStaticNavigation(RootStack);

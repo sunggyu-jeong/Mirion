@@ -1,109 +1,37 @@
-import { useRef, useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
-import ReactNativeBiometrics from 'react-native-biometrics'
-import { UserRejectedRequestError } from 'viem'
-import type { Address } from 'viem'
+import { useLockStore } from '@entities/lock';
+import { useWalletStore } from '@entities/wallet';
+import { timeLockContract } from '@shared/api/contracts';
+import type { Address } from 'viem';
 
-import { timeLockContract } from '@shared/api/contracts'
-import { publicClient, createWalletClientFromKey } from '@shared/lib/web3/client'
-import { secureKey } from '@entities/wallet'
-import { useLockStore } from '@entities/lock'
-import { useWalletStore } from '@entities/wallet'
-
-import {
-  savePendingTx,
-  clearPendingTx,
-  mapContractError,
-  scheduleRefetch,
-} from './staking-utils'
-import type { TxState } from './staking-utils'
+import { savePendingTx } from './staking-utils';
+import { useBiometricTransaction } from './use-biometric-transaction';
 
 export function useClaimInterest() {
-  const [txState, setTxState] = useState<TxState>('idle')
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const isSubmitting = useRef(false)
-  const queryClient = useQueryClient()
-  const { address } = useWalletStore()
-  const { optimisticClaimInterest } = useLockStore()
+  const { address } = useWalletStore();
+  const { optimisticClaimInterest } = useLockStore();
+  const { execute, txState, errorMessage, reset } = useBiometricTransaction({
+    biometricMessage: '이자 수령을 위해 생체 인증이 필요합니다',
+  });
 
-  const claimInterest = async (keyId: string) => {
-    if (isSubmitting.current || !address) return
-    isSubmitting.current = true
-    setErrorMessage(null)
-
-    try {
-      setTxState('biometric')
-      const rnBiometrics = new ReactNativeBiometrics()
-      const { available } = await rnBiometrics.isSensorAvailable()
-      if (!available) throw new Error('biometric_unavailable')
-
-      const { success } = await rnBiometrics.simplePrompt({
-        promptMessage: '이자 수령을 위해 생체 인증이 필요합니다',
-      })
-      if (!success) {
-        setTxState('idle')
-        return
-      }
-
-      setTxState('broadcasting')
-      let privateKey: string | null = null
-      try {
-        privateKey = await secureKey.retrieve(keyId)
-        if (!privateKey) throw new Error('key_not_found')
-
-        const walletClient = createWalletClientFromKey(`0x${privateKey}`)
-        const fees = await publicClient.estimateFeesPerGas()
-
+  const claimInterest = (keyId: string) =>
+    execute({
+      keyId,
+      action: async (walletClient, feeOverrides) => {
         const txHash = await walletClient.writeContract({
           ...timeLockContract,
           functionName: 'claimInterest',
-          ...(fees.maxFeePerGas && { maxFeePerGas: (fees.maxFeePerGas * 110n) / 100n }),
-          ...(fees.maxPriorityFeePerGas && {
-            maxPriorityFeePerGas: (fees.maxPriorityFeePerGas * 110n) / 100n,
-          }),
-        })
-
+          ...feeOverrides,
+        });
         savePendingTx(address as Address, {
           txHash,
           type: 'claimInterest',
           timestamp: Date.now(),
           status: 'pending',
-        })
+        });
+        optimisticClaimInterest();
+        return txHash;
+      },
+    });
 
-        optimisticClaimInterest()
-        setTxState('pending')
-
-        try {
-          await publicClient.waitForTransactionReceipt({
-            hash: txHash,
-            retryCount: 10,
-            pollingInterval: 6_000,
-          })
-          clearPendingTx(address as Address)
-          scheduleRefetch(queryClient, address as Address)
-          setTxState('success')
-        } catch {
-          // receipt timeout - MMKV에 txHash 보관 중, use-pending-tx가 복구
-        }
-      } finally {
-        privateKey = null
-      }
-    } catch (error) {
-      if (error instanceof UserRejectedRequestError) {
-        setTxState('idle')
-        return
-      }
-      setTxState('error')
-      setErrorMessage(mapContractError(error))
-    } finally {
-      isSubmitting.current = false
-    }
-  }
-
-  const reset = () => {
-    setTxState('idle')
-    setErrorMessage(null)
-  }
-
-  return { claimInterest, txState, errorMessage, reset }
+  return { claimInterest, txState, errorMessage, reset };
 }

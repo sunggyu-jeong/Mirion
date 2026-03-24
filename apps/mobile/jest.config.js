@@ -11,11 +11,7 @@ module.exports = {
       statements: 95,
     },
   },
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/index.ts',
-  ],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts', '!src/**/index.ts'],
   moduleNameMapper: {
     '^react-native-config$': '<rootDir>/src/__mocks__/react-native-config.ts',
     '^@app/(.*)$': '<rootDir>/src/app/$1',

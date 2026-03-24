@@ -1,6 +1,5 @@
-import { NitroModules } from 'react-native-nitro-modules';
-
 import type { SecureKeyManager } from '@modules/SecureKeyManager/spec/SecureKeyManager.nitro';
+import { NitroModules } from 'react-native-nitro-modules';
 
 let _manager: SecureKeyManager | null = null;
 const getManager = (): SecureKeyManager => {

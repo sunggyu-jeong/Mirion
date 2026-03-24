@@ -46,14 +46,15 @@ jest.mock('../model/staking-utils', () => ({
   scheduleRefetch: jest.fn(),
 }));
 
-import { renderHook, act } from '@testing-library/react-native';
+import { useLockStore } from '@entities/lock';
+import { secureKey, useWalletStore } from '@entities/wallet';
+import { createWalletClientFromKey, publicClient } from '@shared/lib/web3/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { act, renderHook } from '@testing-library/react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
 import { UserRejectedRequestError } from 'viem';
-import { useQueryClient } from '@tanstack/react-query';
-import { secureKey, useWalletStore } from '@entities/wallet';
-import { useLockStore } from '@entities/lock';
-import { publicClient, createWalletClientFromKey } from '@shared/lib/web3/client';
-import { savePendingTx, clearPendingTx } from '../model/staking-utils';
+
+import { clearPendingTx, savePendingTx } from '../model/staking-utils';
 import { useClaimInterest } from '../model/use-claim-interest';
 
 const TEST_ADDRESS = '0xUser0000000000000000000000000000000001';
@@ -67,14 +68,19 @@ const mockOptimisticClaimInterest = jest.fn();
 
 beforeEach(() => {
   jest.clearAllMocks();
-  jest.mocked(ReactNativeBiometrics).mockImplementation(() => ({
-    isSensorAvailable: mockIsSensorAvailable,
-    simplePrompt: mockSimplePrompt,
-  }) as unknown as ReactNativeBiometrics);
+  jest.mocked(ReactNativeBiometrics).mockImplementation(
+    () =>
+      ({
+        isSensorAvailable: mockIsSensorAvailable,
+        simplePrompt: mockSimplePrompt,
+      }) as unknown as ReactNativeBiometrics,
+  );
   mockIsSensorAvailable.mockResolvedValue({ available: true });
   mockSimplePrompt.mockResolvedValue({ success: true });
   jest.mocked(secureKey.retrieve).mockResolvedValue('deadbeef1234');
-  jest.mocked(createWalletClientFromKey).mockReturnValue({ writeContract: mockWriteContract } as never);
+  jest
+    .mocked(createWalletClientFromKey)
+    .mockReturnValue({ writeContract: mockWriteContract } as never);
   mockWriteContract.mockResolvedValue(TEST_TX_HASH);
   jest.mocked(publicClient.estimateFeesPerGas).mockResolvedValue({} as never);
   jest.mocked(publicClient.waitForTransactionReceipt).mockResolvedValue({} as never);
@@ -251,7 +257,9 @@ describe('useClaimInterest', () => {
 
   describe('중복 실행 방지', () => {
     it('처리 중일 때 두 번째 호출은 무시된다', async () => {
-      jest.mocked(publicClient.waitForTransactionReceipt).mockReturnValue(new Promise(() => {}) as never);
+      jest
+        .mocked(publicClient.waitForTransactionReceipt)
+        .mockReturnValue(new Promise(() => {}) as never);
       const { result } = renderHook(() => useClaimInterest());
 
       act(() => {

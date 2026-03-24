@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 
@@ -17,6 +18,7 @@ type WalletType = 'metamask' | 'coinbase';
 
 export function SpinnerIcon({ walletType = 'metamask' }: { walletType?: WalletType }) {
   const rotation = useSharedValue(0);
+  const scale = useSharedValue(0.7);
 
   useEffect(() => {
     rotation.value = withRepeat(
@@ -24,28 +26,32 @@ export function SpinnerIcon({ walletType = 'metamask' }: { walletType?: WalletTy
       -1,
       false,
     );
+    scale.value = withSpring(1, { damping: 12 });
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const rotateStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
+  const scaleStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   return (
-    <View
-      className="items-center justify-center"
-      style={{ width: 70, height: 70 }}
+    <Animated.View
+      style={[scaleStyle, { width: 69, height: 69, alignItems: 'center', justifyContent: 'center' }]}
     >
       <Animated.View
         style={[
-          animatedStyle,
+          rotateStyle,
           {
             position: 'absolute',
-            width: 70,
-            height: 70,
-            borderRadius: 35,
+            width: 69,
+            height: 69,
+            borderRadius: 34.5,
             borderWidth: 3,
             borderTopColor: '#2b7fff',
-            borderRightColor: '#2b7fff',
+            borderRightColor: 'transparent',
             borderBottomColor: 'transparent',
             borderLeftColor: 'transparent',
           },
@@ -61,6 +67,6 @@ export function SpinnerIcon({ walletType = 'metamask' }: { walletType?: WalletTy
           resizeMode="contain"
         />
       </View>
-    </View>
+    </Animated.View>
   );
 }

@@ -145,6 +145,9 @@ export default tseslint.config(
         },
       ],
 
+      // unused-imports/no-unused-vars가 대신 처리하므로 비활성화
+      'no-unused-vars': 'off',
+
       // 기타
       'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
       eqeqeq: ['error', 'always'],

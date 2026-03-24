@@ -1,8 +1,8 @@
-export { useDeposit } from './model/use-deposit'
-export { useWithdraw } from './model/use-withdraw'
-export { useClaimInterest } from './model/use-claim-interest'
-export { useLockInfo } from './model/use-lock-info'
-export { usePendingTx } from './model/use-pending-tx'
-export { useGaslessDeposit } from './model/use-gasless-deposit'
-export { useInterestHistory } from './model/use-interest-history'
-export { useDisclaimerGuard } from './model/use-disclaimer-guard'
+export { useClaimInterest } from './model/use-claim-interest';
+export { useDeposit } from './model/use-deposit';
+export { useDisclaimerGuard } from './model/use-disclaimer-guard';
+export { useGaslessDeposit } from './model/use-gasless-deposit';
+export { useInterestHistory } from './model/use-interest-history';
+export { useLockInfo } from './model/use-lock-info';
+export { usePendingTx } from './model/use-pending-tx';
+export { useWithdraw } from './model/use-withdraw';
