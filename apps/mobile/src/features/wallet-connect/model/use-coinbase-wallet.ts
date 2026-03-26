@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Linking } from 'react-native';
 
 const PROJECT_ID = 'b6a245dd890f6d3f0528ffc01efa78aa';
-const CHAIN_CAIP = 'eip155:84532'; // Base Sepolia
+const CHAIN_CAIP = 'eip155:8453'; // Base Mainnet
 
 let clientPromise: Promise<InstanceType<typeof SignClient>> | null = null;
 

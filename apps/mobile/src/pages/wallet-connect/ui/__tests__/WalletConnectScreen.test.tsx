@@ -2,6 +2,14 @@ jest.mock('@shared/lib/navigation', () => ({
   useAppNavigation: jest.fn(),
 }));
 
+jest.mock('@entities/wallet', () => ({
+  useWalletStore: jest.fn((selector: (s: { setSession: jest.Mock }) => unknown) =>
+    selector({ setSession: jest.fn() }),
+  ),
+  secureKey: { store: jest.fn().mockResolvedValue(true) },
+  WC_SESSION_KEY: 'wc-session-key',
+}));
+
 jest.mock('@shared/ui', () => ({
   PrimaryButton: ({ label, onPress }: { label: string; onPress?: () => void }) => {
     const { TouchableOpacity, Text } = require('react-native');
@@ -24,6 +32,7 @@ import { WalletConnectScreen } from '../WalletConnectScreen';
 
 const mockGoBack = jest.fn();
 const mockToWalletConnecting = jest.fn();
+const mockToMain = jest.fn();
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -31,6 +40,7 @@ beforeEach(() => {
   jest.mocked(useAppNavigation).mockReturnValue({
     goBack: mockGoBack,
     toWalletConnecting: mockToWalletConnecting,
+    toMain: mockToMain,
   } as never);
 });
 

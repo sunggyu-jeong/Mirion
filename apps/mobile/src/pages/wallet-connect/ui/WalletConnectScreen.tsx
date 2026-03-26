@@ -1,7 +1,8 @@
+import { secureKey, useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { PrimaryButton } from '@shared/ui';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, PanResponder, Pressable, Text, View } from 'react-native';
+import { Animated, PanResponder, Pressable, Text, TextInput, View } from 'react-native';
 
 import { WalletOption } from './WalletOption';
 
@@ -15,7 +16,9 @@ type WalletType = 'metamask' | 'coinbase';
 
 export function WalletConnectScreen() {
   const [selected, setSelected] = useState<WalletType>('metamask');
-  const { goBack, toWalletConnecting } = useAppNavigation();
+  const [devAddress, setDevAddress] = useState('');
+  const { goBack, toWalletConnecting, toMain } = useAppNavigation();
+  const setSession = useWalletStore(s => s.setSession);
 
   const backdropOpacity = useRef(new Animated.Value(0)).current;
   const sheetTranslateY = useRef(new Animated.Value(SHEET_HEIGHT)).current;
@@ -65,6 +68,14 @@ export function WalletConnectScreen() {
     ]).start(() => {
       toWalletConnecting(selected);
     });
+  };
+
+  const handleDevConnect = async () => {
+    const addr = devAddress.trim();
+    if (!addr) return;
+    await secureKey.store(WC_SESSION_KEY, addr);
+    setSession(addr, 'walletconnect');
+    toMain();
   };
 
   const panResponder = useRef(
@@ -138,6 +149,27 @@ export function WalletConnectScreen() {
             <Text className="underline">개인정보 처리 방침</Text>
             {'에 동의하게 됩니다'}
           </Text>
+          {__DEV__ && (
+            <View className="w-full mt-2 gap-y-2">
+              <View className="h-[1px] bg-[#f1f5f9]" />
+              <Text className="text-[11px] text-[#94a3b8] text-center">개발용 주소 직접 입력</Text>
+              <TextInput
+                className="w-full h-[44px] px-3 rounded-xl border border-[#e2e8f0] text-[13px] text-[#0f172b]"
+                placeholder="0x..."
+                placeholderTextColor="#94a3b8"
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={devAddress}
+                onChangeText={setDevAddress}
+              />
+              <PrimaryButton
+                label="개발용 연결"
+                height={40}
+                variant="secondary"
+                onPress={handleDevConnect}
+              />
+            </View>
+          )}
         </View>
       </Animated.View>
     </View>
