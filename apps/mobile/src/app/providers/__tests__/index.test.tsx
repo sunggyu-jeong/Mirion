@@ -1,20 +1,3 @@
-jest.mock('wagmi', () => ({
-  createConfig: jest.fn(() => ({})),
-  WagmiProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
-
-jest.mock('wagmi/connectors', () => ({
-  metaMask: jest.fn(() => ({})),
-}));
-
-jest.mock('viem', () => ({
-  http: jest.fn(() => ({})),
-}));
-
-jest.mock('@shared/api/contracts', () => ({
-  CHAIN: { id: 84532 },
-}));
-
 jest.mock('react-native-safe-area-context', () => ({
   SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
   SafeAreaView: require('react-native').View,

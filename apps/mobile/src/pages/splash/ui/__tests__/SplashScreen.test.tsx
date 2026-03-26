@@ -24,7 +24,7 @@ import React from 'react';
 import { SplashScreen } from '../SplashScreen';
 
 const mockToOnboarding = jest.fn();
-const mockToStaking = jest.fn();
+const mockToMain = jest.fn();
 const mockSetSession = jest.fn();
 
 beforeEach(() => {
@@ -32,7 +32,7 @@ beforeEach(() => {
   jest.useFakeTimers();
   jest.mocked(useAppNavigation).mockReturnValue({
     toOnboarding: mockToOnboarding,
-    toStaking: mockToStaking,
+    toMain: mockToMain,
   } as never);
   jest
     .mocked(useWalletStore)
@@ -60,7 +60,7 @@ describe('SplashScreen', () => {
     });
 
     expect(mockToOnboarding).toHaveBeenCalledTimes(1);
-    expect(mockToStaking).not.toHaveBeenCalled();
+    expect(mockToMain).not.toHaveBeenCalled();
   });
 
   it('wc-session-key가 있으면 주소 복원 후 toStaking을 호출한다', async () => {
@@ -71,7 +71,7 @@ describe('SplashScreen', () => {
 
     await waitFor(() => {
       expect(mockSetSession).toHaveBeenCalledWith('0xUserAddress', 'walletconnect');
-      expect(mockToStaking).toHaveBeenCalled();
+      expect(mockToMain).toHaveBeenCalled();
     });
     expect(mockToOnboarding).not.toHaveBeenCalled();
   });
@@ -84,7 +84,7 @@ describe('SplashScreen', () => {
 
     await waitFor(() => {
       expect(mockSetSession).toHaveBeenCalledWith('0xCoinbaseAddress', 'coinbase');
-      expect(mockToStaking).toHaveBeenCalled();
+      expect(mockToMain).toHaveBeenCalled();
     });
   });
 
@@ -102,7 +102,7 @@ describe('SplashScreen', () => {
       jest.advanceTimersByTime(2000);
     });
 
-    expect(mockToStaking).not.toHaveBeenCalled();
+    expect(mockToMain).not.toHaveBeenCalled();
     expect(mockToOnboarding).toHaveBeenCalled();
   });
 });
