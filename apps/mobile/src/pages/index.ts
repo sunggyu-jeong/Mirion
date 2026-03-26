@@ -1,5 +1,13 @@
+export { DepositConfirmScreen } from './deposit-confirm';
+export { DepositSetupScreen } from './deposit-setup';
+export { DepositSuccessScreen } from './deposit-success';
+export { ErrorScreen } from './error';
+export { HistoryScreen } from './history';
+export { HomeScreen } from './home';
 export { OnboardingScreen } from './onboarding';
+export { SettlementReceiptModal } from './settlement-receipt';
+export { SettingsScreen } from './settings';
 export { SplashScreen } from './splash';
-export { StakingScreen } from './staking';
+export { TransactionProgressScreen } from './transaction-progress';
 export { WalletConnectScreen } from './wallet-connect';
 export { WalletConnectingScreen } from './wallet-connecting';

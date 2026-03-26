@@ -5,7 +5,7 @@ import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function OnboardingScreen() {
-  const { toWalletConnect } = useAppNavigation();
+  const { toMain } = useAppNavigation();
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -23,7 +23,7 @@ export function OnboardingScreen() {
       <View className="px-5 pb-8">
         <PrimaryButton
           label="내 지갑 연결하고 시작하기"
-          onPress={toWalletConnect}
+          onPress={toMain}
           height={52}
         />
       </View>

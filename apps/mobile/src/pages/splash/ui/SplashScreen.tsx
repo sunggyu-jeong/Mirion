@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 
 export function SplashScreen() {
-  const { toOnboarding, toStaking } = useAppNavigation();
+  const { toOnboarding, toMain } = useAppNavigation();
   const setSession = useWalletStore(s => s.setSession);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function SplashScreen() {
         const address = await secureKey.retrieveData(keyId);
         if (address) {
           setSession(address, walletType);
-          toStaking();
+          toMain();
           return;
         }
       }

@@ -63,11 +63,11 @@ describe('useAppNavigation', () => {
     });
   });
 
-  describe('toStaking', () => {
-    it('Staking으로 reset한다', () => {
+  describe('toMain', () => {
+    it('Main으로 reset한다', () => {
       const { result } = renderHook(() => useAppNavigation());
-      result.current.toStaking();
-      expect(mockReset).toHaveBeenCalledWith({ index: 0, routes: [{ name: 'Staking' }] });
+      result.current.toMain();
+      expect(mockReset).toHaveBeenCalledWith({ index: 0, routes: [{ name: 'Main' }] });
     });
   });
 

@@ -58,7 +58,7 @@ import React from 'react';
 import { WalletConnectingScreen } from '../WalletConnectingScreen';
 
 const mockGoBack = jest.fn();
-const mockToStaking = jest.fn();
+const mockToMain = jest.fn();
 const mockConnectMetaMask = jest.fn();
 const mockConnectCoinbase = jest.fn();
 
@@ -66,7 +66,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   jest.mocked(useAppNavigation).mockReturnValue({
     goBack: mockGoBack,
-    toStaking: mockToStaking,
+    toMain: mockToMain,
   } as never);
   jest.mocked(useWalletConnect).mockReturnValue({
     connectWallet: mockConnectMetaMask,
@@ -88,14 +88,14 @@ describe('WalletConnectingScreen', () => {
       expect(screen.getByText('MetaMask 연결 중...')).toBeTruthy();
     });
 
-    it('연결 성공 시 toStaking을 호출한다', async () => {
+    it('연결 성공 시 toMain을 호출한다', async () => {
       mockConnectMetaMask.mockResolvedValue(undefined);
 
       render(<WalletConnectingScreen />);
 
       await waitFor(() => {
         expect(mockConnectMetaMask).toHaveBeenCalled();
-        expect(mockToStaking).toHaveBeenCalled();
+        expect(mockToMain).toHaveBeenCalled();
       });
     });
 
@@ -150,7 +150,7 @@ describe('WalletConnectingScreen', () => {
       jest.mocked(useRoute).mockReturnValue({ params: { walletType: 'metamask' } } as never);
     });
 
-    it('언마운트 후 연결 완료 시 toStaking을 호출하지 않는다', async () => {
+    it('언마운트 후 연결 완료 시 toMain을 호출하지 않는다', async () => {
       let resolve!: () => void;
       mockConnectMetaMask.mockReturnValue(
         new Promise<void>(r => {
@@ -163,7 +163,7 @@ describe('WalletConnectingScreen', () => {
       resolve();
 
       await new Promise(r => setTimeout(r, 0));
-      expect(mockToStaking).not.toHaveBeenCalled();
+      expect(mockToMain).not.toHaveBeenCalled();
     });
 
     it('언마운트 후 연결 실패 시 goBack을 호출하지 않는다', async () => {

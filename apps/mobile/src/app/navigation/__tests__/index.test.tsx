@@ -32,6 +32,10 @@ jest.mock('@react-navigation/native-stack', () => ({
   createNativeStackNavigator: jest.fn(() => ({ screens: {} })),
 }));
 
+jest.mock('@react-navigation/bottom-tabs', () => ({
+  createBottomTabNavigator: jest.fn(() => ({ screens: {} })),
+}));
+
 jest.mock('react-native-reanimated', () => ({
   __esModule: true,
   default: { View: require('react-native').View, createAnimatedComponent: (c: any) => c },
@@ -57,7 +61,7 @@ describe('Navigation', () => {
   it('네이티브 스택 네비게이터를 생성한다', () => {
     expect(createNativeStackNavigator).toHaveBeenCalledWith(
       expect.objectContaining({
-        screens: expect.objectContaining({ Staking: expect.any(Object) }),
+        screens: expect.objectContaining({ Main: expect.any(Object) }),
       }),
     );
   });

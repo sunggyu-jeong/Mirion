@@ -1,4 +1,3 @@
-import type { RootStackParamList } from '@app/navigation';
 import { useCoinbaseWallet, useWalletConnect } from '@features/wallet-connect';
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
@@ -11,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { SpinnerIcon } from './SpinnerIcon';
 
+type WalletConnectingParams = { walletType: 'metamask' | 'coinbase' };
 type WalletType = 'metamask' | 'coinbase';
 
 const WALLET_LABELS: Record<WalletType, string> = {
@@ -19,8 +19,8 @@ const WALLET_LABELS: Record<WalletType, string> = {
 };
 
 export function WalletConnectingScreen() {
-  const { goBack, toStaking } = useAppNavigation();
-  const route = useRoute<RouteProp<RootStackParamList, 'WalletConnecting'>>();
+  const { goBack, toMain } = useAppNavigation();
+  const route = useRoute<RouteProp<{ WalletConnecting: WalletConnectingParams }, 'WalletConnecting'>>();
   const walletType = route.params?.walletType ?? 'metamask';
 
   const { connectWallet: connectMetaMask } = useWalletConnect();
@@ -40,7 +40,7 @@ export function WalletConnectingScreen() {
           await connectCoinbase();
         }
         if (!cancelled.current) {
-          toStaking();
+          toMain();
         }
       } catch {
         if (!cancelled.current) {
