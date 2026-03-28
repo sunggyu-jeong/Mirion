@@ -8,7 +8,12 @@ type ReceiptRowProps = {
   amountColor?: string;
 };
 
-export function ReceiptRow({ label, amount, unit = 'ETH', amountColor = '#0f172b' }: ReceiptRowProps) {
+export function ReceiptRow({
+  label,
+  amount,
+  unit = 'ETH',
+  amountColor = '#0f172b',
+}: ReceiptRowProps) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
       <Text
@@ -34,17 +39,19 @@ export function ReceiptRow({ label, amount, unit = 'ETH', amountColor = '#0f172b
         >
           {amount}
         </Text>
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: '400',
-            color: amountColor,
-            letterSpacing: -0.16,
-            lineHeight: 24,
-          }}
-        >
-          {unit}
-        </Text>
+        {unit ? (
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: '400',
+              color: amountColor,
+              letterSpacing: -0.16,
+              lineHeight: 24,
+            }}
+          >
+            {unit}
+          </Text>
+        ) : null}
       </View>
     </View>
   );

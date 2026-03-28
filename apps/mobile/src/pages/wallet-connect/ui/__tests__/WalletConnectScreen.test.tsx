@@ -10,19 +10,34 @@ jest.mock('@entities/wallet', () => ({
   WC_SESSION_KEY: 'wc-session-key',
 }));
 
-jest.mock('@shared/ui', () => ({
-  PrimaryButton: ({ label, onPress }: { label: string; onPress?: () => void }) => {
-    const { TouchableOpacity, Text } = require('react-native');
-    return (
-      <TouchableOpacity
-        onPress={onPress}
-        testID={`btn-${label}`}
-      >
-        <Text>{label}</Text>
-      </TouchableOpacity>
-    );
-  },
-}));
+jest.mock('@shared/ui', () => {
+  const React = require('react');
+  return {
+    PrimaryButton: ({ label, onPress }: { label: string; onPress?: () => void }) => {
+      const { TouchableOpacity, Text } = require('react-native');
+      return (
+        <TouchableOpacity
+          onPress={onPress}
+          testID={`btn-${label}`}
+        >
+          <Text>{label}</Text>
+        </TouchableOpacity>
+      );
+    },
+    BottomSheet: React.forwardRef(
+      (
+        { children, onDismiss }: { children: React.ReactNode; onDismiss?: () => void },
+        ref: React.Ref<{ open: () => void; close: (cb?: () => void) => void }>,
+      ) => {
+        React.useImperativeHandle(ref, () => ({
+          open: jest.fn(),
+          close: (cb?: () => void) => cb?.(),
+        }));
+        return <>{children}</>;
+      },
+    ),
+  };
+});
 
 import { useAppNavigation } from '@shared/lib/navigation';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
@@ -31,7 +46,6 @@ import React from 'react';
 import { WalletConnectScreen } from '../WalletConnectScreen';
 
 const mockGoBack = jest.fn();
-const mockToWalletConnecting = jest.fn();
 const mockToMain = jest.fn();
 
 beforeEach(() => {
@@ -39,7 +53,6 @@ beforeEach(() => {
   jest.useFakeTimers();
   jest.mocked(useAppNavigation).mockReturnValue({
     goBack: mockGoBack,
-    toWalletConnecting: mockToWalletConnecting,
     toMain: mockToMain,
   } as never);
 });
@@ -74,31 +87,17 @@ describe('WalletConnectScreen', () => {
     expect(screen.getByText(/이용약관/)).toBeTruthy();
   });
 
-  it('연결하기 버튼 클릭 후 toWalletConnecting이 호출된다', async () => {
+  it('연결하기 버튼 클릭 후 toMain이 호출된다', async () => {
     render(<WalletConnectScreen />);
 
     await act(async () => {
       fireEvent.press(screen.getByTestId('btn-연결하기'));
-      jest.advanceTimersByTime(300);
     });
 
-    expect(mockToWalletConnecting).toHaveBeenCalledWith('metamask');
+    expect(mockToMain).toHaveBeenCalled();
   });
 
-  it('Coinbase 선택 후 연결하기 클릭 시 coinbase walletType으로 호출된다', async () => {
-    render(<WalletConnectScreen />);
-
-    fireEvent.press(screen.getByText('Coinbase Wallet'));
-
-    await act(async () => {
-      fireEvent.press(screen.getByTestId('btn-연결하기'));
-      jest.advanceTimersByTime(300);
-    });
-
-    expect(mockToWalletConnecting).toHaveBeenCalledWith('coinbase');
-  });
-
-  it('Coinbase 선택 후 MetaMask 재선택 시 metamask walletType으로 호출된다', async () => {
+  it('Coinbase 선택 후 MetaMask 재선택해도 연결 후 toMain이 호출된다', async () => {
     render(<WalletConnectScreen />);
 
     fireEvent.press(screen.getByText('Coinbase Wallet'));
@@ -106,9 +105,8 @@ describe('WalletConnectScreen', () => {
 
     await act(async () => {
       fireEvent.press(screen.getByTestId('btn-연결하기'));
-      jest.advanceTimersByTime(300);
     });
 
-    expect(mockToWalletConnecting).toHaveBeenCalledWith('metamask');
+    expect(mockToMain).toHaveBeenCalled();
   });
 });

@@ -29,6 +29,9 @@ export function useWalletConnect() {
     setError(null);
     try {
       const ethereum = sdkRef.current.getProvider();
+      if (!ethereum) {
+        throw new Error('Provider를 초기화할 수 없습니다');
+      }
       const accounts = (await ethereum.request({ method: 'eth_requestAccounts' })) as string[];
       const account = accounts[0];
       await secureKey.store(WC_SESSION_KEY, account);

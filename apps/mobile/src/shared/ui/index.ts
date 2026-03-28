@@ -1,7 +1,12 @@
+export type { BottomSheetRef } from './BottomSheet';
+export { BottomSheet } from './BottomSheet';
 export { BottomTabBar } from './BottomTabBar';
 export { DisclaimerBox } from './DisclaimerBox';
 export { ErrorStateView } from './ErrorStateView';
+export { InfoCard } from './InfoCard';
 export { PrimaryButton } from './PrimaryButton';
 export { ReceiptRow } from './ReceiptRow';
-export { StepIndicator } from './StepIndicator';
+export { ScreenHeader } from './ScreenHeader';
+export { ScreenTitle } from './ScreenTitle';
 export type { Step } from './StepIndicator';
+export { StepIndicator } from './StepIndicator';

@@ -1,14 +1,15 @@
 import { useWalletStore } from '@entities/wallet';
+import { addDays, formatDate } from '@shared/lib/date';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { publicClient } from '@shared/lib/web3/client';
-import { PrimaryButton } from '@shared/ui';
-import { ChevronRight, X } from 'lucide-react-native';
+import type { BottomSheetRef } from '@shared/ui';
+import { BottomSheet, PrimaryButton, ScreenHeader, ScreenTitle } from '@shared/ui';
+import { ChevronRight } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Keyboard,
   KeyboardAvoidingView,
-  PanResponder,
   Platform,
   Pressable,
   StyleSheet,
@@ -25,30 +26,15 @@ const DAY_PRESETS = [7, 15, 30, 90] as const;
 const SHEET_HEIGHT = 340;
 const DISMISS_THRESHOLD = 80;
 
-function addDays(date: Date, days: number): Date {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
-
-function formatDate(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}.${m}.${d}`;
-}
-
 export function DepositSetupScreen() {
   const { goBack, toDepositConfirm } = useAppNavigation();
   const address = useWalletStore(s => s.address);
   const [amountEth, setAmountEth] = useState('');
   const [days, setDays] = useState(15);
-  const [showPicker, setShowPicker] = useState(false);
   const [customDays, setCustomDays] = useState('');
   const [balance, setBalance] = useState<string | null>(null);
 
-  const backdropOpacity = useRef(new Animated.Value(0)).current;
-  const sheetTranslateY = useRef(new Animated.Value(SHEET_HEIGHT)).current;
+  const sheetRef = useRef<BottomSheetRef>(null);
   const keyboardHeight = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -62,9 +48,6 @@ export function DepositSetupScreen() {
   }, [address]);
 
   useEffect(() => {
-    if (!showPicker) {
-      return;
-    }
     const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
 
@@ -87,7 +70,7 @@ export function DepositSetupScreen() {
       showSub.remove();
       hideSub.remove();
     };
-  }, [showPicker, keyboardHeight]);
+  }, [keyboardHeight]);
 
   const unlockDate = addDays(new Date(), days);
   const parsedAmount = parseFloat(amountEth);
@@ -107,69 +90,14 @@ export function DepositSetupScreen() {
 
   const openPicker = () => {
     Keyboard.dismiss();
-    setShowPicker(true);
-    Animated.timing(backdropOpacity, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      Animated.spring(sheetTranslateY, {
-        toValue: 0,
-        tension: 65,
-        friction: 11,
-        useNativeDriver: true,
-      }).start();
-    });
-  };
-
-  const closePicker = () => {
-    Animated.parallel([
-      Animated.timing(sheetTranslateY, {
-        toValue: SHEET_HEIGHT,
-        duration: 220,
-        useNativeDriver: true,
-      }),
-      Animated.timing(backdropOpacity, {
-        toValue: 0,
-        duration: 220,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setShowPicker(false);
-      sheetTranslateY.setValue(SHEET_HEIGHT);
-      backdropOpacity.setValue(0);
-      keyboardHeight.setValue(0);
-    });
+    sheetRef.current?.open();
   };
 
   const applyDays = (d: number) => {
     setDays(d);
     setCustomDays('');
-    closePicker();
+    sheetRef.current?.close();
   };
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, { dy }) => dy > 8,
-      onPanResponderMove: (_, { dy }) => {
-        if (dy > 0) {
-          sheetTranslateY.setValue(dy);
-        }
-      },
-      onPanResponderRelease: (_, { dy }) => {
-        if (dy > DISMISS_THRESHOLD) {
-          closePicker();
-        } else {
-          Animated.spring(sheetTranslateY, {
-            toValue: 0,
-            tension: 65,
-            friction: 11,
-            useNativeDriver: true,
-          }).start();
-        }
-      },
-    }),
-  ).current;
 
   return (
     <View style={{ flex: 1 }}>
@@ -183,31 +111,11 @@ export function DepositSetupScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           >
             <View style={{ flex: 1 }}>
-              <View style={{ paddingHorizontal: 20, height: 56, justifyContent: 'center' }}>
-                <Pressable
-                  onPress={goBack}
-                  hitSlop={12}
-                >
-                  <X
-                    size={24}
-                    color="#0f172b"
-                  />
-                </Pressable>
-              </View>
+              <ScreenHeader onClose={goBack} />
 
               <View style={{ paddingHorizontal: 20, flex: 1, gap: 28, marginTop: 8 }}>
                 <View style={{ gap: 20 }}>
-                  <Text
-                    style={{
-                      fontSize: 22,
-                      fontWeight: '700',
-                      color: '#0f172b',
-                      letterSpacing: -0.198,
-                      lineHeight: 30.8,
-                    }}
-                  >
-                    얼마나 잠글까요?
-                  </Text>
+                  <ScreenTitle>얼마나 잠글까요?</ScreenTitle>
 
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                     <TextInput
@@ -325,119 +233,73 @@ export function DepositSetupScreen() {
         </TouchableWithoutFeedback>
       </SafeAreaView>
 
-      {/* 잠금 기간 바텀시트 */}
-      {showPicker && (
-        <View
-          style={StyleSheet.absoluteFillObject}
-          pointerEvents="box-none"
-        >
-          <Animated.View
-            style={[
-              StyleSheet.absoluteFillObject,
-              { backgroundColor: 'rgba(0,0,0,0.5)', opacity: backdropOpacity },
-            ]}
-          />
-          <Pressable
-            style={StyleSheet.absoluteFillObject}
-            onPress={closePicker}
-          />
-          <Animated.View
-            style={[
-              styles.sheet,
-              {
-                transform: [{ translateY: Animated.subtract(sheetTranslateY, keyboardHeight) }],
-              },
-            ]}
+      <BottomSheet
+        ref={sheetRef}
+        height={SHEET_HEIGHT}
+        dismissThreshold={DISMISS_THRESHOLD}
+        translateYOffset={keyboardHeight}
+      >
+        <View style={{ paddingHorizontal: 20, paddingBottom: 32, gap: 24 }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: '700',
+              color: '#0f172b',
+              textAlign: 'center',
+              lineHeight: 25.2,
+            }}
           >
-            {/* 드래그 핸들 */}
-            <View
-              style={{ alignItems: 'center', paddingTop: 16, paddingBottom: 8 }}
-              {...panResponder.panHandlers}
-            >
-              <View
-                style={{ width: 33, height: 4, backgroundColor: '#f1f5f9', borderRadius: 99 }}
-              />
+            잠금 기간 선택
+          </Text>
+
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {DAY_PRESETS.map(d => (
+              <Pressable
+                key={d}
+                style={[styles.chip, days === d && styles.chipSelected]}
+                onPress={() => applyDays(d)}
+              >
+                <Text style={[styles.chipText, days === d && styles.chipTextSelected]}>{d}일</Text>
+              </Pressable>
+            ))}
+          </View>
+
+          <View style={{ gap: 12 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <View style={{ flex: 1, height: 1, backgroundColor: '#f1f5f9' }} />
+              <Text style={{ fontSize: 12, color: '#94a3b8', fontWeight: '500' }}>직접 입력</Text>
+              <View style={{ flex: 1, height: 1, backgroundColor: '#f1f5f9' }} />
             </View>
 
-            {/* 콘텐츠 */}
-            <View style={{ paddingHorizontal: 20, paddingBottom: 32, gap: 24 }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '700',
-                  color: '#0f172b',
-                  textAlign: 'center',
-                  lineHeight: 25.2,
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <TextInput
+                style={styles.customInput}
+                placeholder="기간 입력 (일)"
+                placeholderTextColor="#94a3b8"
+                keyboardType="number-pad"
+                value={customDays}
+                onChangeText={setCustomDays}
+              />
+              <Pressable
+                style={styles.applyButton}
+                onPress={() => {
+                  const d = parseInt(customDays, 10);
+                  if (d > 0) {
+                    applyDays(d);
+                  }
                 }}
               >
-                잠금 기간 선택
-              </Text>
-
-              {/* 프리셋 칩 */}
-              <View style={{ flexDirection: 'row', gap: 8 }}>
-                {DAY_PRESETS.map(d => (
-                  <Pressable
-                    key={d}
-                    style={[styles.chip, days === d && styles.chipSelected]}
-                    onPress={() => applyDays(d)}
-                  >
-                    <Text style={[styles.chipText, days === d && styles.chipTextSelected]}>
-                      {d}일
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-
-              {/* 구분선 + 직접 입력 */}
-              <View style={{ gap: 12 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                  <View style={{ flex: 1, height: 1, backgroundColor: '#f1f5f9' }} />
-                  <Text style={{ fontSize: 12, color: '#94a3b8', fontWeight: '500' }}>
-                    직접 입력
-                  </Text>
-                  <View style={{ flex: 1, height: 1, backgroundColor: '#f1f5f9' }} />
-                </View>
-
-                <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <TextInput
-                    style={styles.customInput}
-                    placeholder="기간 입력 (일)"
-                    placeholderTextColor="#94a3b8"
-                    keyboardType="number-pad"
-                    value={customDays}
-                    onChangeText={setCustomDays}
-                  />
-                  <Pressable
-                    style={styles.applyButton}
-                    onPress={() => {
-                      const d = parseInt(customDays, 10);
-                      if (d > 0) {
-                        applyDays(d);
-                      }
-                    }}
-                  >
-                    <Text style={styles.applyButtonText}>적용</Text>
-                  </Pressable>
-                </View>
-              </View>
+                <Text style={styles.applyButtonText}>적용</Text>
+              </Pressable>
             </View>
-          </Animated.View>
+          </View>
         </View>
-      )}
+      </BottomSheet>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  sheet: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-  },
   chip: {
     flex: 1,
     backgroundColor: '#f1f5f9',

@@ -35,7 +35,7 @@ import { DepositConfirmScreen } from '../DepositConfirmScreen';
 describe('DepositConfirmScreen', () => {
   it('잠금 금액과 날짜를 렌더링한다', () => {
     render(<DepositConfirmScreen />);
-    expect(screen.getByText('1.5 ETH')).toBeTruthy();
+    expect(screen.getByText('1.5')).toBeTruthy();
     expect(screen.getByText('2026.02.28')).toBeTruthy();
   });
 

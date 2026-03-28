@@ -1,4 +1,5 @@
 import { useWalletStore } from '@entities/wallet';
+import { ScreenTitle } from '@shared/ui';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -57,18 +58,7 @@ export function SettingsScreen() {
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16 }}
         showsVerticalScrollIndicator={false}
       >
-        <Text
-          style={{
-            fontSize: 22,
-            fontWeight: '700',
-            color: '#0f172b',
-            letterSpacing: -0.198,
-            lineHeight: 30.8,
-            marginBottom: 40,
-          }}
-        >
-          설정
-        </Text>
+        <ScreenTitle style={{ marginBottom: 40 }}>설정</ScreenTitle>
 
         <View style={{ gap: 40 }}>
           <View style={{ gap: 20 }}>

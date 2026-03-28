@@ -11,7 +11,7 @@ type ErrorStateViewProps = {
   icon: React.ReactNode;
   iconBg?: string;
   title: string;
-  description: string[];
+  description: readonly string[];
 };
 
 export function ErrorStateView({

@@ -2,7 +2,7 @@ import { useLockStore } from '@entities/lock';
 import { useWalletStore } from '@entities/wallet';
 import { useEthPrice, useLockInfo } from '@features/staking';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { PrimaryButton } from '@shared/ui';
+import { InfoCard, PrimaryButton } from '@shared/ui';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import Animated, {
@@ -44,21 +44,6 @@ function WalletBadge({ address }: { address: string | null }) {
       >
         {short}
       </Text>
-    </View>
-  );
-}
-
-function InfoCard({ children }: { children: React.ReactNode }) {
-  return (
-    <View
-      style={{
-        backgroundColor: '#f8fafc',
-        borderRadius: 20,
-        padding: 20,
-        width: '100%',
-      }}
-    >
-      {children}
     </View>
   );
 }
@@ -147,13 +132,14 @@ export function HomeScreen() {
   const rewardEth = parseFloat(formatEther(pendingReward));
   const isInterestLow = rewardEth > 0 && rewardEth < ESTIMATED_GAS_ETH;
 
-  const unlockDateLabel = unlockTime > 0n
-    ? new Date(Number(unlockTime) * 1000).toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : null;
+  const unlockDateLabel =
+    unlockTime > 0n
+      ? new Date(Number(unlockTime) * 1000).toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      : null;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -215,9 +201,7 @@ export function HomeScreen() {
               </Text>
             )}
           </View>
-          {isLocked && unlockTime > 0n ? (
-            <CountdownDisplay unlockTime={unlockTime} />
-          ) : null}
+          {isLocked && unlockTime > 0n ? <CountdownDisplay unlockTime={unlockTime} /> : null}
           {unlockDateLabel && isLocked ? (
             <Text
               style={{

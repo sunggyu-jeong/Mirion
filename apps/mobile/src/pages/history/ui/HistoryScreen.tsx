@@ -1,6 +1,7 @@
 import { useWalletStore } from '@entities/wallet';
 import { useInterestHistory } from '@features/staking';
 import type { InterestSnapshot } from '@features/staking/model/use-interest-history';
+import { ScreenTitle } from '@shared/ui';
 import React from 'react';
 import { SectionList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,7 +14,9 @@ function groupByMonth(snapshots: InterestSnapshot[]): Section[] {
   for (const s of snapshots) {
     const d = new Date(s.date);
     const key = `${d.getFullYear()}년 ${d.getMonth() + 1}월`;
-    if (!map.has(key)) map.set(key, []);
+    if (!map.has(key)) {
+      map.set(key, []);
+    }
     map.get(key)!.push(s);
   }
   return Array.from(map.entries()).map(([title, data]) => ({ title, data }));
@@ -61,7 +64,15 @@ function HistoryRow({ item }: { item: InterestSnapshot }) {
 function EmptyState() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
-      <Text style={{ fontSize: 16, fontWeight: '400', color: '#62748e', lineHeight: 24, textAlign: 'center' }}>
+      <Text
+        style={{
+          fontSize: 16,
+          fontWeight: '400',
+          color: '#62748e',
+          lineHeight: 24,
+          textAlign: 'center',
+        }}
+      >
         아직 이자 내역이 없습니다
       </Text>
     </View>
@@ -77,9 +88,7 @@ export function HistoryScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fcfcfc' }}>
       <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
-        <Text style={{ fontSize: 22, fontWeight: '700', color: '#0f172b', letterSpacing: -0.198, lineHeight: 30.8 }}>
-          내역
-        </Text>
+        <ScreenTitle>내역</ScreenTitle>
       </View>
       {sections.length === 0 ? (
         <EmptyState />
