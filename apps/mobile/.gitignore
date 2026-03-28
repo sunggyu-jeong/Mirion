@@ -37,3 +37,8 @@ yarn-error.*
 instruction.*
 CLAUDE.md
 .claude
+# Xcode personal state
+*.xcuserstate
+
+# iOS export settings
+ios/ExportOptions.plist
