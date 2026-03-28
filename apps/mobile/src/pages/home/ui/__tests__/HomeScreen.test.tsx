@@ -16,7 +16,9 @@ jest.mock('@entities/lock', () => ({
 
 jest.mock('@features/staking', () => ({
   useLockInfo: jest.fn(),
-  useEthPrice: jest.fn(() => ({ data: { price: '₩4,595,313', change: '▲ +2.4%', isPositive: true } })),
+  useEthPrice: jest.fn(() => ({
+    data: { price: '₩4,595,313', change: '▲ +2.4%', isPositive: true },
+  })),
 }));
 
 jest.mock('@shared/lib/navigation', () => ({

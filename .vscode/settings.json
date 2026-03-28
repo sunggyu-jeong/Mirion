@@ -1,0 +1,5 @@
+{
+  "git.ignoredRepositories": [
+    "apps/contracts/lib/forge-std"
+  ]
+}
