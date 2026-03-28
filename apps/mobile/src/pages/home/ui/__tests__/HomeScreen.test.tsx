@@ -19,6 +19,9 @@ jest.mock('@features/staking', () => ({
   useEthPrice: jest.fn(() => ({
     data: { price: '₩4,595,313', change: '▲ +2.4%', isPositive: true },
   })),
+  useEthPriceChart: jest.fn(() => ({
+    data: [3000000, 3100000, 3050000, 3200000, 3150000, 3250000, 3044376],
+  })),
 }));
 
 jest.mock('@shared/lib/navigation', () => ({

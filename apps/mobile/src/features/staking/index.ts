@@ -1,5 +1,6 @@
 export { useClaimInterest } from './model/use-claim-interest';
 export { useEthPrice } from './model/use-eth-price';
+export { useEthPriceChart } from './model/use-eth-price-chart';
 export { useDeposit } from './model/use-deposit';
 export { useDisclaimerGuard } from './model/use-disclaimer-guard';
 export { useGaslessDeposit } from './model/use-gasless-deposit';

@@ -1,8 +1,9 @@
 import { useLockStore } from '@entities/lock';
 import { useWalletStore } from '@entities/wallet';
-import { useEthPrice, useLockInfo } from '@features/staking';
+import { useEthPrice, useEthPriceChart, useLockInfo } from '@features/staking';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { InfoCard, PrimaryButton } from '@shared/ui';
+import { EthPriceChart } from './EthPriceChart';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import Animated, {
@@ -123,6 +124,7 @@ export function HomeScreen() {
 
   useLockInfo(address as Address | null);
   const { data: ethPrice } = useEthPrice();
+  const { data: chartPrices } = useEthPriceChart();
 
   const now = BigInt(Math.floor(Date.now() / 1000));
   const hasBalance = balance > 0n;
@@ -253,15 +255,9 @@ export function HomeScreen() {
               {ethPrice?.change ?? '불러오는 중...'}
             </Text>
           </View>
-          <View
-            style={{
-              height: 55,
-              marginTop: 16,
-              backgroundColor: '#fef2f2',
-              borderRadius: 8,
-              opacity: 0.5,
-            }}
-          />
+          {chartPrices && chartPrices.length >= 2 && (
+            <EthPriceChart prices={chartPrices} />
+          )}
         </InfoCard>
 
         {isUnlocked && hasBalance ? (
