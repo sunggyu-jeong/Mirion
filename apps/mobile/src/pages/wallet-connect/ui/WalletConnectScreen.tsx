@@ -2,9 +2,11 @@ import { secureKey, useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { PrimaryButton } from '@shared/ui';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, PanResponder, Pressable, Text, TextInput, View } from 'react-native';
+import { Animated, PanResponder, Pressable, Text, View } from 'react-native';
 
 import { WalletOption } from './WalletOption';
+
+const HARDCODED_ADDRESS = '0x5B8c33b2cC027Eca6c2aB8bf6b0f7Dcf832c2036';
 
 const metamaskIcon = require('../../../shared/assets/images/metamask.png');
 const coinbaseIcon = require('../../../shared/assets/images/coinbase.png');
@@ -16,8 +18,7 @@ type WalletType = 'metamask' | 'coinbase';
 
 export function WalletConnectScreen() {
   const [selected, setSelected] = useState<WalletType>('metamask');
-  const [devAddress, setDevAddress] = useState('');
-  const { goBack, toWalletConnecting, toMain } = useAppNavigation();
+  const { goBack, toMain } = useAppNavigation();
   const setSession = useWalletStore(s => s.setSession);
 
   const backdropOpacity = useRef(new Animated.Value(0)).current;
@@ -53,7 +54,13 @@ export function WalletConnectScreen() {
     ]).start(goBack);
   };
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
+    try {
+      await secureKey.store(WC_SESSION_KEY, HARDCODED_ADDRESS);
+    } catch {
+      // 시뮬레이터는 Keychain entitlement 없어서 실패 — 무시하고 진행
+    }
+    setSession(HARDCODED_ADDRESS, 'walletconnect');
     Animated.parallel([
       Animated.timing(sheetTranslateY, {
         toValue: SHEET_HEIGHT,
@@ -66,16 +73,8 @@ export function WalletConnectScreen() {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      toWalletConnecting(selected);
+      toMain();
     });
-  };
-
-  const handleDevConnect = async () => {
-    const addr = devAddress.trim();
-    if (!addr) return;
-    await secureKey.store(WC_SESSION_KEY, addr);
-    setSession(addr, 'walletconnect');
-    toMain();
   };
 
   const panResponder = useRef(
@@ -149,27 +148,6 @@ export function WalletConnectScreen() {
             <Text className="underline">개인정보 처리 방침</Text>
             {'에 동의하게 됩니다'}
           </Text>
-          {__DEV__ && (
-            <View className="w-full mt-2 gap-y-2">
-              <View className="h-[1px] bg-[#f1f5f9]" />
-              <Text className="text-[11px] text-[#94a3b8] text-center">개발용 주소 직접 입력</Text>
-              <TextInput
-                className="w-full h-[44px] px-3 rounded-xl border border-[#e2e8f0] text-[13px] text-[#0f172b]"
-                placeholder="0x..."
-                placeholderTextColor="#94a3b8"
-                autoCapitalize="none"
-                autoCorrect={false}
-                value={devAddress}
-                onChangeText={setDevAddress}
-              />
-              <PrimaryButton
-                label="개발용 연결"
-                height={40}
-                variant="secondary"
-                onPress={handleDevConnect}
-              />
-            </View>
-          )}
         </View>
       </Animated.View>
     </View>

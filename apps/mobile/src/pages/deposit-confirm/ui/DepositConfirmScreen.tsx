@@ -1,11 +1,15 @@
+import { useWalletStore } from '@entities/wallet';
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import { useAppNavigation } from '@shared/lib/navigation';
+import { publicClient } from '@shared/lib/web3/client';
 import { DisclaimerBox, PrimaryButton } from '@shared/ui';
 import { X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { Address } from 'viem';
+import { parseEther } from 'viem';
 
 type DepositConfirmParams = { amountEth: string; unlockDate: string };
 
@@ -88,12 +92,24 @@ function SummaryCard({ amountEth, unlockDate }: { amountEth: string; unlockDate:
 export function DepositConfirmScreen() {
   const route = useRoute<RouteProp<{ DepositConfirm: DepositConfirmParams }, 'DepositConfirm'>>();
   const { amountEth, unlockDate } = route.params;
-  const { goBack, toTransactionProgress } = useAppNavigation();
+  const { goBack, toTransactionProgress, toError } = useAppNavigation();
+  const address = useWalletStore(s => s.address);
   const [isAgreed, setIsAgreed] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
 
-  const handleLock = () => {
-    if (!isAgreed) {
-      return;
+  const handleLock = async () => {
+    if (!isAgreed) return;
+    setIsChecking(true);
+    try {
+      const balance = await publicClient.getBalance({ address: address as Address });
+      if (balance < parseEther(amountEth)) {
+        toError({ errorType: 'balance' });
+        return;
+      }
+    } catch {
+      // 잔액 조회 실패 시 통과 — 트랜잭션 단계에서 처리
+    } finally {
+      setIsChecking(false);
     }
     const unlockTimestamp = BigInt(Math.floor(new Date(unlockDate).getTime() / 1000));
     toTransactionProgress({
@@ -195,9 +211,9 @@ export function DepositConfirmScreen() {
         </Pressable>
 
         <PrimaryButton
-          label="지갑 잠그기"
+          label={isChecking ? '확인 중...' : '지갑 잠그기'}
           onPress={handleLock}
-          variant={isAgreed ? 'primary' : 'secondary'}
+          variant={isAgreed && !isChecking ? 'primary' : 'secondary'}
         />
       </View>
     </SafeAreaView>

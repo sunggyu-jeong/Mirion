@@ -14,7 +14,20 @@ jest.mock('@shared/lib/navigation', () => ({
   useAppNavigation: () => ({
     goBack: jest.fn(),
     toTransactionProgress: jest.fn(),
+    toError: jest.fn(),
   }),
+}));
+
+jest.mock('@entities/wallet', () => ({
+  useWalletStore: jest.fn((selector: (s: { address: string }) => unknown) =>
+    selector({ address: '0xTestAddress' }),
+  ),
+}));
+
+jest.mock('@shared/lib/web3/client', () => ({
+  publicClient: {
+    getBalance: jest.fn().mockResolvedValue(BigInt('2000000000000000000')), // 2 ETH
+  },
 }));
 
 import { DepositConfirmScreen } from '../DepositConfirmScreen';

@@ -1,6 +1,6 @@
 import { useLockStore } from '@entities/lock';
 import { useWalletStore } from '@entities/wallet';
-import { useLockInfo } from '@features/staking';
+import { useEthPrice, useLockInfo } from '@features/staking';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { PrimaryButton } from '@shared/ui';
 import React, { useEffect, useRef, useState } from 'react';
@@ -15,8 +15,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Address } from 'viem';
 import { formatEther } from 'viem';
 
-const MOCK_ETH_PRICE = '₩4,595,313';
-const MOCK_ETH_CHANGE = '▲ +2.4%';
 const ESTIMATED_GAS_ETH = 0.0005;
 
 function WalletBadge({ address }: { address: string | null }) {
@@ -139,6 +137,7 @@ export function HomeScreen() {
   const { toDepositSetup, toSettlementReceipt } = useAppNavigation();
 
   useLockInfo(address as Address | null);
+  const { data: ethPrice } = useEthPrice();
 
   const now = BigInt(Math.floor(Date.now() / 1000));
   const hasBalance = balance > 0n;
@@ -256,18 +255,18 @@ export function HomeScreen() {
                 lineHeight: 33.6,
               }}
             >
-              {MOCK_ETH_PRICE}
+              {ethPrice?.price ?? '---'}
             </Text>
             <Text
               style={{
                 fontSize: 14,
                 fontWeight: '500',
-                color: '#fb2c36',
+                color: ethPrice ? (ethPrice.isPositive ? '#22c55e' : '#fb2c36') : '#62748e',
                 letterSpacing: -0.028,
                 lineHeight: 21,
               }}
             >
-              {MOCK_ETH_CHANGE}
+              {ethPrice?.change ?? '불러오는 중...'}
             </Text>
           </View>
           <View
