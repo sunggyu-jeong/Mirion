@@ -1,19 +1,11 @@
-jest.mock('react-native-nitro-modules', () => ({
-  NitroModules: { createHybridObject: jest.fn().mockReturnValue({}) },
-}));
-
 jest.mock('@shared/lib/storage', () => ({
   storage: { getString: jest.fn(), set: jest.fn(), remove: jest.fn() },
 }));
 
 jest.mock('@entities/wallet', () => ({
-  secureKey: {
-    has: jest.fn().mockReturnValue(false),
-    retrieveData: jest.fn().mockResolvedValue(null),
-  },
-  useWalletStore: jest.fn((selector: CallableFunction) =>
-    selector({ setSession: jest.fn() }),
-  ),
+  useWalletStore: jest.fn((selector: CallableFunction) => selector({ setSession: jest.fn() })),
+  WC_SESSION_KEY: 'wc-session-key',
+  CB_SESSION_KEY: 'cb-session-key',
 }));
 
 jest.mock('@features/wallet-connect', () => ({
@@ -38,18 +30,18 @@ jest.mock('@react-navigation/bottom-tabs', () => ({
 
 jest.mock('react-native-reanimated', () => ({
   __esModule: true,
-  default: { View: require('react-native').View, createAnimatedComponent: (c: any) => c },
-  useSharedValue: (v: any) => ({ value: v }),
-  useAnimatedStyle: (fn: any) => fn(),
-  withTiming: (v: any) => v,
-  withRepeat: (v: any) => v,
-  withSpring: (v: any) => v,
-  Easing: { linear: (t: any) => t },
+  default: { View: require('react-native').View, createAnimatedComponent: (c: unknown) => c },
+  useSharedValue: (v: unknown) => ({ value: v }),
+  useAnimatedStyle: (fn: () => unknown) => fn(),
+  withTiming: (v: unknown) => v,
+  withRepeat: (v: unknown) => v,
+  withSpring: (v: unknown) => v,
+  Easing: { linear: (t: unknown) => t },
 }));
 
 jest.mock('react-native-safe-area-context', () => ({
   SafeAreaView: require('react-native').View,
-  SafeAreaProvider: ({ children }: any) => children,
+  SafeAreaProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 import { createStaticNavigation } from '@react-navigation/native';

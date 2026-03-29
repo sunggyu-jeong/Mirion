@@ -1,12 +1,13 @@
+import { useLidoStore } from '@entities/lido';
 import { useWalletStore } from '@entities/wallet';
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
-import { formatDate, formatFullDate } from '@shared/lib/date';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { publicClient } from '@shared/lib/web3/client';
 import { DisclaimerBox, PrimaryButton, ReceiptRow, ScreenHeader, ScreenTitle } from '@shared/ui';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Address } from 'viem';
 import { parseEther } from 'viem';
@@ -15,13 +16,14 @@ type DepositConfirmParams = { amountEth: string; unlockDate: string };
 
 export function DepositConfirmScreen() {
   const route = useRoute<RouteProp<{ DepositConfirm: DepositConfirmParams }, 'DepositConfirm'>>();
-  const { amountEth, unlockDate } = route.params;
+  const { amountEth } = route.params;
   const { goBack, toTransactionProgress, toError } = useAppNavigation();
   const address = useWalletStore(s => s.address);
+  const { estimatedApy } = useLidoStore();
   const [isAgreed, setIsAgreed] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
 
-  const handleLock = async () => {
+  const handleStake = async () => {
     if (!isAgreed) {
       return;
     }
@@ -33,15 +35,14 @@ export function DepositConfirmScreen() {
         return;
       }
     } catch {
-      // 잔액 조회 실패 시 통과 — 트랜잭션 단계에서 처리
+      // 잔액 조회 실패 시 통과
     } finally {
       setIsChecking(false);
     }
-    const unlockTimestamp = BigInt(Math.floor(new Date(unlockDate).getTime() / 1000));
     toTransactionProgress({
       amountEth,
-      unlockTimestamp: unlockTimestamp.toString(),
-      unlockDateLabel: formatFullDate(new Date(unlockDate)),
+      unlockTimestamp: '0',
+      unlockDateLabel: '',
     });
   };
 
@@ -54,33 +55,36 @@ export function DepositConfirmScreen() {
         contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}
         showsVerticalScrollIndicator={false}
       >
-        <ScreenTitle style={{ marginBottom: 12 }}>잠그기 전 마지막으로 확인해주세요</ScreenTitle>
+        <ScreenTitle style={{ marginBottom: 12 }}>스테이킹 전 마지막으로 확인해주세요</ScreenTitle>
 
-        <View
-          style={{
-            backgroundColor: '#f1f5f9',
-            borderRadius: 12,
-            padding: 16,
-            gap: 6,
-          }}
+        <Animated.View
+          entering={FadeInDown.delay(50).springify()}
+          style={{ backgroundColor: '#f1f5f9', borderRadius: 12, padding: 16, gap: 6 }}
         >
           <ReceiptRow
-            label="잠금 금액"
+            label="스테이킹 금액"
             amount={amountEth}
             unit="ETH"
           />
           <ReceiptRow
-            label="잠긴 일시"
-            amount={formatDate(new Date(unlockDate))}
+            label="예상 연수익 (APY)"
+            amount={estimatedApy > 0 ? `${estimatedApy.toFixed(1)}%` : '-'}
             unit=""
           />
-        </View>
+          <ReceiptRow
+            label="수령 토큰"
+            amount="stETH (Lido)"
+            unit=""
+          />
+        </Animated.View>
 
-        <DisclaimerBox
-          title="원금 차감 가능성 안내"
-          body="가스비 대납 혜택을 드리고 있으나,발생한 이자보다 대납 가스비가 많으면 부족한 만큼 원금에서 정산됩니다."
-          highlightedText="부족한 만큼 원금에서 정산"
-        />
+        <Animated.View entering={FadeInDown.delay(120).springify()}>
+          <DisclaimerBox
+            title="비수탁형 서비스 안내"
+            body="LockFi는 귀하의 자산을 직접 보관하지 않습니다. ETH는 Lido 스마트 컨트랙트에 직접 예치되며, 예상 수익률은 과거 데이터 기반의 예상치로 실제 수익을 보장하지 않습니다."
+            highlightedText="실제 수익을 보장하지 않습니다"
+          />
+        </Animated.View>
       </ScrollView>
 
       <View style={{ paddingHorizontal: 20, paddingBottom: 20, gap: 16 }}>
@@ -100,16 +104,9 @@ export function DepositConfirmScreen() {
               justifyContent: 'center',
             }}
           >
-            {isAgreed ? (
-              <View
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: 'white',
-                }}
-              />
-            ) : null}
+            {isAgreed && (
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: 'white' }} />
+            )}
           </View>
           <Text
             style={{
@@ -120,13 +117,13 @@ export function DepositConfirmScreen() {
               lineHeight: 21,
             }}
           >
-            위 위험 요소를 확인했으며, 동의 합니다.
+            위 내용을 확인했으며, 동의합니다.
           </Text>
         </Pressable>
 
         <PrimaryButton
-          label={isChecking ? '확인 중...' : '지갑 잠그기'}
-          onPress={handleLock}
+          label={isChecking ? '확인 중...' : 'ETH 스테이킹하기'}
+          onPress={handleStake}
           variant={isAgreed && !isChecking ? 'primary' : 'secondary'}
         />
       </View>

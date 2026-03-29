@@ -1,28 +1,36 @@
-import { CB_SESSION_KEY, secureKey, useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
+import { CB_SESSION_KEY, useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
+import { LEGAL_ACCEPTED_KEY } from '@pages/legal';
 import { useAppNavigation } from '@shared/lib/navigation';
+import { storage } from '@shared/lib/storage';
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 
 export function SplashScreen() {
-  const { toOnboarding, toMain } = useAppNavigation();
+  const { toOnboarding, toMain, toLegal } = useAppNavigation();
   const setSession = useWalletStore(s => s.setSession);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
-    const init = async () => {
-      const hasWC = secureKey.has(WC_SESSION_KEY);
-      const hasCB = secureKey.has(CB_SESSION_KEY);
+    const init = () => {
+      const wcAddress = storage.getString(WC_SESSION_KEY);
+      const cbAddress = storage.getString(CB_SESSION_KEY);
 
-      if (hasWC || hasCB) {
-        const keyId = hasWC ? WC_SESSION_KEY : CB_SESSION_KEY;
-        const walletType = hasWC ? 'walletconnect' : 'coinbase';
-        const address = await secureKey.retrieveData(keyId);
-        if (address) {
-          setSession(address, walletType);
-          toMain();
-          return;
-        }
+      if (wcAddress) {
+        setSession(wcAddress, 'walletconnect');
+        toMain();
+        return;
+      }
+      if (cbAddress) {
+        setSession(cbAddress, 'coinbase');
+        toMain();
+        return;
+      }
+
+      const legalAccepted = storage.getString(LEGAL_ACCEPTED_KEY);
+      if (!legalAccepted) {
+        timer = setTimeout(toLegal, 2000);
+        return;
       }
 
       timer = setTimeout(toOnboarding, 2000);

@@ -5,7 +5,6 @@ export { ErrorScreen } from './error';
 export { HistoryScreen } from './history';
 export { HomeScreen } from './home';
 export { OnboardingScreen } from './onboarding';
-export { SettlementReceiptModal } from './settlement-receipt';
 export { SettingsScreen } from './settings';
 export { SplashScreen } from './splash';
 export { TransactionProgressScreen } from './transaction-progress';

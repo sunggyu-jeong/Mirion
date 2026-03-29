@@ -1,3 +1,3 @@
-export { useClaimInterest, useDeposit, useLockInfo, usePendingTx, useWithdraw } from './staking';
-export { useSignTransaction } from './transaction-sign';
+export { useLidoInfo, useLidoSubmit, useLidoWithdraw } from './lido';
+export { useEthPrice, useEthPriceChart } from './staking';
 export { useCoinbaseWallet, useWalletConnect } from './wallet-connect';

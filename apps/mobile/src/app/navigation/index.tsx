@@ -1,19 +1,19 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DepositConfirmScreen } from '@pages/deposit-confirm';
 import { DepositSetupScreen } from '@pages/deposit-setup';
 import { DepositSuccessScreen } from '@pages/deposit-success';
 import { ErrorScreen } from '@pages/error';
 import { HistoryScreen } from '@pages/history';
 import { HomeScreen } from '@pages/home';
+import { LegalScreen } from '@pages/legal';
 import { OnboardingScreen } from '@pages/onboarding';
-import { SettlementReceiptModal } from '@pages/settlement-receipt';
 import { SettingsScreen } from '@pages/settings';
 import { SplashScreen } from '@pages/splash';
 import { TransactionProgressScreen } from '@pages/transaction-progress';
 import { WalletConnectScreen } from '@pages/wallet-connect';
 import { WalletConnectingScreen } from '@pages/wallet-connecting';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BottomTabBar } from '@shared/ui';
 import React from 'react';
 
@@ -36,6 +36,10 @@ const RootStack = createNativeStackNavigator({
   screens: {
     Splash: {
       screen: SplashScreen,
+    },
+    Legal: {
+      screen: LegalScreen,
+      options: { animation: 'fade' },
     },
     Onboarding: {
       screen: OnboardingScreen,
@@ -66,10 +70,6 @@ const RootStack = createNativeStackNavigator({
     DepositSuccess: {
       screen: DepositSuccessScreen,
       options: { animation: 'fade', gestureEnabled: false },
-    },
-    SettlementReceipt: {
-      screen: SettlementReceiptModal,
-      options: { presentation: 'transparentModal', animation: 'none' },
     },
     Error: {
       screen: ErrorScreen,

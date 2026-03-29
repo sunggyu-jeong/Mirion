@@ -1,5 +1,7 @@
 import { useWalletStore } from '@entities/wallet';
-import { ScreenTitle } from '@shared/ui';
+import { useCoinbaseWallet, useWalletConnect } from '@features/wallet-connect';
+import { useAppNavigation } from '@shared/lib/navigation';
+import { PrimaryButton, ScreenTitle } from '@shared/ui';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -50,6 +52,19 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 export function SettingsScreen() {
   const address = useWalletStore(s => s.address);
+  const walletType = useWalletStore(s => s.walletType);
+  const { disconnectWallet: disconnectMetaMask } = useWalletConnect();
+  const { disconnectWallet: disconnectCoinbase } = useCoinbaseWallet();
+  const { toOnboarding } = useAppNavigation();
+
+  const handleDisconnect = () => {
+    if (walletType === 'walletconnect') {
+      disconnectMetaMask();
+    } else {
+      disconnectCoinbase();
+    }
+    toOnboarding();
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fcfcfc' }}>
@@ -68,6 +83,7 @@ export function SettingsScreen() {
                 backgroundColor: '#f1f5f9',
                 borderRadius: 12,
                 padding: 16,
+                gap: 12,
               }}
             >
               <Text
@@ -77,7 +93,6 @@ export function SettingsScreen() {
                   color: '#62748e',
                   letterSpacing: -0.028,
                   lineHeight: 21,
-                  marginBottom: 8,
                 }}
               >
                 연결된 주소
@@ -94,6 +109,13 @@ export function SettingsScreen() {
                 {address ?? '-'}
               </Text>
             </View>
+            {address && (
+              <PrimaryButton
+                label="지갑 연결 해제"
+                variant="secondary"
+                onPress={handleDisconnect}
+              />
+            )}
           </View>
 
           <View style={{ gap: 20 }}>
@@ -112,7 +134,7 @@ export function SettingsScreen() {
               />
               <InfoRow
                 label="네트워크"
-                value="Base Mainnet"
+                value="Ethereum Mainnet (Lido)"
               />
             </View>
           </View>

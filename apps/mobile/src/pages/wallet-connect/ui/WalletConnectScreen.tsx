@@ -1,13 +1,12 @@
-import { secureKey, useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
+import { useWalletConnect } from '@features/wallet-connect';
+import { useCoinbaseWallet } from '@features/wallet-connect';
 import { useAppNavigation } from '@shared/lib/navigation';
 import type { BottomSheetRef } from '@shared/ui';
 import { BottomSheet, PrimaryButton } from '@shared/ui';
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 import { WalletOption } from './WalletOption';
-
-const HARDCODED_ADDRESS = '0x5B8c33b2cC027Eca6c2aB8bf6b0f7Dcf832c2036';
 
 const metamaskIcon = require('../../../shared/assets/images/metamask.png');
 const coinbaseIcon = require('../../../shared/assets/images/coinbase.png');
@@ -20,8 +19,11 @@ type WalletType = 'metamask' | 'coinbase';
 export function WalletConnectScreen() {
   const [selected, setSelected] = useState<WalletType>('metamask');
   const { goBack, toMain } = useAppNavigation();
-  const setSession = useWalletStore(s => s.setSession);
   const sheetRef = useRef<BottomSheetRef>(null);
+
+  const { connectWallet: connectMetaMask, isPending: mmPending } = useWalletConnect();
+  const { connectWallet: connectCoinbase, isPending: cbPending } = useCoinbaseWallet();
+  const isPending = mmPending || cbPending;
 
   useEffect(() => {
     sheetRef.current?.open();
@@ -29,12 +31,15 @@ export function WalletConnectScreen() {
 
   const handleConnect = async () => {
     try {
-      await secureKey.store(WC_SESSION_KEY, HARDCODED_ADDRESS);
+      if (selected === 'metamask') {
+        await connectMetaMask();
+      } else {
+        await connectCoinbase();
+      }
+      sheetRef.current?.close(toMain);
     } catch {
-      // 시뮬레이터는 Keychain entitlement 없어서 실패 — 무시하고 진행
+      // 사용자 취소 또는 연결 실패 — 시트 유지
     }
-    setSession(HARDCODED_ADDRESS, 'walletconnect');
-    sheetRef.current?.close(toMain);
   };
 
   return (
@@ -75,10 +80,16 @@ export function WalletConnectScreen() {
               />
             </View>
             <PrimaryButton
-              label="연결하기"
+              label={isPending ? '' : '연결하기'}
               height={44}
               onPress={handleConnect}
             />
+            {isPending && (
+              <ActivityIndicator
+                style={{ position: 'absolute', bottom: 22 }}
+                color="#ffffff"
+              />
+            )}
           </View>
           <Text style={{ fontSize: 12, color: '#62748e', textAlign: 'center', lineHeight: 18 }}>
             {'로그인 시 이용약관과 '}

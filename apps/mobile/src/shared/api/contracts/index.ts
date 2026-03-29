@@ -1,2 +1,2 @@
-export { timeLockAbi } from './timeLock.abi';
-export { CHAIN, TIMELOCK_ADDRESS, timeLockContract } from './timeLock.config';
+export { lidoAbi } from './lido.abi';
+export { CHAIN, LIDO_ADDRESS, LIDO_REFERRAL_ADDRESS, lidoContract } from './lido.config';

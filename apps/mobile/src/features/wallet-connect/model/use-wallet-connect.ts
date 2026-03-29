@@ -1,5 +1,7 @@
-import { secureKey, useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
+import { useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
 import MetaMaskSDK from '@metamask/sdk';
+import { storage } from '@shared/lib/storage';
+import { toast } from '@shared/lib/toast';
 import { useEffect, useRef, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 
@@ -10,7 +12,6 @@ export function useWalletConnect() {
   const isConnected = useWalletStore(s => s.isConnected);
   const setSession = useWalletStore(s => s.setSession);
   const clearSession = useWalletStore(s => s.clearSession);
-  const syncSession = useWalletStore(s => s.syncSession);
   const sdkRef = useRef(
     new MetaMaskSDK({ dappMetadata: { name: 'LockFi', url: 'https://lockfi.app' } }),
   );
@@ -18,11 +19,14 @@ export function useWalletConnect() {
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
-        syncSession(WC_SESSION_KEY);
+        const saved = storage.getString(WC_SESSION_KEY);
+        if (!saved) {
+          clearSession();
+        }
       }
     });
     return () => sub.remove();
-  }, [syncSession]);
+  }, [clearSession]);
 
   const connectWallet = async () => {
     setIsPending(true);
@@ -34,7 +38,13 @@ export function useWalletConnect() {
       }
       const accounts = (await ethereum.request({ method: 'eth_requestAccounts' })) as string[];
       const account = accounts[0];
-      await secureKey.store(WC_SESSION_KEY, account);
+
+      const chainId = (await ethereum.request({ method: 'eth_chainId' })) as string;
+      if (parseInt(chainId, 16) !== 1) {
+        toast.error('이더리움 메인넷에 연결해주세요 (현재 네트워크가 다릅니다)');
+      }
+
+      storage.set(WC_SESSION_KEY, account);
       setSession(account, 'walletconnect');
       return account;
     } catch (e) {
@@ -47,7 +57,7 @@ export function useWalletConnect() {
 
   const disconnectWallet = () => {
     sdkRef.current.disconnect();
-    secureKey.delete(WC_SESSION_KEY);
+    storage.remove(WC_SESSION_KEY);
     clearSession();
   };
 

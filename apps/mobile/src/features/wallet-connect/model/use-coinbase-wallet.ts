@@ -1,10 +1,11 @@
-import { CB_SESSION_KEY, secureKey, useWalletStore } from '@entities/wallet';
+import { CB_SESSION_KEY, useWalletStore } from '@entities/wallet';
+import { storage } from '@shared/lib/storage';
 import SignClient from '@walletconnect/sign-client';
 import { useState } from 'react';
 import { Linking } from 'react-native';
 
 const PROJECT_ID = 'b6a245dd890f6d3f0528ffc01efa78aa';
-const CHAIN_CAIP = 'eip155:8453'; // Base Mainnet
+const CHAIN_CAIP = 'eip155:8453';
 
 let clientPromise: Promise<InstanceType<typeof SignClient>> | null = null;
 
@@ -51,9 +52,11 @@ export function useCoinbaseWallet() {
       const accounts = session.namespaces.eip155?.accounts ?? [];
       const address = accounts[0]?.split(':')[2];
 
-      if (!address) throw new Error('Coinbase 연결 실패: 계정을 가져올 수 없습니다');
+      if (!address) {
+        throw new Error('Coinbase 연결 실패: 계정을 가져올 수 없습니다');
+      }
 
-      await secureKey.store(CB_SESSION_KEY, address);
+      storage.set(CB_SESSION_KEY, address);
       setSession(address, 'coinbase');
       return address;
     } finally {
@@ -76,7 +79,7 @@ export function useCoinbaseWallet() {
     } catch {
       // 세션이 없거나 이미 끊긴 경우 무시
     }
-    secureKey.delete(CB_SESSION_KEY);
+    storage.remove(CB_SESSION_KEY);
     clearSession();
   };
 

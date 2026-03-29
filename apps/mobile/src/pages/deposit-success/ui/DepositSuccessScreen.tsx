@@ -17,8 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 type DepositSuccessParams = { unlockDateLabel: string };
 
 export function DepositSuccessScreen() {
-  const route = useRoute<RouteProp<{ DepositSuccess: DepositSuccessParams }, 'DepositSuccess'>>();
-  const { unlockDateLabel } = route.params;
+  useRoute<RouteProp<{ DepositSuccess: DepositSuccessParams }, 'DepositSuccess'>>();
   const { toMain } = useAppNavigation();
 
   const iconScale = useSharedValue(0);
@@ -68,7 +67,7 @@ export function DepositSuccessScreen() {
                 textAlign: 'center',
               }}
             >
-              예치가 완료되었습니다!
+              스테이킹이 완료되었습니다!
             </Text>
             <Text
               style={{
@@ -80,7 +79,7 @@ export function DepositSuccessScreen() {
                 textAlign: 'center',
               }}
             >
-              만기일 : {unlockDateLabel}
+              stETH가 지갑에 입금되었습니다. Lido를 통해 자동으로 이자가 쌓입니다.
             </Text>
           </Animated.View>
         </View>

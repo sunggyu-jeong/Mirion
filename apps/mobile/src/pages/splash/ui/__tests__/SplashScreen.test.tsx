@@ -1,12 +1,12 @@
-jest.mock('react-native-nitro-modules', () => ({
-  NitroModules: { createHybridObject: jest.fn().mockReturnValue({}) },
+jest.mock('react-native-mmkv', () => ({
+  createMMKV: jest.fn(() => ({
+    getString: jest.fn(),
+    set: jest.fn(),
+    delete: jest.fn(),
+  })),
 }));
 
 jest.mock('@entities/wallet', () => ({
-  secureKey: {
-    has: jest.fn(),
-    retrieveData: jest.fn(),
-  },
   useWalletStore: jest.fn(),
   WC_SESSION_KEY: 'wc-session-key',
   CB_SESSION_KEY: 'cb-session-key',
@@ -16,8 +16,21 @@ jest.mock('@shared/lib/navigation', () => ({
   useAppNavigation: jest.fn(),
 }));
 
-import { secureKey, useWalletStore } from '@entities/wallet';
+jest.mock('@shared/lib/storage', () => ({
+  storage: {
+    getString: jest.fn(),
+    set: jest.fn(),
+    delete: jest.fn(),
+  },
+}));
+
+jest.mock('@pages/legal', () => ({
+  LEGAL_ACCEPTED_KEY: 'legal-accepted',
+}));
+
+import { useWalletStore } from '@entities/wallet';
 import { useAppNavigation } from '@shared/lib/navigation';
+import { storage } from '@shared/lib/storage';
 import { act, render, screen, waitFor } from '@testing-library/react-native';
 import React from 'react';
 
@@ -25,6 +38,7 @@ import { SplashScreen } from '../SplashScreen';
 
 const mockToOnboarding = jest.fn();
 const mockToMain = jest.fn();
+const mockToLegal = jest.fn();
 const mockSetSession = jest.fn();
 
 beforeEach(() => {
@@ -33,6 +47,7 @@ beforeEach(() => {
   jest.mocked(useAppNavigation).mockReturnValue({
     toOnboarding: mockToOnboarding,
     toMain: mockToMain,
+    toLegal: mockToLegal,
   } as never);
   jest
     .mocked(useWalletStore)
@@ -46,13 +61,28 @@ afterEach(() => {
 
 describe('SplashScreen', () => {
   it('"LockFi" 텍스트를 렌더링한다', () => {
-    jest.mocked(secureKey.has).mockReturnValue(false);
+    jest.mocked(storage.getString).mockReturnValue(undefined);
     render(<SplashScreen />);
     expect(screen.getByText('LockFi')).toBeTruthy();
   });
 
-  it('세션 없을 때 2초 후 toOnboarding을 호출한다', async () => {
-    jest.mocked(secureKey.has).mockReturnValue(false);
+  it('세션 없고 법적 고지 미동의 시 2초 후 toLegal을 호출한다', async () => {
+    jest.mocked(storage.getString).mockReturnValue(undefined);
+    render(<SplashScreen />);
+
+    await act(async () => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    expect(mockToLegal).toHaveBeenCalledTimes(1);
+    expect(mockToOnboarding).not.toHaveBeenCalled();
+    expect(mockToMain).not.toHaveBeenCalled();
+  });
+
+  it('세션 없고 법적 고지 동의 시 2초 후 toOnboarding을 호출한다', async () => {
+    jest
+      .mocked(storage.getString)
+      .mockImplementation(key => (key === 'legal-accepted' ? '1' : undefined));
     render(<SplashScreen />);
 
     await act(async () => {
@@ -60,12 +90,14 @@ describe('SplashScreen', () => {
     });
 
     expect(mockToOnboarding).toHaveBeenCalledTimes(1);
+    expect(mockToLegal).not.toHaveBeenCalled();
     expect(mockToMain).not.toHaveBeenCalled();
   });
 
-  it('wc-session-key가 있으면 주소 복원 후 toStaking을 호출한다', async () => {
-    jest.mocked(secureKey.has).mockImplementation(key => key === 'wc-session-key');
-    jest.mocked(secureKey.retrieveData).mockResolvedValue('0xUserAddress');
+  it('wc-session-key가 있으면 주소 복원 후 toMain을 호출한다', async () => {
+    jest
+      .mocked(storage.getString)
+      .mockImplementation(key => (key === 'wc-session-key' ? '0xUserAddress' : undefined));
 
     render(<SplashScreen />);
 
@@ -76,9 +108,10 @@ describe('SplashScreen', () => {
     expect(mockToOnboarding).not.toHaveBeenCalled();
   });
 
-  it('cb-session-key가 있으면 coinbase 세션으로 toStaking을 호출한다', async () => {
-    jest.mocked(secureKey.has).mockImplementation(key => key === 'cb-session-key');
-    jest.mocked(secureKey.retrieveData).mockResolvedValue('0xCoinbaseAddress');
+  it('cb-session-key가 있으면 coinbase 세션으로 toMain을 호출한다', async () => {
+    jest
+      .mocked(storage.getString)
+      .mockImplementation(key => (key === 'cb-session-key' ? '0xCoinbaseAddress' : undefined));
 
     render(<SplashScreen />);
 
@@ -86,23 +119,5 @@ describe('SplashScreen', () => {
       expect(mockSetSession).toHaveBeenCalledWith('0xCoinbaseAddress', 'coinbase');
       expect(mockToMain).toHaveBeenCalled();
     });
-  });
-
-  it('키가 있지만 데이터가 null이면 toOnboarding을 호출한다', async () => {
-    jest.mocked(secureKey.has).mockImplementation(key => key === 'wc-session-key');
-    jest.mocked(secureKey.retrieveData).mockResolvedValue(null);
-
-    render(<SplashScreen />);
-
-    // retrieveData Promise가 resolve될 때까지 마이크로태스크를 플러시
-    await act(async () => {});
-
-    // setTimeout 2000ms 경과
-    await act(async () => {
-      jest.advanceTimersByTime(2000);
-    });
-
-    expect(mockToMain).not.toHaveBeenCalled();
-    expect(mockToOnboarding).toHaveBeenCalled();
   });
 });

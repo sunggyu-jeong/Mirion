@@ -1,12 +1,12 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
-import { Animated, PanResponder, Pressable, StyleSheet, View } from 'react-native';
+import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import { PanResponder, Pressable, StyleSheet, View } from 'react-native';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 export type BottomSheetRef = {
   open: () => void;
@@ -16,7 +16,6 @@ export type BottomSheetRef = {
 type Props = {
   height: number;
   dismissThreshold?: number;
-  translateYOffset?: Animated.Value;
   onDismiss?: () => void;
   bottomInset?: number;
   horizontalInset?: number;
@@ -25,113 +24,80 @@ type Props = {
 
 export const BottomSheet = forwardRef<BottomSheetRef, Props>(
   (
-    {
-      height,
-      dismissThreshold = 80,
-      translateYOffset,
-      onDismiss,
-      bottomInset = 0,
-      horizontalInset = 0,
-      children,
-    },
+    { height, dismissThreshold = 100, onDismiss, bottomInset = 0, horizontalInset = 0, children },
     ref,
   ) => {
     const [mounted, setMounted] = useState(false);
-    const pendingOpen = useRef(false);
-    const backdropOpacity = useRef(new Animated.Value(0)).current;
-    const sheetTranslateY = useRef(new Animated.Value(height)).current;
-
-    const closeSheet = useCallback(
-      (callback?: () => void) => {
-        Animated.parallel([
-          Animated.timing(sheetTranslateY, {
-            toValue: height,
-            duration: 220,
-            useNativeDriver: true,
-          }),
-          Animated.timing(backdropOpacity, {
-            toValue: 0,
-            duration: 220,
-            useNativeDriver: true,
-          }),
-        ]).start(() => {
-          setMounted(false);
-          sheetTranslateY.setValue(height);
-          backdropOpacity.setValue(0);
-          callback?.();
-        });
-      },
-      [height, sheetTranslateY, backdropOpacity],
-    );
-
-    const closeSheetRef = useRef(closeSheet);
-    closeSheetRef.current = closeSheet;
-
+    const translateY = useSharedValue(height);
+    const backdropOpacity = useSharedValue(0);
     const onDismissRef = useRef(onDismiss);
     onDismissRef.current = onDismiss;
+
+    const dismiss = useCallback(
+      (callback?: () => void) => {
+        translateY.value = withTiming(height, { duration: 250 });
+        backdropOpacity.value = withTiming(0, { duration: 200 }, finished => {
+          if (finished) {
+            runOnJS(setMounted)(false);
+            if (callback) {
+              runOnJS(callback)();
+            }
+            if (onDismissRef.current) {
+              runOnJS(onDismissRef.current)();
+            }
+          }
+        });
+      },
+      [height, translateY, backdropOpacity],
+    );
+
+    const dismissRef = useRef(dismiss);
+    dismissRef.current = dismiss;
 
     useImperativeHandle(
       ref,
       () => ({
         open: () => {
-          pendingOpen.current = true;
           setMounted(true);
+          translateY.value = height;
+          backdropOpacity.value = 0;
+          backdropOpacity.value = withTiming(1, { duration: 280 });
+          translateY.value = withSpring(0, { damping: 22, stiffness: 240, mass: 0.8 });
         },
-        close: (callback?) => closeSheetRef.current(callback),
+        close: (callback?) => dismissRef.current(callback),
       }),
-      [],
+      [height, translateY, backdropOpacity],
     );
-
-    useEffect(() => {
-      if (mounted && pendingOpen.current) {
-        pendingOpen.current = false;
-        backdropOpacity.setValue(0);
-        sheetTranslateY.setValue(height);
-        Animated.timing(backdropOpacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }).start(() => {
-          Animated.spring(sheetTranslateY, {
-            toValue: 0,
-            tension: 65,
-            friction: 11,
-            useNativeDriver: true,
-          }).start();
-        });
-      }
-    }, [mounted, backdropOpacity, sheetTranslateY, height]);
 
     const panResponder = useRef(
       PanResponder.create({
         onMoveShouldSetPanResponder: (_, { dy }) => dy > 8,
         onPanResponderMove: (_, { dy }) => {
           if (dy > 0) {
-            sheetTranslateY.setValue(dy);
+            translateY.value = dy;
           }
         },
         onPanResponderRelease: (_, { dy }) => {
           if (dy > dismissThreshold) {
-            closeSheetRef.current(() => onDismissRef.current?.());
+            dismissRef.current();
           } else {
-            Animated.spring(sheetTranslateY, {
-              toValue: 0,
-              tension: 65,
-              friction: 11,
-              useNativeDriver: true,
-            }).start();
+            translateY.value = withSpring(0, { damping: 18, stiffness: 160 });
           }
         },
       }),
     ).current;
 
+    const sheetStyle = useAnimatedStyle(() => ({
+      transform: [{ translateY: translateY.value }],
+    }));
+
+    const backdropStyle = useAnimatedStyle(() => ({
+      opacity: backdropOpacity.value,
+    }));
+
     if (!mounted) {
       return null;
     }
-
-    const transform = translateYOffset
-      ? [{ translateY: Animated.subtract(sheetTranslateY, translateYOffset) }]
-      : [{ translateY: sheetTranslateY }];
 
     return (
       <View
@@ -141,12 +107,13 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(
         <Animated.View
           style={[
             StyleSheet.absoluteFillObject,
-            { backgroundColor: 'rgba(0,0,0,0.5)', opacity: backdropOpacity },
+            { backgroundColor: 'rgba(0,0,0,0.5)' },
+            backdropStyle,
           ]}
         />
         <Pressable
           style={StyleSheet.absoluteFillObject}
-          onPress={() => closeSheetRef.current(() => onDismissRef.current?.())}
+          onPress={() => dismissRef.current()}
         />
         <Animated.View
           style={[
@@ -160,7 +127,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(
               borderTopRightRadius: 24,
               borderRadius: bottomInset > 0 ? 24 : undefined,
             },
-            { transform },
+            sheetStyle,
           ]}
         >
           <View
@@ -182,3 +149,5 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(
     );
   },
 );
+
+BottomSheet.displayName = 'BottomSheet';

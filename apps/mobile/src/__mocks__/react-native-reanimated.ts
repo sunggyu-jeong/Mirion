@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, ScrollView } from 'react-native';
+import { Image, ScrollView, Text, View } from 'react-native';
 
 const Animated = {
   View,
@@ -25,12 +25,25 @@ const Easing = {
   inOut: (easing: (t: number) => number) => easing,
   bezier: () => (t: number) => t,
 };
-const FadeIn = { delay: () => ({ springify: () => ({}) }) };
-const FadeOut = { delay: () => ({ springify: () => ({}) }) };
-const FadeInDown = { delay: () => ({ springify: () => ({}) }) };
-const FadeInUp = { delay: () => ({ springify: () => ({}) }) };
-const SlideInRight = { delay: () => ({ springify: () => ({}) }) };
-const ZoomIn = { delay: () => ({ springify: () => ({}) }) };
+
+function makeAnimationMock() {
+  const self: Record<string, () => object> = {
+    delay: () => self,
+    springify: () => ({}),
+    duration: () => self,
+    damping: () => self,
+    stiffness: () => self,
+  };
+  return self;
+}
+
+const FadeIn = makeAnimationMock();
+const FadeOut = makeAnimationMock();
+const FadeInDown = makeAnimationMock();
+const FadeInUp = makeAnimationMock();
+const SlideInRight = makeAnimationMock();
+const ZoomIn = makeAnimationMock();
+const BounceIn = makeAnimationMock();
 const useAnimatedRef = () => ({ current: null });
 const useScrollViewOffset = () => ({ value: 0 });
 const scrollTo = () => {};
@@ -38,26 +51,27 @@ const runOnJS = (fn: (...args: unknown[]) => void) => fn;
 const runOnUI = (fn: (...args: unknown[]) => void) => fn;
 
 export {
-  Animated as default,
   Animated,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-  withSequence,
-  withDelay,
-  withRepeat,
-  interpolate,
+  BounceIn,
+  Animated as default,
   Easing,
   FadeIn,
-  FadeOut,
   FadeInDown,
   FadeInUp,
-  SlideInRight,
-  ZoomIn,
-  useAnimatedRef,
-  useScrollViewOffset,
-  scrollTo,
+  FadeOut,
+  interpolate,
   runOnJS,
   runOnUI,
+  scrollTo,
+  SlideInRight,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollViewOffset,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+  ZoomIn,
 };

@@ -11,6 +11,10 @@ jest.mock('@shared/lib/navigation', () => ({
   }),
 }));
 
+jest.mock('@entities/lido', () => ({
+  useLidoStore: jest.fn(() => ({ estimatedApy: 3.5 })),
+}));
+
 jest.mock('@entities/wallet', () => ({
   useWalletStore: jest.fn((selector: (s: { address: string }) => unknown) =>
     selector({ address: '0xTestAddress' }),
@@ -22,6 +26,7 @@ jest.mock('@shared/lib/web3/client', () => ({
 }));
 
 import { publicClient } from '@shared/lib/web3/client';
+
 import { DepositSetupScreen } from '../DepositSetupScreen';
 
 describe('DepositSetupScreen', () => {
@@ -34,7 +39,7 @@ describe('DepositSetupScreen', () => {
 
   it('기본 UI 요소를 렌더링한다', () => {
     render(<DepositSetupScreen />);
-    expect(screen.getByText('얼마나 잠글까요?')).toBeTruthy();
+    expect(screen.getByText('얼마나 스테이킹할까요?')).toBeTruthy();
     expect(screen.getByText('확인')).toBeTruthy();
     expect(screen.getByPlaceholderText('0.0')).toBeTruthy();
   });
@@ -92,6 +97,6 @@ describe('DepositSetupScreen', () => {
     await waitFor(() => {
       expect(screen.queryByText(/잔액:/)).toBeNull();
     });
-    expect(screen.getByText('얼마나 잠글까요?')).toBeTruthy();
+    expect(screen.getByText('얼마나 스테이킹할까요?')).toBeTruthy();
   });
 });

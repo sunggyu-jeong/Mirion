@@ -1,2 +1,3 @@
-export * from './lock';
+export * from './lido';
+export * from './tx';
 export * from './wallet';

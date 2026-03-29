@@ -1,41 +1,30 @@
+import { useLidoStore } from '@entities/lido';
 import { useWalletStore } from '@entities/wallet';
-import { addDays, formatDate } from '@shared/lib/date';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { publicClient } from '@shared/lib/web3/client';
-import type { BottomSheetRef } from '@shared/ui';
-import { BottomSheet, PrimaryButton, ScreenHeader, ScreenTitle } from '@shared/ui';
-import { ChevronRight } from 'lucide-react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import { PrimaryButton, ScreenHeader, ScreenTitle } from '@shared/ui';
+import React, { useEffect, useState } from 'react';
 import {
-  Animated,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Address } from 'viem';
 import { formatEther } from 'viem';
 
-const DAY_PRESETS = [7, 15, 30, 90] as const;
-const SHEET_HEIGHT = 340;
-const DISMISS_THRESHOLD = 80;
-
 export function DepositSetupScreen() {
   const { goBack, toDepositConfirm } = useAppNavigation();
   const address = useWalletStore(s => s.address);
+  const { estimatedApy } = useLidoStore();
   const [amountEth, setAmountEth] = useState('');
-  const [days, setDays] = useState(15);
-  const [customDays, setCustomDays] = useState('');
   const [balance, setBalance] = useState<string | null>(null);
-
-  const sheetRef = useRef<BottomSheetRef>(null);
-  const keyboardHeight = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!address) {
@@ -47,32 +36,6 @@ export function DepositSetupScreen() {
       .catch(() => {});
   }, [address]);
 
-  useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-
-    const showSub = Keyboard.addListener(showEvent, e => {
-      Animated.timing(keyboardHeight, {
-        toValue: e.endCoordinates.height,
-        duration: e.duration ?? 250,
-        useNativeDriver: true,
-      }).start();
-    });
-    const hideSub = Keyboard.addListener(hideEvent, e => {
-      Animated.timing(keyboardHeight, {
-        toValue: 0,
-        duration: e.duration ?? 250,
-        useNativeDriver: true,
-      }).start();
-    });
-
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, [keyboardHeight]);
-
-  const unlockDate = addDays(new Date(), days);
   const parsedAmount = parseFloat(amountEth);
   const parsedBalance = balance !== null ? parseFloat(balance) : null;
   const exceedsBalance = parsedBalance !== null && parsedAmount > parsedBalance;
@@ -82,265 +45,127 @@ export function DepositSetupScreen() {
     if (!isValid) {
       return;
     }
-    toDepositConfirm({
-      amountEth,
-      unlockDate: unlockDate.toISOString(),
-    });
-  };
-
-  const openPicker = () => {
-    Keyboard.dismiss();
-    sheetRef.current?.open();
-  };
-
-  const applyDays = (d: number) => {
-    setDays(d);
-    setCustomDays('');
-    sheetRef.current?.close();
+    toDepositConfirm({ amountEth, unlockDate: '' });
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fcfcfc' }}>
-        <TouchableWithoutFeedback
-          onPress={Keyboard.dismiss}
-          accessible={false}
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fcfcfc' }}>
+      <TouchableWithoutFeedback
+        onPress={Keyboard.dismiss}
+        accessible={false}
+      >
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          >
-            <View style={{ flex: 1 }}>
-              <ScreenHeader onClose={goBack} />
+          <View style={{ flex: 1 }}>
+            <ScreenHeader onClose={goBack} />
 
-              <View style={{ paddingHorizontal: 20, flex: 1, gap: 28, marginTop: 8 }}>
-                <View style={{ gap: 20 }}>
-                  <ScreenTitle>얼마나 잠글까요?</ScreenTitle>
+            <View style={{ paddingHorizontal: 20, flex: 1, gap: 28, marginTop: 8 }}>
+              <Animated.View
+                entering={FadeInDown.springify()}
+                style={{ gap: 20 }}
+              >
+                <ScreenTitle>얼마나 스테이킹할까요?</ScreenTitle>
 
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <TextInput
-                      style={{
-                        fontSize: 24,
-                        fontWeight: '400',
-                        color: '#0f172b',
-                        letterSpacing: -0.216,
-                        lineHeight: 36,
-                        minWidth: 60,
-                        flex: 0,
-                        padding: 0,
-                      }}
-                      placeholder="0.0"
-                      placeholderTextColor="#cad5e2"
-                      keyboardType="decimal-pad"
-                      value={amountEth}
-                      onChangeText={setAmountEth}
-                      autoFocus
-                    />
-                    <Text
-                      style={{
-                        fontSize: 24,
-                        fontWeight: '400',
-                        color: '#0f172b',
-                        letterSpacing: -0.216,
-                        lineHeight: 36,
-                      }}
-                    >
-                      ETH
-                    </Text>
-                  </View>
-
-                  {balance !== null && (
-                    <View style={{ gap: 6 }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                        <Text style={{ fontSize: 14, color: '#62748e' }}>
-                          잔액: {parseFloat(balance).toFixed(4)} ETH
-                        </Text>
-                        <Pressable
-                          onPress={() => setAmountEth(parseFloat(balance).toFixed(6))}
-                          style={{
-                            paddingHorizontal: 12,
-                            paddingVertical: 5,
-                            backgroundColor: '#2b7fff',
-                            borderRadius: 6,
-                          }}
-                        >
-                          <Text style={{ fontSize: 13, color: '#fff', fontWeight: '700' }}>
-                            최대
-                          </Text>
-                        </Pressable>
-                      </View>
-                      {exceedsBalance && (
-                        <Text style={{ fontSize: 13, color: '#ef4444' }}>
-                          잔액을 초과할 수 없습니다
-                        </Text>
-                      )}
-                    </View>
-                  )}
-                </View>
-
-                <Pressable
-                  style={{
-                    backgroundColor: '#f1f5f9',
-                    borderRadius: 8,
-                    paddingHorizontal: 20,
-                    paddingVertical: 16,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                  onPress={openPicker}
-                >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                  <TextInput
+                    style={{
+                      fontSize: 24,
+                      fontWeight: '400',
+                      color: '#0f172b',
+                      letterSpacing: -0.216,
+                      minWidth: 60,
+                      flex: 0,
+                      padding: 0,
+                      includeFontPadding: false,
+                    }}
+                    placeholder="0.0"
+                    placeholderTextColor="#cad5e2"
+                    keyboardType="decimal-pad"
+                    value={amountEth}
+                    onChangeText={setAmountEth}
+                    autoFocus
+                  />
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontSize: 24,
                       fontWeight: '400',
-                      color: '#1d293d',
-                      letterSpacing: -0.16,
-                      lineHeight: 24,
+                      color: '#0f172b',
+                      letterSpacing: -0.216,
+                      lineHeight: 36,
                     }}
                   >
-                    {formatDate(unlockDate)}
+                    ETH
                   </Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        fontWeight: '400',
-                        color: '#1d293d',
-                        letterSpacing: -0.16,
-                        lineHeight: 24,
-                      }}
-                    >
-                      ({days}일간)
-                    </Text>
-                    <ChevronRight
-                      size={18}
-                      color="#1d293d"
-                    />
-                  </View>
-                </Pressable>
-              </View>
+                </View>
 
-              <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
-                <PrimaryButton
-                  label="확인"
-                  onPress={handleConfirm}
-                  variant={isValid ? 'primary' : 'secondary'}
-                />
-              </View>
-            </View>
-          </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
-      </SafeAreaView>
+                {balance !== null && (
+                  <Animated.View
+                    entering={FadeIn.duration(300)}
+                    style={{ gap: 6 }}
+                  >
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                      <Text style={{ fontSize: 14, color: '#62748e' }}>
+                        잔액: {parseFloat(balance).toFixed(4)} ETH
+                      </Text>
+                      <Pressable
+                        onPress={() => setAmountEth(parseFloat(balance).toFixed(6))}
+                        style={{
+                          paddingHorizontal: 12,
+                          paddingVertical: 5,
+                          backgroundColor: '#2b7fff',
+                          borderRadius: 6,
+                        }}
+                      >
+                        <Text style={{ fontSize: 13, color: '#fff', fontWeight: '700' }}>최대</Text>
+                      </Pressable>
+                    </View>
+                    {exceedsBalance && (
+                      <Text style={{ fontSize: 13, color: '#fb2c36' }}>
+                        잔액을 초과할 수 없습니다
+                      </Text>
+                    )}
+                  </Animated.View>
+                )}
+              </Animated.View>
 
-      <BottomSheet
-        ref={sheetRef}
-        height={SHEET_HEIGHT}
-        dismissThreshold={DISMISS_THRESHOLD}
-        translateYOffset={keyboardHeight}
-      >
-        <View style={{ paddingHorizontal: 20, paddingBottom: 32, gap: 24 }}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: '700',
-              color: '#0f172b',
-              textAlign: 'center',
-              lineHeight: 25.2,
-            }}
-          >
-            잠금 기간 선택
-          </Text>
-
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            {DAY_PRESETS.map(d => (
-              <Pressable
-                key={d}
-                style={[styles.chip, days === d && styles.chipSelected]}
-                onPress={() => applyDays(d)}
-              >
-                <Text style={[styles.chipText, days === d && styles.chipTextSelected]}>{d}일</Text>
-              </Pressable>
-            ))}
-          </View>
-
-          <View style={{ gap: 12 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-              <View style={{ flex: 1, height: 1, backgroundColor: '#f1f5f9' }} />
-              <Text style={{ fontSize: 12, color: '#94a3b8', fontWeight: '500' }}>직접 입력</Text>
-              <View style={{ flex: 1, height: 1, backgroundColor: '#f1f5f9' }} />
-            </View>
-
-            <View style={{ flexDirection: 'row', gap: 8 }}>
-              <TextInput
-                style={styles.customInput}
-                placeholder="기간 입력 (일)"
-                placeholderTextColor="#94a3b8"
-                keyboardType="number-pad"
-                value={customDays}
-                onChangeText={setCustomDays}
-              />
-              <Pressable
-                style={styles.applyButton}
-                onPress={() => {
-                  const d = parseInt(customDays, 10);
-                  if (d > 0) {
-                    applyDays(d);
-                  }
+              <Animated.View
+                entering={FadeInDown.delay(100).springify()}
+                style={{
+                  backgroundColor: '#f8fafc',
+                  borderRadius: 16,
+                  padding: 16,
+                  gap: 6,
                 }}
               >
-                <Text style={styles.applyButtonText}>적용</Text>
-              </Pressable>
+                <Text style={{ fontSize: 13, color: '#62748e', fontWeight: '500' }}>
+                  Lido stETH 스테이킹 정보
+                </Text>
+                <Text style={{ fontSize: 15, color: '#0f172b', fontWeight: '600' }}>
+                  예상 연수익 (APY){' '}
+                  <Text style={{ color: '#22c55e' }}>
+                    {estimatedApy > 0 ? `${estimatedApy.toFixed(1)}%` : '로딩 중...'}
+                  </Text>
+                  <Text style={{ fontSize: 11, color: '#94a3b8' }}> (예상치)</Text>
+                </Text>
+                <Text style={{ fontSize: 12, color: '#94a3b8', lineHeight: 18 }}>
+                  LockFi는 자산을 직접 보관하지 않습니다. 귀하의 ETH는 Lido 스마트 컨트랙트에 직접
+                  스테이킹됩니다.
+                </Text>
+              </Animated.View>
+            </View>
+
+            <View style={{ paddingHorizontal: 20, paddingBottom: 20 }}>
+              <PrimaryButton
+                label="확인"
+                onPress={handleConfirm}
+                variant={isValid ? 'primary' : 'secondary'}
+              />
             </View>
           </View>
-        </View>
-      </BottomSheet>
-    </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  chip: {
-    flex: 1,
-    backgroundColor: '#f1f5f9',
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  chipSelected: {
-    backgroundColor: '#2b7fff',
-  },
-  chipText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1d293d',
-    lineHeight: 22,
-  },
-  chipTextSelected: {
-    color: '#ffffff',
-  },
-  customInput: {
-    flex: 1,
-    height: 48,
-    backgroundColor: '#f8fafc',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 15,
-    color: '#0f172b',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  applyButton: {
-    height: 48,
-    paddingHorizontal: 20,
-    backgroundColor: '#2b7fff',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  applyButtonText: {
-    fontSize: 15,
-    color: '#ffffff',
-    fontWeight: '600',
-  },
-});

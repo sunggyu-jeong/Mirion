@@ -16,12 +16,14 @@ import { DepositSuccessScreen } from '../DepositSuccessScreen';
 describe('DepositSuccessScreen', () => {
   it('성공 메시지를 렌더링한다', () => {
     render(<DepositSuccessScreen />);
-    expect(screen.getByText('예치가 완료되었습니다!')).toBeTruthy();
+    expect(screen.getByText('스테이킹이 완료되었습니다!')).toBeTruthy();
   });
 
-  it('만기일을 올바르게 렌더링한다', () => {
+  it('안내 문구를 렌더링한다', () => {
     render(<DepositSuccessScreen />);
-    expect(screen.getByText('만기일 : 2026년 2월 28일')).toBeTruthy();
+    expect(
+      screen.getByText('stETH가 지갑에 입금되었습니다. Lido를 통해 자동으로 이자가 쌓입니다.'),
+    ).toBeTruthy();
   });
 
   it('"홈으로 돌아가기" 버튼을 렌더링한다', () => {

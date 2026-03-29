@@ -1,3 +1,5 @@
+import { useTxTracker } from '@features/lido';
+import { ToastView } from '@shared/ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -13,11 +15,18 @@ const queryClient = new QueryClient({
   },
 });
 
+function TxTrackerProvider() {
+  useTxTracker();
+  return null;
+}
+
 export function AppProviders() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
+        <TxTrackerProvider />
         <Navigation />
+        <ToastView />
       </SafeAreaProvider>
     </QueryClientProvider>
   );
