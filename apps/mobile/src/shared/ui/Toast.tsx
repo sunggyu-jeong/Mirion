@@ -2,10 +2,10 @@ import { useToastStore } from '@shared/lib/toast';
 import React, { useEffect } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import Animated, {
+  Easing,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 
@@ -15,6 +15,8 @@ const BG: Record<string, string> = {
   info: '#2b7fff',
 };
 
+const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
+
 export function ToastView() {
   const { visible, message, type, hide } = useToastStore();
   const translateY = useSharedValue(80);
@@ -22,15 +24,15 @@ export function ToastView() {
 
   useEffect(() => {
     if (visible) {
-      translateY.value = withSpring(0, { damping: 20, stiffness: 260 });
-      opacity.value = withTiming(1, { duration: 180 });
+      translateY.value = withTiming(0, { duration: 240, easing: EASE_OUT });
+      opacity.value = withTiming(1, { duration: 160 });
       const timer = setTimeout(() => {
         opacity.value = withTiming(0, { duration: 200 }, finished => {
           if (finished) {
             runOnJS(hide)();
           }
         });
-        translateY.value = withTiming(80, { duration: 200 });
+        translateY.value = withTiming(80, { duration: 200, easing: Easing.bezier(0.4, 0, 1, 1) });
       }, 3000);
       return () => clearTimeout(timer);
     }

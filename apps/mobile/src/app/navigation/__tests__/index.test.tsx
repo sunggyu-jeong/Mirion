@@ -36,7 +36,9 @@ jest.mock('react-native-reanimated', () => ({
   withTiming: (v: unknown) => v,
   withRepeat: (v: unknown) => v,
   withSpring: (v: unknown) => v,
-  Easing: { linear: (t: unknown) => t },
+  Easing: { linear: (t: unknown) => t, bezier: () => (t: unknown) => t },
+  FadeInDown: { delay: () => ({ duration: () => ({ easing: () => ({}) }) }) },
+  FadeInUp: { delay: () => ({ duration: () => ({ easing: () => ({}) }) }) },
 }));
 
 jest.mock('react-native-safe-area-context', () => ({

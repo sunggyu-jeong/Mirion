@@ -1,10 +1,10 @@
 import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { PanResponder, Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
+  Easing,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 
@@ -22,6 +22,8 @@ type Props = {
   children: React.ReactNode;
 };
 
+const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
+
 export const BottomSheet = forwardRef<BottomSheetRef, Props>(
   (
     { height, dismissThreshold = 100, onDismiss, bottomInset = 0, horizontalInset = 0, children },
@@ -35,7 +37,10 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(
 
     const dismiss = useCallback(
       (callback?: () => void) => {
-        translateY.value = withTiming(height, { duration: 250 });
+        translateY.value = withTiming(height, {
+          duration: 220,
+          easing: Easing.bezier(0.4, 0, 1, 1),
+        });
         backdropOpacity.value = withTiming(0, { duration: 200 }, finished => {
           if (finished) {
             runOnJS(setMounted)(false);
@@ -61,8 +66,8 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(
           setMounted(true);
           translateY.value = height;
           backdropOpacity.value = 0;
-          backdropOpacity.value = withTiming(1, { duration: 280 });
-          translateY.value = withSpring(0, { damping: 22, stiffness: 240, mass: 0.8 });
+          backdropOpacity.value = withTiming(1, { duration: 260 });
+          translateY.value = withTiming(0, { duration: 320, easing: EASE_OUT });
         },
         close: (callback?) => dismissRef.current(callback),
       }),
@@ -81,7 +86,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(
           if (dy > dismissThreshold) {
             dismissRef.current();
           } else {
-            translateY.value = withSpring(0, { damping: 18, stiffness: 160 });
+            translateY.value = withTiming(0, { duration: 280, easing: EASE_OUT });
           }
         },
       }),

@@ -1,6 +1,11 @@
 import React from 'react';
 import { Pressable, Text } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 type PrimaryButtonProps = {
   label: string;
@@ -28,10 +33,10 @@ export function PrimaryButton({
       className="w-full"
       onPress={onPress}
       onPressIn={() => {
-        scale.value = withSpring(0.95, { damping: 10, stiffness: 200 });
+        scale.value = withTiming(0.97, { duration: 80 });
       }}
       onPressOut={() => {
-        scale.value = withSpring(1, { damping: 10, stiffness: 200 });
+        scale.value = withTiming(1, { duration: 200, easing: Easing.bezier(0.22, 1, 0.36, 1) });
       }}
     >
       <Animated.View

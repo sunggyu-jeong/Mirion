@@ -31,6 +31,7 @@ function makeAnimationMock() {
     delay: () => self,
     springify: () => ({}),
     duration: () => self,
+    easing: () => ({}),
     damping: () => self,
     stiffness: () => self,
   };

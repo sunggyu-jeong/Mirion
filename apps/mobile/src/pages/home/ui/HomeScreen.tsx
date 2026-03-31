@@ -7,11 +7,13 @@ import type { BottomSheetRef } from '@shared/ui';
 import { AnimatedNumber, BottomSheet, InfoCard, PrimaryButton, Skeleton } from '@shared/ui';
 import React, { useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import Animated, { Easing, FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatEther, parseEther } from 'viem';
 
 import { EthPriceChart } from './EthPriceChart';
+
+const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 
 function WalletBadge({ address }: { address: string | null }) {
   if (!address) {
@@ -128,7 +130,7 @@ export function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* stETH 잔고 카드 */}
-        <Animated.View entering={FadeInDown.delay(0).springify()}>
+        <Animated.View entering={FadeInDown.delay(0).duration(260).easing(EASE_OUT)}>
           <InfoCard>
             <View style={{ gap: 4 }}>
               <Text
@@ -179,7 +181,7 @@ export function HomeScreen() {
 
         {/* ETH 잔액 카드 */}
         {ethBalanceStr !== null && (
-          <Animated.View entering={FadeInDown.delay(40).springify()}>
+          <Animated.View entering={FadeInDown.delay(60).duration(260).easing(EASE_OUT)}>
             <InfoCard>
               <View style={{ gap: 4 }}>
                 <Text
@@ -206,7 +208,7 @@ export function HomeScreen() {
         )}
 
         {/* ETH 시세 카드 */}
-        <Animated.View entering={FadeInDown.delay(80).springify()}>
+        <Animated.View entering={FadeInDown.delay(120).duration(260).easing(EASE_OUT)}>
           <InfoCard>
             <View style={{ gap: 4 }}>
               <Text
@@ -245,7 +247,7 @@ export function HomeScreen() {
 
         {/* 버튼 영역 */}
         <Animated.View
-          entering={FadeInUp.delay(160).springify()}
+          entering={FadeInUp.delay(180).duration(260).easing(EASE_OUT)}
           style={{ gap: 12 }}
         >
           <PrimaryButton

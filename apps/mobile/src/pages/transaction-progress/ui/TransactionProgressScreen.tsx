@@ -8,7 +8,6 @@ import type { Step } from '@shared/ui/StepIndicator';
 import React, { useEffect, useRef } from 'react';
 import { Text, View } from 'react-native';
 import Animated, {
-  BounceIn,
   Easing,
   FadeInDown,
   useAnimatedStyle,
@@ -30,6 +29,8 @@ const STEPS: Step[] = [
   { label: '스테이킹 진행 중', subtitle: '블록체인에 기록 중입니다' },
   { label: '확인 대기', subtitle: '트랜잭션이 확인되고 있습니다' },
 ];
+
+const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 
 function SpinnerRing() {
   const rotation = useSharedValue(0);
@@ -99,7 +100,7 @@ export function TransactionProgressScreen() {
       {txStatus === 'error' ? <ScreenHeader onClose={goBack} /> : <View style={{ height: 56 }} />}
 
       <Animated.View
-        entering={FadeInDown.delay(50).springify()}
+        entering={FadeInDown.delay(50).duration(260).easing(EASE_OUT)}
         style={{ paddingHorizontal: 20, gap: 8, marginBottom: 40 }}
       >
         <ScreenTitle style={{ textAlign: 'center' }}>스테이킹 진행 중...</ScreenTitle>
@@ -120,7 +121,7 @@ export function TransactionProgressScreen() {
       <View style={{ alignItems: 'center', marginBottom: 32 }}>
         {txStatus === 'success' ? (
           <Animated.Text
-            entering={BounceIn}
+            entering={FadeInDown.duration(240).easing(EASE_OUT)}
             style={{ fontSize: 32 }}
           >
             ✓

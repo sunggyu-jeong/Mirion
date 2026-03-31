@@ -31,6 +31,24 @@ const config = {
         return { filePath: cjsPath, type: 'sourceFile' };
       }
 
+      // Force @walletconnect/* to use CJS builds — packages use "type":"module" which
+      // causes Metro to pick ESM entry, but Hermes doesn't support ES modules natively.
+      if (moduleName.startsWith('@walletconnect/')) {
+        const pkgName = moduleName.split('/').slice(0, 2).join('/');
+        const subPath = moduleName.slice(pkgName.length);
+        const pkgRoot = path.resolve(monorepoRoot, 'node_modules', pkgName);
+        const pkgJson = JSON.parse(fs.readFileSync(path.join(pkgRoot, 'package.json'), 'utf8'));
+        const cjsEntry = pkgJson.main;
+        if (cjsEntry) {
+          const cjsPath = subPath
+            ? path.resolve(pkgRoot, subPath)
+            : path.resolve(pkgRoot, cjsEntry);
+          if (fs.existsSync(cjsPath)) {
+            return { filePath: cjsPath, type: 'sourceFile' };
+          }
+        }
+      }
+
       // Polyfill node:crypto for @metamask/sdk in React Native
       if (moduleName === 'node:crypto' || moduleName === 'crypto') {
         return {
@@ -43,6 +61,28 @@ const config = {
       if (moduleName === '@react-native-async-storage/async-storage') {
         return {
           filePath: path.resolve(__dirname, 'src/shared/lib/async-storage-shim.js'),
+          type: 'sourceFile',
+        };
+      }
+
+      // Shim @walletconnect/keyvaluestorage — CJS build uses Node.js `fs`, not available in RN
+      if (moduleName === '@walletconnect/keyvaluestorage') {
+        return {
+          filePath: path.resolve(__dirname, 'src/shared/lib/wc-keyvaluestorage-shim.js'),
+          type: 'sourceFile',
+        };
+      }
+
+      // Stub out Node.js built-ins not available in React Native
+      if (moduleName === 'fs' || moduleName === 'node:fs') {
+        return {
+          filePath: path.resolve(__dirname, 'src/shared/lib/fs-stub.js'),
+          type: 'sourceFile',
+        };
+      }
+      if (moduleName === 'path' || moduleName === 'node:path') {
+        return {
+          filePath: path.resolve(__dirname, 'src/shared/lib/path-stub.js'),
           type: 'sourceFile',
         };
       }

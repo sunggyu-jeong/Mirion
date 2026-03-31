@@ -30,6 +30,9 @@ export function WalletConnectScreen() {
   }, []);
 
   const handleConnect = async () => {
+    // TODO: 테스트용 — 실제 지갑 연결 없이 메인으로 이동
+    sheetRef.current?.close(toMain);
+    return;
     try {
       if (selected === 'metamask') {
         await connectMetaMask();

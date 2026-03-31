@@ -3,6 +3,7 @@ import { AppState } from 'react-native';
 
 jest.mock('@metamask/sdk', () =>
   jest.fn().mockImplementation(() => ({
+    init: jest.fn().mockResolvedValue(undefined),
     getProvider: jest.fn().mockReturnValue({ request: jest.fn() }),
     disconnect: jest.fn(),
   })),
@@ -21,6 +22,10 @@ jest.mock('@shared/lib/storage', () => ({
   },
 }));
 
+jest.mock('@shared/lib/toast', () => ({
+  toast: { error: jest.fn() },
+}));
+
 import { useWalletStore } from '@entities/wallet';
 import MetaMaskSDK from '@metamask/sdk';
 import { storage } from '@shared/lib/storage';
@@ -37,6 +42,7 @@ beforeEach(() => {
   jest.mocked(MetaMaskSDK).mockImplementation(
     () =>
       ({
+        init: jest.fn().mockResolvedValue(undefined),
         getProvider: () => ({ request: mockRequest }),
         disconnect: mockDisconnect,
       }) as never,

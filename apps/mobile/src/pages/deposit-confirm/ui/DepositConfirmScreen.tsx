@@ -7,10 +7,12 @@ import { publicClient } from '@shared/lib/web3/client';
 import { DisclaimerBox, PrimaryButton, ReceiptRow, ScreenHeader, ScreenTitle } from '@shared/ui';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Address } from 'viem';
 import { parseEther } from 'viem';
+
+const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 
 type DepositConfirmParams = { amountEth: string; unlockDate: string };
 
@@ -58,7 +60,7 @@ export function DepositConfirmScreen() {
         <ScreenTitle style={{ marginBottom: 12 }}>스테이킹 전 마지막으로 확인해주세요</ScreenTitle>
 
         <Animated.View
-          entering={FadeInDown.delay(50).springify()}
+          entering={FadeInDown.delay(50).duration(260).easing(EASE_OUT)}
           style={{ backgroundColor: '#f1f5f9', borderRadius: 12, padding: 16, gap: 6 }}
         >
           <ReceiptRow
@@ -78,7 +80,7 @@ export function DepositConfirmScreen() {
           />
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(120).springify()}>
+        <Animated.View entering={FadeInDown.delay(120).duration(260).easing(EASE_OUT)}>
           <DisclaimerBox
             title="비수탁형 서비스 안내"
             body="LockFi는 귀하의 자산을 직접 보관하지 않습니다. ETH는 Lido 스마트 컨트랙트에 직접 예치되며, 예상 수익률은 과거 데이터 기반의 예상치로 실제 수익을 보장하지 않습니다."

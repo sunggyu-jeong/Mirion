@@ -1,7 +1,7 @@
 import { CB_SESSION_KEY, useWalletStore } from '@entities/wallet';
 import { storage } from '@shared/lib/storage';
 import SignClient from '@walletconnect/sign-client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Linking } from 'react-native';
 
 const PROJECT_ID = 'b6a245dd890f6d3f0528ffc01efa78aa';
@@ -19,6 +19,9 @@ function getSignClient() {
         url: 'https://lockfi.app',
         icons: ['https://lockfi.app/icon.png'],
       },
+    }).catch(e => {
+      clientPromise = null;
+      throw e;
     });
   }
   return clientPromise;
@@ -26,11 +29,14 @@ function getSignClient() {
 
 export function useCoinbaseWallet() {
   const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const setSession = useWalletStore(s => s.setSession);
   const clearSession = useWalletStore(s => s.clearSession);
+  const isMounted = useRef(true);
 
   const connectWallet = async () => {
     setIsPending(true);
+    setError(null);
     try {
       const client = await getSignClient();
 
@@ -59,8 +65,16 @@ export function useCoinbaseWallet() {
       storage.set(CB_SESSION_KEY, address);
       setSession(address, 'coinbase');
       return address;
+    } catch (e) {
+      const err = e instanceof Error ? e : new Error(String(e));
+      if (isMounted.current) {
+        setError(err);
+      }
+      throw err;
     } finally {
-      setIsPending(false);
+      if (isMounted.current) {
+        setIsPending(false);
+      }
     }
   };
 
@@ -83,5 +97,5 @@ export function useCoinbaseWallet() {
     clearSession();
   };
 
-  return { connectWallet, disconnectWallet, isPending };
+  return { connectWallet, disconnectWallet, isPending, error };
 }

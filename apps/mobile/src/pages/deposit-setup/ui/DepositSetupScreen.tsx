@@ -14,8 +14,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import Animated, { Easing, FadeIn, FadeInDown } from 'react-native-reanimated';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 import type { Address } from 'viem';
 import { formatEther } from 'viem';
 
@@ -63,7 +66,7 @@ export function DepositSetupScreen() {
 
             <View style={{ paddingHorizontal: 20, flex: 1, gap: 28, marginTop: 8 }}>
               <Animated.View
-                entering={FadeInDown.springify()}
+                entering={FadeInDown.duration(260).easing(EASE_OUT)}
                 style={{ gap: 20 }}
               >
                 <ScreenTitle>얼마나 스테이킹할까요?</ScreenTitle>
@@ -131,7 +134,7 @@ export function DepositSetupScreen() {
               </Animated.View>
 
               <Animated.View
-                entering={FadeInDown.delay(100).springify()}
+                entering={FadeInDown.delay(100).duration(260).easing(EASE_OUT)}
                 style={{
                   backgroundColor: '#f8fafc',
                   borderRadius: 16,

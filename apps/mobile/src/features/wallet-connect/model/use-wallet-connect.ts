@@ -5,6 +5,25 @@ import { toast } from '@shared/lib/toast';
 import { useEffect, useRef, useState } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
 
+let sdkInstance: InstanceType<typeof MetaMaskSDK> | null = null;
+let sdkInitPromise: Promise<void> | null = null;
+
+async function getProvider() {
+  if (!sdkInstance) {
+    sdkInstance = new MetaMaskSDK({
+      dappMetadata: { name: 'LockFi', url: 'https://lockfi.app' },
+    });
+  }
+  if (!sdkInitPromise) {
+    sdkInitPromise = sdkInstance.init().catch(e => {
+      sdkInitPromise = null;
+      throw e;
+    });
+  }
+  await sdkInitPromise;
+  return sdkInstance.getProvider();
+}
+
 export function useWalletConnect() {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -12,11 +31,10 @@ export function useWalletConnect() {
   const isConnected = useWalletStore(s => s.isConnected);
   const setSession = useWalletStore(s => s.setSession);
   const clearSession = useWalletStore(s => s.clearSession);
-  const sdkRef = useRef(
-    new MetaMaskSDK({ dappMetadata: { name: 'LockFi', url: 'https://lockfi.app' } }),
-  );
+  const isMounted = useRef(true);
 
   useEffect(() => {
+    isMounted.current = true;
     const sub = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
         const saved = storage.getString(WC_SESSION_KEY);
@@ -25,14 +43,17 @@ export function useWalletConnect() {
         }
       }
     });
-    return () => sub.remove();
+    return () => {
+      isMounted.current = false;
+      sub.remove();
+    };
   }, [clearSession]);
 
   const connectWallet = async () => {
     setIsPending(true);
     setError(null);
     try {
-      const ethereum = sdkRef.current.getProvider();
+      const ethereum = await getProvider();
       if (!ethereum) {
         throw new Error('Provider를 초기화할 수 없습니다');
       }
@@ -48,15 +69,20 @@ export function useWalletConnect() {
       setSession(account, 'walletconnect');
       return account;
     } catch (e) {
-      setError(e instanceof Error ? e : new Error(String(e)));
-      throw e;
+      const err = e instanceof Error ? e : new Error(String(e));
+      if (isMounted.current) {
+        setError(err);
+      }
+      throw err;
     } finally {
-      setIsPending(false);
+      if (isMounted.current) {
+        setIsPending(false);
+      }
     }
   };
 
   const disconnectWallet = () => {
-    sdkRef.current.disconnect();
+    sdkInstance?.disconnect();
     storage.remove(WC_SESSION_KEY);
     clearSession();
   };

@@ -6,15 +6,18 @@ import { Check } from 'lucide-react-native';
 import React from 'react';
 import { Text, View } from 'react-native';
 import Animated, {
+  Easing,
   FadeInDown,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
-  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type DepositSuccessParams = { unlockDateLabel: string };
+
+const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 
 export function DepositSuccessScreen() {
   useRoute<RouteProp<{ DepositSuccess: DepositSuccessParams }, 'DepositSuccess'>>();
@@ -23,8 +26,8 @@ export function DepositSuccessScreen() {
   const iconScale = useSharedValue(0);
   const iconOpacity = useSharedValue(0);
 
-  iconOpacity.value = withSpring(1, { damping: 20 });
-  iconScale.value = withDelay(100, withSpring(1, { damping: 10, stiffness: 180 }));
+  iconOpacity.value = withTiming(1, { duration: 200 });
+  iconScale.value = withDelay(80, withTiming(1, { duration: 300, easing: EASE_OUT }));
 
   const iconStyle = useAnimatedStyle(() => ({
     transform: [{ scale: iconScale.value }],
@@ -54,7 +57,7 @@ export function DepositSuccessScreen() {
             />
           </Animated.View>
           <Animated.View
-            entering={FadeInDown.delay(200).springify()}
+            entering={FadeInDown.delay(180).duration(260).easing(EASE_OUT)}
             style={{ alignItems: 'center', gap: 12, width: '100%' }}
           >
             <Text
