@@ -7,6 +7,7 @@ import { HomeScreen } from '@pages/home';
 import { LegalScreen } from '@pages/legal';
 import { OnboardingScreen } from '@pages/onboarding';
 import { SettingsScreen } from '@pages/settings';
+import { SimulatorScreen } from '@pages/simulator';
 import { SplashScreen } from '@pages/splash';
 import { TransactionProgressScreen } from '@pages/transaction-progress';
 import { WalletConnectScreen } from '@pages/wallet-connect';
@@ -22,6 +23,7 @@ const MainTab = createBottomTabNavigator({
   screenOptions: { headerShown: false },
   screens: {
     Home: HomeScreen,
+    Simulator: SimulatorScreen,
     History: HistoryScreen,
     Settings: SettingsScreen,
   },

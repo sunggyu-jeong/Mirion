@@ -1,16 +1,13 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { BarChart2, Home, Settings } from 'lucide-react-native';
+import { BarChart2, Home, Settings, TrendingUp } from 'lucide-react-native';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TAB_CONFIG = [
   { name: 'Home', label: '홈', Icon: Home },
+  { name: 'Simulator', label: '시뮬레이터', Icon: TrendingUp },
   { name: 'History', label: '내역', Icon: BarChart2 },
   { name: 'Settings', label: '설정', Icon: Settings },
 ] as const;
