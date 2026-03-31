@@ -4,6 +4,7 @@ export { BottomSheet } from './BottomSheet';
 export { BottomTabBar } from './BottomTabBar';
 export { DisclaimerBox } from './DisclaimerBox';
 export { ErrorStateView } from './ErrorStateView';
+export { GrowthChart } from './GrowthChart';
 export { InfoCard } from './InfoCard';
 export { PrimaryButton } from './PrimaryButton';
 export { ReceiptRow } from './ReceiptRow';
