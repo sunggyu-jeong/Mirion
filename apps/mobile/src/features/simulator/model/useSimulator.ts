@@ -1,5 +1,4 @@
 import { useLidoStore } from '@entities/lido';
-import { useEthPrice } from '@features/staking';
 import { useCallback, useMemo, useState } from 'react';
 
 const DURATION_OPTIONS = [
@@ -37,22 +36,15 @@ function formatMonth(m: number): string {
   return `${m}개월`;
 }
 
-function parseUsdPrice(price: string): number {
-  return parseFloat(price.replace(/[^0-9.]/g, ''));
-}
-
 export type SimulatorResult = {
   growthData: number[];
   earned: number;
   finalBalance: number;
-  earnedUsd: string | null;
-  finalUsd: string | null;
   xTicks: Array<{ index: number; label: string }>;
 };
 
 export function useSimulator() {
   const { estimatedApy } = useLidoStore();
-  const { data: ethPrice } = useEthPrice();
 
   const [amountText, setAmountText] = useState('1');
   const [selectedMonths, setSelectedMonths] = useState(12);
@@ -68,16 +60,11 @@ export function useSimulator() {
     const growthData = calcGrowth(principal, apy, selectedMonths);
     const finalBalance = growthData[growthData.length - 1] ?? principal;
     const earned = finalBalance - principal;
-
-    const priceNum = ethPrice ? parseUsdPrice(ethPrice.price) : 0;
-    const earnedUsd = priceNum > 0 ? (earned * priceNum).toFixed(2) : null;
-    const finalUsd = priceNum > 0 ? (finalBalance * priceNum).toFixed(2) : null;
-
     const tickMonths = TICK_MAP[selectedMonths] ?? [0, selectedMonths];
     const xTicks = tickMonths.map(m => ({ index: m, label: formatMonth(m) }));
 
-    return { growthData, earned, finalBalance, earnedUsd, finalUsd, xTicks };
-  }, [principal, apy, selectedMonths, ethPrice]);
+    return { growthData, earned, finalBalance, xTicks };
+  }, [principal, apy, selectedMonths]);
 
   const selectAmount = useCallback((v: string) => setAmountText(v), []);
   const selectMonths = useCallback((m: number) => setSelectedMonths(m), []);
