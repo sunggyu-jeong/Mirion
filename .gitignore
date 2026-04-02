@@ -6,6 +6,7 @@ Desktop.ini
 *~
 
 .xcode.env.local
+*.xcuserstate
 
 # VS Code
 .vscode/*
