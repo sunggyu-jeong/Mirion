@@ -10,6 +10,7 @@ export { PrimaryButton } from './PrimaryButton';
 export { ReceiptRow } from './ReceiptRow';
 export { ScreenHeader } from './ScreenHeader';
 export { ScreenTitle } from './ScreenTitle';
+export { SectionTitle } from './SectionTitle';
 export { Skeleton } from './Skeleton';
 export type { Step } from './StepIndicator';
 export { StepIndicator } from './StepIndicator';
