@@ -21,20 +21,18 @@ jest.mock('@entities/wallet', () => ({
   ),
 }));
 
-jest.mock('@shared/lib/web3/client', () => ({
-  publicClient: { getBalance: jest.fn() },
+jest.mock('@features/lido', () => ({
+  useEthBalance: jest.fn(() => ({ data: BigInt('1500000000000000000') })),
 }));
 
-import { publicClient } from '@shared/lib/web3/client';
+import { useEthBalance } from '@features/lido';
 
 import { DepositSetupScreen } from '../DepositSetupScreen';
 
 describe('DepositSetupScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (publicClient.getBalance as jest.Mock).mockResolvedValue(
-      BigInt('1500000000000000000'), // 1.5 ETH
-    );
+    jest.mocked(useEthBalance).mockReturnValue({ data: BigInt('1500000000000000000') } as never);
   });
 
   it('기본 UI 요소를 렌더링한다', () => {
@@ -92,7 +90,7 @@ describe('DepositSetupScreen', () => {
   });
 
   it('잔액 조회 실패 시 에러 없이 렌더링된다', async () => {
-    (publicClient.getBalance as jest.Mock).mockRejectedValue(new Error('network error'));
+    jest.mocked(useEthBalance).mockReturnValue({ data: undefined } as never);
     render(<DepositSetupScreen />);
     await waitFor(() => {
       expect(screen.queryByText(/잔액:/)).toBeNull();

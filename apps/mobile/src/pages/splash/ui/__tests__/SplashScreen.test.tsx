@@ -17,15 +17,12 @@ jest.mock('@shared/lib/navigation', () => ({
 }));
 
 jest.mock('@shared/lib/storage', () => ({
+  LEGAL_ACCEPTED_KEY: 'legal-accepted',
   storage: {
     getString: jest.fn(),
     set: jest.fn(),
     delete: jest.fn(),
   },
-}));
-
-jest.mock('@pages/legal', () => ({
-  LEGAL_ACCEPTED_KEY: 'legal-accepted',
 }));
 
 import { useWalletStore } from '@entities/wallet';

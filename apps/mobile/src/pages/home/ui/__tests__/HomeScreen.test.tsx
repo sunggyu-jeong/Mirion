@@ -16,6 +16,14 @@ jest.mock('@features/lido', () => ({
   useLidoInfo: jest.fn(() => ({ apyQuery: { isLoading: false } })),
   useEthBalance: jest.fn(() => ({ data: undefined })),
   useLidoWithdraw: jest.fn(() => ({ requestWithdrawal: jest.fn(), isPending: false })),
+  useUnstake: jest.fn(() => ({
+    amount: '',
+    error: '',
+    setAmount: jest.fn(),
+    setMax: jest.fn(),
+    submit: jest.fn(),
+    isPending: false,
+  })),
 }));
 
 jest.mock('@features/staking', () => ({
@@ -53,5 +61,16 @@ describe('HomeScreen', () => {
   it('"현재 이더리움 시세" 카드를 렌더링한다', () => {
     render(<HomeScreen />);
     expect(screen.getByText('현재 이더리움 시세')).toBeTruthy();
+  });
+
+  it('stakedBalance > 0이면 "stETH 출금하기" 버튼을 렌더링한다', () => {
+    const { useLidoStore } = require('@entities/lido');
+    jest.spyOn(require('@entities/lido'), 'useLidoStore').mockReturnValue({
+      stakedBalance: BigInt('1000000000000000000'),
+      estimatedApy: 3.8,
+      stakeBaseline: 0n,
+    });
+    render(<HomeScreen />);
+    expect(screen.getByText('stETH 출금하기')).toBeTruthy();
   });
 });

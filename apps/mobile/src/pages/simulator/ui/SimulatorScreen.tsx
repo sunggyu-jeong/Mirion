@@ -1,4 +1,5 @@
 import { useSimulator } from '@features/simulator';
+import { useEthPrice } from '@features/staking';
 import { GrowthChart, InfoCard } from '@shared/ui';
 import React from 'react';
 import {
@@ -17,6 +18,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 
+function parseUsdPrice(price: string): number {
+  return parseFloat(price.replace(/[^0-9.]/g, ''));
+}
+
 export function SimulatorScreen() {
   const {
     apy,
@@ -29,6 +34,11 @@ export function SimulatorScreen() {
     durationOptions,
     quickAmounts,
   } = useSimulator();
+
+  const { data: ethPrice } = useEthPrice();
+  const priceNum = ethPrice ? parseUsdPrice(ethPrice.price) : 0;
+  const earnedUsd = result && priceNum > 0 ? (result.earned * priceNum).toFixed(2) : null;
+  const finalUsd = result && priceNum > 0 ? (result.finalBalance * priceNum).toFixed(2) : null;
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -114,9 +124,9 @@ export function SimulatorScreen() {
                     <Text className="text-[28px] font-bold text-[#22c55e] tracking-tight">
                       +{result.earned.toFixed(6)} ETH
                     </Text>
-                    {result.earnedUsd && (
+                    {earnedUsd && (
                       <Text className="text-sm text-[#62748e]">
-                        ≈ ${Number(result.earnedUsd).toLocaleString()}
+                        ≈ ${Number(earnedUsd).toLocaleString()}
                       </Text>
                     )}
                   </View>
@@ -132,9 +142,9 @@ export function SimulatorScreen() {
                       <Text className="text-[15px] font-semibold text-[#0f172b]">
                         {result.finalBalance.toFixed(6)} ETH
                       </Text>
-                      {result.finalUsd && (
+                      {finalUsd && (
                         <Text className="text-xs text-[#62748e]">
-                          ≈ ${Number(result.finalUsd).toLocaleString()}
+                          ≈ ${Number(finalUsd).toLocaleString()}
                         </Text>
                       )}
                     </View>

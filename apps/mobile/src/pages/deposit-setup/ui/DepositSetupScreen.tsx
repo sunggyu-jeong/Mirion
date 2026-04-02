@@ -1,9 +1,9 @@
 import { useLidoStore } from '@entities/lido';
 import { useWalletStore } from '@entities/wallet';
+import { useEthBalance } from '@features/lido';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { publicClient } from '@shared/lib/web3/client';
 import { PrimaryButton, ScreenHeader, ScreenTitle } from '@shared/ui';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -15,29 +15,19 @@ import {
   View,
 } from 'react-native';
 import Animated, { Easing, FadeIn, FadeInDown } from 'react-native-reanimated';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { formatEther } from 'viem';
 
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
-import type { Address } from 'viem';
-import { formatEther } from 'viem';
 
 export function DepositSetupScreen() {
   const { goBack, toDepositConfirm } = useAppNavigation();
   const address = useWalletStore(s => s.address);
   const { estimatedApy } = useLidoStore();
   const [amountEth, setAmountEth] = useState('');
-  const [balance, setBalance] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!address) {
-      return;
-    }
-    publicClient
-      .getBalance({ address: address as Address })
-      .then(val => setBalance(formatEther(val)))
-      .catch(() => {});
-  }, [address]);
+  const { data: ethBalanceWei } = useEthBalance(address);
+  const balance = ethBalanceWei !== undefined ? formatEther(ethBalanceWei) : null;
 
   const parsedAmount = parseFloat(amountEth);
   const parsedBalance = balance !== null ? parseFloat(balance) : null;

@@ -1,16 +1,14 @@
 import { useLidoStore } from '@entities/lido';
 import { useWalletStore } from '@entities/wallet';
+import { useBalanceCheck } from '@features/lido';
 import type { RouteProp } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { publicClient } from '@shared/lib/web3/client';
 import { DisclaimerBox, PrimaryButton, ReceiptRow, ScreenHeader, ScreenTitle } from '@shared/ui';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { Address } from 'viem';
-import { parseEther } from 'viem';
 
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 
@@ -24,6 +22,7 @@ export function DepositConfirmScreen() {
   const { estimatedApy } = useLidoStore();
   const [isAgreed, setIsAgreed] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const checkBalance = useBalanceCheck();
 
   const handleStake = async () => {
     if (!isAgreed) {
@@ -31,21 +30,16 @@ export function DepositConfirmScreen() {
     }
     setIsChecking(true);
     try {
-      const balance = await publicClient.getBalance({ address: address as Address });
-      if (balance < parseEther(amountEth)) {
+      const hasBalance = await checkBalance(address!, amountEth);
+      if (!hasBalance) {
         toError({ errorType: 'balance' });
         return;
       }
     } catch {
-      // 잔액 조회 실패 시 통과
     } finally {
       setIsChecking(false);
     }
-    toTransactionProgress({
-      amountEth,
-      unlockTimestamp: '0',
-      unlockDateLabel: '',
-    });
+    toTransactionProgress({ amountEth, unlockTimestamp: '0', unlockDateLabel: '' });
   };
 
   return (

@@ -11,12 +11,19 @@ const Animated = {
 
 const useSharedValue = (init: number) => ({ value: init });
 const useAnimatedStyle = (fn: () => object) => fn();
-const withTiming = (toValue: number) => toValue;
+const withTiming = (toValue: number, _config?: unknown, callback?: (finished: boolean) => void) => {
+  if (callback) {
+    callback(true);
+  }
+  return toValue;
+};
 const withSpring = (toValue: number) => toValue;
 const withSequence = (...values: number[]) => values[values.length - 1];
 const withDelay = (_delay: number, value: number) => value;
 const withRepeat = (value: number) => value;
 const interpolate = (value: number, input: number[], output: number[]) => output[0];
+const interpolateColor = (_value: number, _inputRange: number[], outputRange: string[]) =>
+  outputRange[0];
 const Easing = {
   linear: (t: number) => t,
   ease: (t: number) => t,
@@ -61,6 +68,7 @@ export {
   FadeInUp,
   FadeOut,
   interpolate,
+  interpolateColor,
   runOnJS,
   runOnUI,
   scrollTo,

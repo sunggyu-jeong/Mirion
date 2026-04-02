@@ -1,11 +1,9 @@
 import { useAppNavigation } from '@shared/lib/navigation';
-import { storage } from '@shared/lib/storage';
+import { LEGAL_ACCEPTED_KEY, storage } from '@shared/lib/storage';
 import { PrimaryButton, ScreenTitle } from '@shared/ui';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-export const LEGAL_ACCEPTED_KEY = 'legal-accepted';
 
 function Section({ title, body }: { title: string; body: string }) {
   return (

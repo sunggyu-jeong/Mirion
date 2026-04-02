@@ -109,6 +109,16 @@ describe('WalletConnectScreen', () => {
     expect(mockToMain).toHaveBeenCalled();
   });
 
+  it('Coinbase 선택 후 MetaMask 재선택하면 MetaMask로 변경된다', async () => {
+    render(<WalletConnectScreen />);
+    fireEvent.press(screen.getByText('Coinbase Wallet'));
+    fireEvent.press(screen.getByText('MetaMask'));
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('btn-연결하기'));
+    });
+    expect(mockConnectMetaMask).toHaveBeenCalled();
+  });
+
   it('연결 실패 시 toMain이 호출되지 않는다', async () => {
     mockConnectMetaMask.mockRejectedValue(new Error('사용자 취소'));
     render(<WalletConnectScreen />);

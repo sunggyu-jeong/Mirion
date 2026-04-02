@@ -1,7 +1,6 @@
 import { CB_SESSION_KEY, useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
-import { LEGAL_ACCEPTED_KEY } from '@pages/legal';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { storage } from '@shared/lib/storage';
+import { LEGAL_ACCEPTED_KEY, storage } from '@shared/lib/storage';
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 

@@ -2,10 +2,11 @@ import { render, screen } from '@testing-library/react-native';
 import React from 'react';
 
 const mockSubmit = jest.fn().mockResolvedValue('0xtxhash');
+const mockToDepositSuccess = jest.fn();
+const mockToError = jest.fn();
 
 jest.mock('@entities/tx', () => ({
-  useTxStore: (selector: (s: { status: string; txHash: string | null }) => unknown) =>
-    selector({ status: 'idle', txHash: null }),
+  useTxStore: jest.fn(),
 }));
 
 jest.mock('@features/lido', () => ({
@@ -28,16 +29,23 @@ jest.mock('@react-navigation/native', () => ({
 
 jest.mock('@shared/lib/navigation', () => ({
   useAppNavigation: () => ({
-    toDepositSuccess: jest.fn(),
-    toError: jest.fn(),
+    toDepositSuccess: mockToDepositSuccess,
+    toError: mockToError,
     goBack: jest.fn(),
   }),
 }));
+
+import { useTxStore } from '@entities/tx';
 
 import { TransactionProgressScreen } from '../TransactionProgressScreen';
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest
+    .mocked(useTxStore)
+    .mockImplementation((selector: (s: { status: string; txHash: string | null }) => unknown) =>
+      selector({ status: 'idle', txHash: null }),
+    );
 });
 
 describe('TransactionProgressScreen', () => {
@@ -61,5 +69,25 @@ describe('TransactionProgressScreen', () => {
   it('마운트 시 submit을 호출한다', () => {
     render(<TransactionProgressScreen />);
     expect(mockSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it('txStatus가 success이면 toDepositSuccess를 호출한다', () => {
+    jest
+      .mocked(useTxStore)
+      .mockImplementation((selector: (s: { status: string; txHash: string | null }) => unknown) =>
+        selector({ status: 'success', txHash: '0xtx' }),
+      );
+    render(<TransactionProgressScreen />);
+    expect(mockToDepositSuccess).toHaveBeenCalled();
+  });
+
+  it('txStatus가 error이면 toError를 호출한다', () => {
+    jest
+      .mocked(useTxStore)
+      .mockImplementation((selector: (s: { status: string; txHash: string | null }) => unknown) =>
+        selector({ status: 'error', txHash: null }),
+      );
+    render(<TransactionProgressScreen />);
+    expect(mockToError).toHaveBeenCalledWith({ errorType: 'transaction' });
   });
 });
