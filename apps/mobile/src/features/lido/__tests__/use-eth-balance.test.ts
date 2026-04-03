@@ -39,4 +39,16 @@ describe('useEthBalance', () => {
     const { result } = renderHook(() => useEthBalance('0xABC'));
     expect(result.current).toEqual({ data: 1000n });
   });
+
+  it('queryFn은 publicClient.getBalance를 호출한다', async () => {
+    const { publicClient } = require('@shared/lib/web3/client');
+    jest.mocked(publicClient.getBalance).mockResolvedValue(5000n);
+
+    renderHook(() => useEthBalance('0xABC'));
+
+    const callArgs = jest.mocked(useQuery).mock.calls[0][0] as { queryFn: () => Promise<unknown> };
+    await callArgs.queryFn();
+
+    expect(publicClient.getBalance).toHaveBeenCalledWith({ address: '0xABC' });
+  });
 });

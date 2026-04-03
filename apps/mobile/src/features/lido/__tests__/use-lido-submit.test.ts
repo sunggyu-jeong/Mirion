@@ -91,4 +91,40 @@ describe('useLidoSubmit', () => {
       }),
     ).rejects.toThrow('네트워크 오류');
   });
+
+  it('비 Error 예외도 setError가 호출된다', async () => {
+    mockRequest.mockRejectedValue('문자열 오류');
+
+    const { result } = renderHook(() => useLidoSubmit());
+    await act(async () => {
+      await result.current.submit(1000000000000000000n).catch(() => {});
+    });
+
+    expect(mockSetError).toHaveBeenCalledWith('문자열 오류');
+  });
+
+  it('isPendingRef.current = true 상태에서 재호출 시 무시된다', async () => {
+    let resolveRequest: (val: string) => void;
+    mockRequest.mockReturnValue(
+      new Promise(res => {
+        resolveRequest = res;
+      }),
+    );
+
+    const { result } = renderHook(() => useLidoSubmit());
+
+    act(() => {
+      result.current.submit(1000000000000000000n);
+    });
+
+    await act(async () => {
+      await result.current.submit(500000000000000000n);
+    });
+
+    expect(mockRequest).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolveRequest!('0xhash');
+    });
+  });
 });

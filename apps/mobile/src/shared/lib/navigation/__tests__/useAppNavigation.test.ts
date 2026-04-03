@@ -71,6 +71,67 @@ describe('useAppNavigation', () => {
     });
   });
 
+  describe('toLegal', () => {
+    it('Legal으로 reset한다', () => {
+      const { result } = renderHook(() => useAppNavigation());
+      result.current.toLegal();
+      expect(mockReset).toHaveBeenCalledWith({ index: 0, routes: [{ name: 'Legal' }] });
+    });
+  });
+
+  describe('toDepositSetup', () => {
+    it('DepositSetup으로 navigate한다', () => {
+      const { result } = renderHook(() => useAppNavigation());
+      result.current.toDepositSetup();
+      expect(mockNavigate).toHaveBeenCalledWith('DepositSetup');
+    });
+  });
+
+  describe('toDepositConfirm', () => {
+    it('DepositConfirm으로 params와 함께 navigate한다', () => {
+      const { result } = renderHook(() => useAppNavigation());
+      result.current.toDepositConfirm({ amountEth: '1.5', unlockDate: '2026-01-01' });
+      expect(mockNavigate).toHaveBeenCalledWith('DepositConfirm', {
+        amountEth: '1.5',
+        unlockDate: '2026-01-01',
+      });
+    });
+  });
+
+  describe('toTransactionProgress', () => {
+    it('TransactionProgress로 params와 함께 navigate한다', () => {
+      const { result } = renderHook(() => useAppNavigation());
+      result.current.toTransactionProgress({
+        amountEth: '1.5',
+        unlockTimestamp: '0',
+        unlockDateLabel: '2년 후',
+      });
+      expect(mockNavigate).toHaveBeenCalledWith('TransactionProgress', {
+        amountEth: '1.5',
+        unlockTimestamp: '0',
+        unlockDateLabel: '2년 후',
+      });
+    });
+  });
+
+  describe('toDepositSuccess', () => {
+    it('DepositSuccess로 params와 함께 navigate한다', () => {
+      const { result } = renderHook(() => useAppNavigation());
+      result.current.toDepositSuccess({ unlockDateLabel: '2028-01-01' });
+      expect(mockNavigate).toHaveBeenCalledWith('DepositSuccess', {
+        unlockDateLabel: '2028-01-01',
+      });
+    });
+  });
+
+  describe('toError', () => {
+    it('Error로 params와 함께 navigate한다', () => {
+      const { result } = renderHook(() => useAppNavigation());
+      result.current.toError({ errorType: 'balance' });
+      expect(mockNavigate).toHaveBeenCalledWith('Error', { errorType: 'balance' });
+    });
+  });
+
   describe('goBack', () => {
     it('navigation.goBack을 호출한다', () => {
       const { result } = renderHook(() => useAppNavigation());

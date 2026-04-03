@@ -146,5 +146,51 @@ describe('useWalletConnect', () => {
 
       expect(mockClearSession).toHaveBeenCalled();
     });
+
+    it('앱이 active 상태로 전환될 때 세션이 있으면 clearSession 미호출', () => {
+      jest.mocked(storage.getString).mockReturnValue('0xABC123');
+
+      renderHook(() => useWalletConnect());
+
+      act(() => {
+        const handlers = jest.mocked(AppState.addEventListener).mock.calls;
+        const changeHandler = handlers.find(args => args[0] === 'change')?.[1] as
+          | ((state: string) => void)
+          | undefined;
+        changeHandler?.('active');
+      });
+
+      expect(mockClearSession).not.toHaveBeenCalled();
+    });
+
+    it('background 상태 전환 시 clearSession 미호출', () => {
+      jest.mocked(storage.getString).mockReturnValue(undefined);
+
+      renderHook(() => useWalletConnect());
+
+      act(() => {
+        const handlers = jest.mocked(AppState.addEventListener).mock.calls;
+        const changeHandler = handlers.find(args => args[0] === 'change')?.[1] as
+          | ((state: string) => void)
+          | undefined;
+        changeHandler?.('background');
+      });
+
+      expect(mockClearSession).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('connectWallet — 메인넷 아님', () => {
+    it('chainId가 1이 아니면 toast.error를 호출한다', async () => {
+      const { toast } = require('@shared/lib/toast');
+      mockRequest.mockResolvedValueOnce(['0xABC123']).mockResolvedValueOnce('0x89');
+
+      const { result } = renderHook(() => useWalletConnect());
+      await act(async () => {
+        await result.current.connectWallet();
+      });
+
+      expect(toast.error).toHaveBeenCalled();
+    });
   });
 });

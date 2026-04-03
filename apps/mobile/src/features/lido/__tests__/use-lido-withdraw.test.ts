@@ -96,4 +96,15 @@ describe('useLidoWithdraw', () => {
     });
     expect(mockSetError).toHaveBeenCalledWith('user rejected');
   });
+
+  it('비 Error 예외도 setError가 호출된다', async () => {
+    mockProviderRef.current = {
+      request: jest.fn().mockRejectedValue('string error'),
+    };
+    const { result } = renderHook(() => useLidoWithdraw());
+    await act(async () => {
+      await result.current.requestWithdrawal(BigInt('1000000000000000000')).catch(() => {});
+    });
+    expect(mockSetError).toHaveBeenCalledWith('string error');
+  });
 });

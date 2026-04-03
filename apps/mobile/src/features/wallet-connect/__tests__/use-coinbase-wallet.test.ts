@@ -123,5 +123,64 @@ describe('useCoinbaseWallet', () => {
 
       expect(mockClearSession).toHaveBeenCalled();
     });
+
+    it('세션이 있으면 각 세션을 disconnect한다', async () => {
+      mockSessionGetAll.mockReturnValue([{ topic: 'topic-1' }, { topic: 'topic-2' }]);
+
+      const { result } = renderHook(() => useCoinbaseWallet());
+      await act(async () => {
+        await result.current.disconnectWallet();
+      });
+
+      expect(mockDisconnect).toHaveBeenCalledTimes(2);
+      expect(mockDisconnect).toHaveBeenCalledWith({
+        topic: 'topic-1',
+        reason: { code: 6000, message: 'User disconnected' },
+      });
+    });
+
+    it('disconnect 중 에러가 발생해도 clearSession은 호출된다', async () => {
+      mockDisconnect.mockRejectedValue(new Error('disconnect 실패'));
+      mockSessionGetAll.mockReturnValue([{ topic: 'topic-err' }]);
+
+      const { result } = renderHook(() => useCoinbaseWallet());
+      await act(async () => {
+        await result.current.disconnectWallet();
+      });
+
+      expect(mockClearSession).toHaveBeenCalled();
+    });
+  });
+
+  describe('connectWallet — uri 없음', () => {
+    it('uri가 없으면 Linking.openURL을 호출하지 않는다', async () => {
+      const { Linking } = require('react-native');
+      mockConnect.mockResolvedValue({
+        uri: undefined,
+        approval: jest.fn().mockResolvedValue({
+          namespaces: { eip155: { accounts: ['eip155:84532:0xCB456DEF'] } },
+        }),
+      });
+
+      const { result } = renderHook(() => useCoinbaseWallet());
+      await act(async () => {
+        await result.current.connectWallet();
+      });
+
+      expect(Linking.openURL).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('connectWallet — 비Error 예외', () => {
+    it('string 예외도 Error로 변환하여 처리한다', async () => {
+      mockConnect.mockRejectedValue('string error');
+
+      const { result } = renderHook(() => useCoinbaseWallet());
+      await expect(
+        act(async () => {
+          await result.current.connectWallet();
+        }),
+      ).rejects.toThrow('string error');
+    });
   });
 });

@@ -109,6 +109,22 @@ describe('useLidoInfo', () => {
     expect(result).toBe(4.2);
   });
 
+  it('fetchLidoApy가 smaApr 없을 때 0을 반환한다', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      json: () => Promise.resolve({ data: {} }),
+    }) as jest.Mock;
+    let capturedApyFn: (() => Promise<unknown>) | undefined;
+    jest.mocked(useQuery).mockImplementation((options: any) => {
+      if (options.queryKey[0] === 'lidoApy') {
+        capturedApyFn = options.queryFn;
+      }
+      return { data: undefined } as never;
+    });
+    renderHook(() => useLidoInfo(null));
+    const result = await capturedApyFn!();
+    expect(result).toBe(0);
+  });
+
   it('fetchLidoApy가 실패 시 0을 반환한다', async () => {
     global.fetch = jest.fn().mockRejectedValue(new Error('network error')) as jest.Mock;
     let capturedApyFn: (() => Promise<unknown>) | undefined;

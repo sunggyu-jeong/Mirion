@@ -88,4 +88,42 @@ describe('useTxTracker', () => {
       expect(mockSetError).toHaveBeenCalledWith('트랜잭션 확인 중 오류가 발생했습니다'),
     );
   });
+
+  it('언마운트 후 에러 발생 시 setError를 호출하지 않는다', async () => {
+    jest.mocked(useTxStore).mockImplementation(makeStore({ txHash: '0xcancelled-err' }));
+
+    let rejectReceipt!: (err: unknown) => void;
+    (publicClient.waitForTransactionReceipt as jest.Mock).mockReturnValue(
+      new Promise((_, rej) => {
+        rejectReceipt = rej;
+      }),
+    );
+
+    const { unmount } = renderHook(() => useTxTracker());
+    unmount();
+
+    rejectReceipt(new Error('timeout'));
+    await new Promise(res => setTimeout(res, 0));
+
+    expect(mockSetError).not.toHaveBeenCalled();
+  });
+
+  it('언마운트 후 receipt 도착 시 setSuccess를 호출하지 않는다', async () => {
+    jest.mocked(useTxStore).mockImplementation(makeStore({ txHash: '0xcancelled' }));
+
+    let resolveReceipt!: (val: unknown) => void;
+    (publicClient.waitForTransactionReceipt as jest.Mock).mockReturnValue(
+      new Promise(res => {
+        resolveReceipt = res;
+      }),
+    );
+
+    const { unmount } = renderHook(() => useTxTracker());
+    unmount();
+
+    resolveReceipt({ status: 'success' });
+    await new Promise(res => setTimeout(res, 0));
+
+    expect(mockSetSuccess).not.toHaveBeenCalled();
+  });
 });

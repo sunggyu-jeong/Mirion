@@ -101,4 +101,11 @@ describe('useSimulator', () => {
     expect(result.current.durationOptions.length).toBeGreaterThan(0);
     expect(result.current.quickAmounts.length).toBeGreaterThan(0);
   });
+
+  it('TICK_MAP에 없는 selectedMonths이면 기본 xTicks를 사용한다', () => {
+    const { result } = renderHook(() => useSimulator());
+    act(() => result.current.selectMonths(2));
+    expect(result.current.result!.xTicks).toBeDefined();
+    expect(result.current.result!.xTicks[0].label).toBe('지금');
+  });
 });
