@@ -1,3 +1,3 @@
-export { useLidoInfo, useLidoSubmit, useLidoWithdraw } from './lido';
-export { useEthPrice, useEthPriceChart } from './staking';
+export { useEthBalance } from './eth-balance';
+export { useEthPrice, useEthPriceChart } from './eth-price';
 export { useCoinbaseWallet, useWalletConnect } from './wallet-connect';
