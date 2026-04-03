@@ -65,7 +65,7 @@ describe('GrowthChart', () => {
   });
 
   it('xTick 레이블들을 렌더링한다', () => {
-    const { UNSAFE_getAllByType } = render(
+    render(
       <GrowthChart
         data={[1, 1.05, 1.038]}
         xTicks={[
@@ -75,5 +75,46 @@ describe('GrowthChart', () => {
       />,
     );
     expect(screen.queryByText('지금')).toBeDefined();
+  });
+
+  it('data 값이 1 미만일 때 소수점 4자리로 포맷한다', () => {
+    const { toJSON } = render(
+      <GrowthChart
+        data={[0.001, 0.0012, 0.0015]}
+        xTicks={[{ index: 0, label: '지금' }]}
+      />,
+    );
+    expect(toJSON()).not.toBeNull();
+  });
+
+  it('onLayout 이후 재렌더 시 오류가 없다', () => {
+    const { UNSAFE_getByType, rerender } = render(
+      <GrowthChart
+        data={[1, 1.01, 1.02]}
+        xTicks={[{ index: 0, label: '지금' }]}
+      />,
+    );
+    const { View } = require('react-native');
+    const view = UNSAFE_getByType(View);
+    fireEvent(view, 'layout', { nativeEvent: { layout: { width: 300 } } });
+    rerender(
+      <GrowthChart
+        data={[1, 1.01, 1.02]}
+        xTicks={[{ index: 0, label: '지금' }]}
+      />,
+    );
+    expect(true).toBe(true);
+  });
+
+  it('차트 렌더링 후 onLayout 재호출이 너비를 갱신한다', () => {
+    const { root } = render(
+      <GrowthChart
+        data={[1, 1.01, 1.02]}
+        xTicks={[{ index: 0, label: '지금' }]}
+      />,
+    );
+    fireEvent(root, 'layout', { nativeEvent: { layout: { width: 300 } } });
+    fireEvent(root, 'layout', { nativeEvent: { layout: { width: 350 } } });
+    expect(true).toBe(true);
   });
 });

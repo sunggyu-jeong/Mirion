@@ -165,4 +165,29 @@ describe('BottomTabBar', () => {
       fireEvent(plusIcon.parent!.parent!, 'pressOut');
     }).not.toThrow();
   });
+
+  it('onLayout 후 state.index < 2이면 toVisualSlot 참 분기를 실행한다', () => {
+    const { root } = render(
+      <BottomTabBar
+        state={makeState(1) as never}
+        navigation={{ emit: mockEmit, navigate: mockNavigate } as never}
+        descriptors={{} as never}
+      />,
+    );
+    fireEvent(root, 'layout', { nativeEvent: { layout: { width: 375 } } });
+    expect(screen.getByText('홈')).toBeTruthy();
+  });
+
+  it('내역 탭 defaultPrevented이면 navigate를 호출하지 않는다', () => {
+    mockEmit.mockReturnValue({ defaultPrevented: true });
+    render(
+      <BottomTabBar
+        state={makeState(0) as never}
+        navigation={{ emit: mockEmit, navigate: mockNavigate } as never}
+        descriptors={{} as never}
+      />,
+    );
+    fireEvent.press(screen.getByText('내역'));
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
 });

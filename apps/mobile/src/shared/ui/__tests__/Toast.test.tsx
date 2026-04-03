@@ -70,4 +70,15 @@ describe('ToastView', () => {
     jest.advanceTimersByTime(3000);
     jest.useRealTimers();
   });
+
+  it('알 수 없는 type도 렌더링된다 (info 컬러 폴백)', () => {
+    jest.mocked(useToastStore).mockReturnValue({
+      visible: true,
+      message: '알 수 없는 타입',
+      type: 'unknown' as never,
+      hide: jest.fn(),
+    } as never);
+    render(<ToastView />);
+    expect(screen.getByText('알 수 없는 타입')).toBeTruthy();
+  });
 });

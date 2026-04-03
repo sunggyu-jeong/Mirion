@@ -14,7 +14,7 @@ jest.mock('react-native-reanimated', () => ({
   },
   withTiming: (v: any) => v,
   withSpring: (v: any) => v,
-  Easing: { out: () => (t: any) => t, quad: (t: any) => t },
+  Easing: { out: () => (t: any) => t, quad: (t: any) => t, bezier: () => (t: any) => t },
 }));
 
 import { fireEvent, render, screen } from '@testing-library/react-native';
@@ -63,5 +63,15 @@ describe('PrimaryButton', () => {
       />,
     );
     expect(screen.getByText('높이버튼')).toBeTruthy();
+  });
+
+  it('onPressIn 이벤트를 처리한다', () => {
+    const { getByText } = render(<PrimaryButton label="press" />);
+    expect(() => fireEvent(getByText('press').parent!, 'pressIn')).not.toThrow();
+  });
+
+  it('onPressOut 이벤트를 처리한다', () => {
+    const { getByText } = render(<PrimaryButton label="pressout" />);
+    expect(() => fireEvent(getByText('pressout').parent!, 'pressOut')).not.toThrow();
   });
 });
