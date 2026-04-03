@@ -1,5 +1,5 @@
 import { useWalletStore } from '@entities/wallet';
-import { useEthBalance } from '@features/lido';
+import { useEthBalance } from '@features/eth-balance';
 import { AnimatedNumber, InfoCard } from '@shared/ui';
 import React from 'react';
 import { Text, View } from 'react-native';

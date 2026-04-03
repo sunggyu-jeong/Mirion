@@ -10,13 +10,13 @@ export function OnboardingScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 items-center justify-center">
-        <View className="w-[266px] items-center">
+        <View className="w-[300px] items-center">
           <Text className="text-[22px] font-bold text-[#0f172b] leading-[1.4] tracking-[-0.198px] text-center">
-            {'강제 저축으로 자산관리 챙기는\n가장 스마트한 방법'}
+            {'가장 스마트한\n자산 관리의 시작'}
           </Text>
           <View className="h-3" />
           <Text className="text-[14px] text-[#62748e] leading-[1.5] text-center">
-            지금 손대는 이더리움,확실하게 잠궈드려요
+            실시간 이더리움 시세 및 잔고 확인
           </Text>
         </View>
       </View>

@@ -1,4 +1,3 @@
-import { useTxTracker } from '@features/lido';
 import { useLoadingStore } from '@shared/lib/loading';
 import { LoadingOverlay, ToastView } from '@shared/ui';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -17,11 +16,6 @@ const queryClient = new QueryClient({
   },
 });
 
-function TxTrackerProvider() {
-  useTxTracker();
-  return null;
-}
-
 function GlobalLoadingOverlay() {
   const { visible } = useLoadingStore();
   return <LoadingOverlay visible={visible} />;
@@ -32,7 +26,6 @@ export function AppProviders() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <View style={StyleSheet.absoluteFill}>
-          <TxTrackerProvider />
           <Navigation />
           <ToastView />
           <GlobalLoadingOverlay />

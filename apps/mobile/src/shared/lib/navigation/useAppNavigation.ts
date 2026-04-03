@@ -8,10 +8,6 @@ type AppParamList = {
   WalletConnect: undefined;
   WalletConnecting: { walletType: 'metamask' | 'coinbase' };
   Main: undefined;
-  DepositSetup: undefined;
-  DepositConfirm: { amountEth: string; unlockDate: string };
-  TransactionProgress: { amountEth: string; unlockTimestamp: string; unlockDateLabel: string };
-  DepositSuccess: { unlockDateLabel: string };
   Error: { errorType: 'network' | 'transaction' | 'balance' };
 };
 
@@ -28,13 +24,6 @@ export function useAppNavigation() {
         routes: [{ name: 'Onboarding' }, { name: 'WalletConnecting', params: { walletType } }],
       }),
     toMain: () => navigation.reset({ index: 0, routes: [{ name: 'Main' }] }),
-    toDepositSetup: () => navigation.navigate('DepositSetup'),
-    toDepositConfirm: (params: AppParamList['DepositConfirm']) =>
-      navigation.navigate('DepositConfirm', params),
-    toTransactionProgress: (params: AppParamList['TransactionProgress']) =>
-      navigation.navigate('TransactionProgress', params),
-    toDepositSuccess: (params: AppParamList['DepositSuccess']) =>
-      navigation.navigate('DepositSuccess', params),
     toError: (params: AppParamList['Error']) => navigation.navigate('Error', params),
     goBack: () => navigation.goBack(),
   };

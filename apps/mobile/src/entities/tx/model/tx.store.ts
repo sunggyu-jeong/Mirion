@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
-export type TxStatus = 'idle' | 'pending' | 'success' | 'error';
-export type TxType = 'stake' | 'unstake';
+export type TxType = 'transfer' | 'swap' | 'receive';
+export type TxStatus = 'pending' | 'success' | 'error';
 
 interface TxState {
   txHash: string | null;
@@ -9,15 +9,13 @@ interface TxState {
   txType: TxType | null;
   amountEth: string | null;
   errorMessage: string | null;
-  setPending: (txHash: string, txType: TxType, amountEth?: string) => void;
-  setSuccess: () => void;
-  setError: (message: string) => void;
+  setTx: (tx: Partial<TxState>) => void;
   reset: () => void;
 }
 
 const initialState = {
   txHash: null,
-  status: 'idle' as TxStatus,
+  status: 'pending' as const,
   txType: null,
   amountEth: null,
   errorMessage: null,
@@ -25,9 +23,6 @@ const initialState = {
 
 export const useTxStore = create<TxState>()(set => ({
   ...initialState,
-  setPending: (txHash, txType, amountEth) =>
-    set({ txHash, txType, amountEth: amountEth ?? null, status: 'pending', errorMessage: null }),
-  setSuccess: () => set({ status: 'success' }),
-  setError: message => set({ status: 'error', errorMessage: message }),
+  setTx: tx => set(state => ({ ...state, ...tx })),
   reset: () => set(initialState),
 }));

@@ -60,7 +60,7 @@ export function AppInfoCard() {
       />
       <InfoRow
         label="네트워크"
-        value="Ethereum Mainnet (Lido)"
+        value="LockFi Mainnet"
       />
     </View>
   );
