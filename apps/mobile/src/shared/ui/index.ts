@@ -1,3 +1,4 @@
+export { typography } from './typography';
 export { AnimatedNumber } from './AnimatedNumber';
 export type { BottomSheetRef } from './BottomSheet';
 export { BottomSheet } from './BottomSheet';

@@ -1,6 +1,8 @@
 import React from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
+
+import { typography } from './typography';
 
 type Props = {
   children: React.ReactNode;
@@ -8,15 +10,5 @@ type Props = {
 };
 
 export function ScreenTitle({ children, style }: Props) {
-  return <Text style={[styles.title, style]}>{children}</Text>;
+  return <Text style={[typography.title2, style]}>{children}</Text>;
 }
-
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#0f172b',
-    letterSpacing: -0.198,
-    lineHeight: 30.8,
-  },
-});
