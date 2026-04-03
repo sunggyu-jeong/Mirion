@@ -127,4 +127,12 @@ describe('WalletConnectScreen', () => {
     });
     expect(mockToMain).not.toHaveBeenCalled();
   });
+
+  it('isPending이 true이면 빈 label 버튼을 렌더링한다', () => {
+    jest
+      .mocked(useWalletConnect)
+      .mockReturnValue({ connectWallet: mockConnectMetaMask, isPending: true } as never);
+    render(<WalletConnectScreen />);
+    expect(screen.getByTestId('btn-')).toBeTruthy();
+  });
 });

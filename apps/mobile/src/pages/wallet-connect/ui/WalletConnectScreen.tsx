@@ -1,10 +1,8 @@
-import { useWalletConnect } from '@features/wallet-connect';
-import { useCoinbaseWallet } from '@features/wallet-connect';
 import { useAppNavigation } from '@shared/lib/navigation';
 import type { BottomSheetRef } from '@shared/ui';
 import { BottomSheet, PrimaryButton } from '@shared/ui';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { WalletOption } from './WalletOption';
 
@@ -21,25 +19,12 @@ export function WalletConnectScreen() {
   const { goBack, toMain } = useAppNavigation();
   const sheetRef = useRef<BottomSheetRef>(null);
 
-  const { connectWallet: connectMetaMask, isPending: mmPending } = useWalletConnect();
-  const { connectWallet: connectCoinbase, isPending: cbPending } = useCoinbaseWallet();
-  const isPending = mmPending || cbPending;
-
   useEffect(() => {
     sheetRef.current?.open();
   }, []);
 
-  const handleConnect = async () => {
-    try {
-      if (selected === 'metamask') {
-        await connectMetaMask();
-      } else {
-        await connectCoinbase();
-      }
-      sheetRef.current?.close(toMain);
-    } catch {
-      // 사용자 취소 또는 연결 실패 — 시트 유지
-    }
+  const handleConnect = () => {
+    sheetRef.current?.close(toMain);
   };
 
   return (
@@ -80,16 +65,10 @@ export function WalletConnectScreen() {
               />
             </View>
             <PrimaryButton
-              label={isPending ? '' : '연결하기'}
+              label="연결하기"
               height={44}
               onPress={handleConnect}
             />
-            {isPending && (
-              <ActivityIndicator
-                style={{ position: 'absolute', bottom: 22 }}
-                color="#ffffff"
-              />
-            )}
           </View>
           <Text style={{ fontSize: 12, color: '#62748e', textAlign: 'center', lineHeight: 18 }}>
             {'로그인 시 이용약관과 '}
