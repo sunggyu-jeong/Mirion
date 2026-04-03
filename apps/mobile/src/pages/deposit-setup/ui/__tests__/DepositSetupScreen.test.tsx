@@ -97,4 +97,11 @@ describe('DepositSetupScreen', () => {
     });
     expect(screen.getByText('얼마나 스테이킹할까요?')).toBeTruthy();
   });
+
+  it('estimatedApy가 0이면 "로딩 중..." 텍스트를 렌더링한다', () => {
+    const { useLidoStore } = require('@entities/lido');
+    jest.mocked(useLidoStore).mockReturnValue({ estimatedApy: 0 });
+    render(<DepositSetupScreen />);
+    expect(screen.getByText('로딩 중...')).toBeTruthy();
+  });
 });

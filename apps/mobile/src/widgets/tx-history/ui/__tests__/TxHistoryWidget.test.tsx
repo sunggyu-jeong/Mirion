@@ -104,4 +104,35 @@ describe('TxHistoryWidget', () => {
     fireEvent.press(screen.getByText('이더스캔에서 보기 →'));
     expect(Linking.openURL).toHaveBeenCalledWith('https://etherscan.io/tx/0xTxHash');
   });
+
+  it('unknown status이면 pending 배지를 폴백으로 렌더링한다', () => {
+    jest.mocked(useTxStore).mockReturnValue({
+      ...baseStore,
+      txHash: '0xabc',
+      status: 'unknown',
+      amountEth: '1.0',
+    } as never);
+    render(<TxHistoryWidget />);
+    expect(screen.getByText('진행 중')).toBeTruthy();
+  });
+
+  it('txHash 없는 상태로 openEtherscan 호출 시 Linking.openURL을 호출하지 않는다', () => {
+    jest
+      .mocked(useTxStore)
+      .mockReturnValueOnce({
+        ...baseStore,
+        txHash: '0xabc',
+        status: 'pending',
+        amountEth: '1.0',
+      } as never)
+      .mockReturnValueOnce({
+        ...baseStore,
+        txHash: null,
+        status: 'pending',
+        amountEth: '',
+      } as never);
+    render(<TxHistoryWidget />);
+    fireEvent.press(screen.getByText('이더스캔에서 보기 →'));
+    expect(Linking.openURL).not.toHaveBeenCalled();
+  });
 });

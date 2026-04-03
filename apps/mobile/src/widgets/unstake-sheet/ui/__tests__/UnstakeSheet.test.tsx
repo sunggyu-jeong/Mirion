@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import React from 'react';
 
 jest.mock('@entities/lido', () => ({
@@ -114,5 +114,21 @@ describe('UnstakeSheet', () => {
     render(<UnstakeSheet sheetRef={sheetRef as never} />);
     fireEvent.press(screen.getByTestId('btn-출금 요청'));
     expect(mockSubmit).toHaveBeenCalled();
+  });
+
+  it('submit이 true를 반환하면 sheetRef.close()가 호출된다', async () => {
+    mockSubmit.mockResolvedValue(true);
+    render(<UnstakeSheet sheetRef={sheetRef as never} />);
+    await act(async () => {
+      fireEvent.press(screen.getByTestId('btn-출금 요청'));
+    });
+    expect(sheetRef.current.close).toHaveBeenCalled();
+  });
+
+  it('stakedBalance가 0이면 "0" ETH를 렌더링한다', () => {
+    const { useLidoStore } = require('@entities/lido');
+    jest.mocked(useLidoStore).mockReturnValue({ stakedBalance: 0n });
+    render(<UnstakeSheet sheetRef={sheetRef as never} />);
+    expect(screen.getByText('보유 stETH: 0 ETH')).toBeTruthy();
   });
 });

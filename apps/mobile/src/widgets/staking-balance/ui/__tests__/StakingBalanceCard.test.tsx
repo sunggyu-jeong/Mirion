@@ -10,11 +10,12 @@ jest.mock('@entities/wallet', () => ({
 }));
 
 jest.mock('@features/lido', () => ({
-  useLidoInfo: jest.fn(() => ({ apyQuery: { isLoading: false } })),
+  useLidoInfo: jest.fn(),
 }));
 
 import { useLidoStore } from '@entities/lido';
 import { useWalletStore } from '@entities/wallet';
+import { useLidoInfo } from '@features/lido';
 
 import { StakingBalanceCard } from '../StakingBalanceCard';
 
@@ -25,6 +26,7 @@ beforeEach(() => {
     .mockImplementation((selector: (s: { address: string }) => unknown) =>
       selector({ address: '0xABCDEF1234567890ABCDEF1234567890ABCDEF12' }),
     );
+  jest.mocked(useLidoInfo).mockReturnValue({ apyQuery: { isLoading: false } } as never);
 });
 
 describe('StakingBalanceCard', () => {
@@ -66,10 +68,19 @@ describe('StakingBalanceCard', () => {
       estimatedApy: 0,
       stakeBaseline: 0n,
     });
-    const { useLidoInfo } = require('@features/lido');
-    jest.mocked(useLidoInfo).mockReturnValue({ apyQuery: { isLoading: true } });
+    jest.mocked(useLidoInfo).mockReturnValue({ apyQuery: { isLoading: true } } as never);
     render(<StakingBalanceCard />);
     expect(screen.queryByText(/예상 APY/)).toBeNull();
+  });
+
+  it('estimatedApy가 0이고 로딩 중이 아니면 "예상 APY 로딩 중..."을 렌더링한다', () => {
+    jest.mocked(useLidoStore).mockReturnValue({
+      stakedBalance: BigInt('1000000000000000000'),
+      estimatedApy: 0,
+      stakeBaseline: 0n,
+    });
+    render(<StakingBalanceCard />);
+    expect(screen.getByText(/예상 APY 로딩 중/)).toBeTruthy();
   });
 
   it('address가 null이면 WalletBadge를 렌더링하지 않는다', () => {

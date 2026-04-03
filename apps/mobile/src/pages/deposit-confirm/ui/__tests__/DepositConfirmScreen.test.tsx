@@ -10,12 +10,21 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
+const mockGoBack = jest.fn();
+const mockToTransactionProgress = jest.fn();
+const mockToError = jest.fn();
+
 jest.mock('@shared/lib/navigation', () => ({
   useAppNavigation: () => ({
-    goBack: jest.fn(),
-    toTransactionProgress: jest.fn(),
-    toError: jest.fn(),
+    goBack: mockGoBack,
+    toTransactionProgress: mockToTransactionProgress,
+    toError: mockToError,
   }),
+}));
+
+const mockCheckBalance = jest.fn();
+jest.mock('@features/lido', () => ({
+  useBalanceCheck: () => mockCheckBalance,
 }));
 
 jest.mock('@entities/wallet', () => ({
@@ -35,6 +44,11 @@ jest.mock('@shared/lib/web3/client', () => ({
 }));
 
 import { DepositConfirmScreen } from '../DepositConfirmScreen';
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockCheckBalance.mockResolvedValue(true);
+});
 
 describe('DepositConfirmScreen', () => {
   it('스테이킹 금액을 렌더링한다', () => {
@@ -64,9 +78,68 @@ describe('DepositConfirmScreen', () => {
     expect(screen.getByText('ETH 스테이킹하기')).toBeTruthy();
   });
 
+  it('estimatedApy가 0이면 "-" 를 렌더링한다', () => {
+    const { useLidoStore } = require('@entities/lido');
+    jest.mocked(useLidoStore).mockReturnValue({ estimatedApy: 0 });
+    render(<DepositConfirmScreen />);
+    expect(screen.getByText('-')).toBeTruthy();
+  });
+
   it('동의 미체크 상태에서 버튼 클릭 시 네비게이션 없음', () => {
     render(<DepositConfirmScreen />);
     fireEvent.press(screen.getByText('ETH 스테이킹하기'));
     expect(screen.getByText('ETH 스테이킹하기')).toBeTruthy();
+  });
+
+  it('동의 후 스테이킹 버튼 클릭 시 잔고 확인 충분 → toTransactionProgress 호출', async () => {
+    const { act } = require('@testing-library/react-native');
+    mockCheckBalance.mockResolvedValue(true);
+    render(<DepositConfirmScreen />);
+    fireEvent.press(screen.getByText('위 내용을 확인했으며, 동의합니다.').parent!);
+    await act(async () => {
+      fireEvent.press(screen.getByText('ETH 스테이킹하기'));
+    });
+    expect(mockToTransactionProgress).toHaveBeenCalled();
+  });
+
+  it('동의 후 스테이킹 버튼 클릭 시 잔고 부족 → toError 호출', async () => {
+    const { act } = require('@testing-library/react-native');
+    mockCheckBalance.mockResolvedValue(false);
+    render(<DepositConfirmScreen />);
+    fireEvent.press(screen.getByText('위 내용을 확인했으며, 동의합니다.').parent!);
+    await act(async () => {
+      fireEvent.press(screen.getByText('ETH 스테이킹하기'));
+    });
+    expect(mockToError).toHaveBeenCalledWith({ errorType: 'balance' });
+  });
+
+  it('버튼 클릭 후 잔고 확인 중에는 "확인 중..." 레이블을 표시한다', async () => {
+    const { act } = require('@testing-library/react-native');
+    let resolveCheck: (val: boolean) => void;
+    mockCheckBalance.mockReturnValue(
+      new Promise(res => {
+        resolveCheck = res;
+      }),
+    );
+    render(<DepositConfirmScreen />);
+    fireEvent.press(screen.getByText('위 내용을 확인했으며, 동의합니다.').parent!);
+    act(() => {
+      fireEvent.press(screen.getByText('ETH 스테이킹하기'));
+    });
+    expect(screen.getByText('확인 중...')).toBeTruthy();
+    await act(async () => {
+      resolveCheck!(true);
+    });
+  });
+
+  it('checkBalance 예외 발생 시 crash 없이 진행된다', async () => {
+    const { act } = require('@testing-library/react-native');
+    mockCheckBalance.mockRejectedValue(new Error('네트워크 오류'));
+    render(<DepositConfirmScreen />);
+    fireEvent.press(screen.getByText('위 내용을 확인했으며, 동의합니다.').parent!);
+    await act(async () => {
+      fireEvent.press(screen.getByText('ETH 스테이킹하기'));
+    });
+    expect(mockToError).not.toHaveBeenCalled();
   });
 });
