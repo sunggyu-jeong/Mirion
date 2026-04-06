@@ -5,9 +5,8 @@ type AppParamList = {
   Splash: undefined;
   Legal: undefined;
   Onboarding: undefined;
-  WalletConnect: undefined;
-  WalletConnecting: { walletType: 'metamask' | 'coinbase' };
-  Main: undefined;
+  Main: { screen: 'Settings' } | undefined;
+  WhaleDetail: { whaleId: string };
   Error: { errorType: 'network' | 'transaction' | 'balance' };
 };
 
@@ -17,13 +16,9 @@ export function useAppNavigation() {
   return {
     toLegal: () => navigation.reset({ index: 0, routes: [{ name: 'Legal' }] }),
     toOnboarding: () => navigation.reset({ index: 0, routes: [{ name: 'Onboarding' }] }),
-    toWalletConnect: () => navigation.navigate('WalletConnect'),
-    toWalletConnecting: (walletType: 'metamask' | 'coinbase') =>
-      navigation.reset({
-        index: 1,
-        routes: [{ name: 'Onboarding' }, { name: 'WalletConnecting', params: { walletType } }],
-      }),
     toMain: () => navigation.reset({ index: 0, routes: [{ name: 'Main' }] }),
+    toWhaleDetail: (whaleId: string) => navigation.navigate('WhaleDetail', { whaleId }),
+    toSettings: () => navigation.navigate('Main', { screen: 'Settings' }),
     toError: (params: AppParamList['Error']) => navigation.navigate('Error', params),
     goBack: () => navigation.goBack(),
   };

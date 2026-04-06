@@ -5,5 +5,4 @@ export { LegalScreen } from './legal';
 export { OnboardingScreen } from './onboarding';
 export { SettingsScreen } from './settings';
 export { SplashScreen } from './splash';
-export { WalletConnectScreen } from './wallet-connect';
-export { WalletConnectingScreen } from './wallet-connecting';
+export { WhaleDetailScreen } from './whale-detail';
