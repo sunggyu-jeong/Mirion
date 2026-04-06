@@ -26,7 +26,7 @@ type TabConfig = {
 
 const TABS: TabConfig[] = [
   { name: 'Home', label: '홈', Icon: Home },
-  { name: 'History', label: '내역', Icon: List },
+  { name: 'History', label: '레이더', Icon: List },
   { name: 'Settings', label: '설정', Icon: Settings },
 ];
 

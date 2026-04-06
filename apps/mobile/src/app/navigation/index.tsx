@@ -5,8 +5,7 @@ import { LegalScreen } from '@pages/legal';
 import { OnboardingScreen } from '@pages/onboarding';
 import { SettingsScreen } from '@pages/settings';
 import { SplashScreen } from '@pages/splash';
-import { WalletConnectScreen } from '@pages/wallet-connect';
-import { WalletConnectingScreen } from '@pages/wallet-connecting';
+import { WhaleDetailScreen } from '@pages/whale-detail';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -30,36 +29,20 @@ const RootStack = createNativeStackNavigator({
     animation: 'fade',
   },
   screens: {
-    Splash: {
-      screen: SplashScreen,
-    },
-    Legal: {
-      screen: LegalScreen,
-      options: { animation: 'fade' },
-    },
-    Onboarding: {
-      screen: OnboardingScreen,
-    },
-    WalletConnect: {
-      screen: WalletConnectScreen,
-      options: { presentation: 'transparentModal', animation: 'none' },
-    },
-    WalletConnecting: {
-      screen: WalletConnectingScreen,
+    Splash: { screen: SplashScreen },
+    Legal: { screen: LegalScreen, options: { animation: 'fade' } },
+    Onboarding: { screen: OnboardingScreen },
+    Main: { screen: MainTab },
+    WhaleDetail: {
+      screen: WhaleDetailScreen,
       options: { animation: 'slide_from_right' },
     },
-    Main: {
-      screen: MainTab,
-    },
-    Error: {
-      screen: ErrorScreen,
-      options: { animation: 'fade' },
-    },
+    Error: { screen: ErrorScreen, options: { animation: 'fade' } },
   },
 });
 
 export type RootStackParamList = StaticParamList<typeof RootStack> & {
-  WalletConnecting: { walletType: 'metamask' | 'coinbase' };
+  WhaleDetail: { whaleId: string };
   Error: { errorType: 'network' | 'transaction' | 'balance' };
 };
 

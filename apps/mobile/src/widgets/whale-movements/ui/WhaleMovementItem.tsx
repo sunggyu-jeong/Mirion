@@ -1,0 +1,208 @@
+import type { WhaleTx } from '@entities/whale-tx';
+import { ArrowDownLeft, ArrowRight, ArrowUpRight, RefreshCw } from 'lucide-react-native';
+import React, { useCallback } from 'react';
+import { Linking, Pressable, Text, View } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+
+const TOSS_PRESS = { damping: 15, stiffness: 400 } as const;
+
+const TX_TYPE_CONFIG = {
+  send: { label: '대규모 전송', Icon: ArrowUpRight, color: '#fb2c36', bg: '#fff1f2' },
+  receive: { label: '대규모 수신', Icon: ArrowDownLeft, color: '#22c55e', bg: '#f0fdf4' },
+  swap: { label: '대규모 스왑', Icon: RefreshCw, color: '#f97316', bg: '#fff7ed' },
+} as const;
+
+function shortenAddress(addr: string): string {
+  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+}
+
+type Props = {
+  item: WhaleTx;
+};
+
+export function WhaleMovementItem({ item }: Props) {
+  const scale = useSharedValue(1);
+  const config = TX_TYPE_CONFIG[item.type];
+  const { Icon } = config;
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handleViewDetail = useCallback(() => {
+    Linking.openURL(`https://etherscan.io/tx/${item.txHash}`);
+  }, [item.txHash]);
+
+  return (
+    <Animated.View
+      style={[
+        {
+          backgroundColor: '#f8fafc',
+          borderRadius: 16,
+          padding: 16,
+          gap: 12,
+        },
+        animatedStyle,
+      ]}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            backgroundColor: config.bg,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Icon
+            size={18}
+            color={config.color}
+            strokeWidth={2}
+          />
+        </View>
+
+        <View style={{ flex: 1, gap: 2 }}>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            <Text
+              style={{ fontSize: 14, fontWeight: '600', color: '#0f172b', letterSpacing: -0.02 }}
+            >
+              {config.label}
+            </Text>
+            <Text
+              style={{ fontSize: 12, fontWeight: '400', color: '#94a3b8', letterSpacing: -0.01 }}
+            >
+              {item.timestamp}
+            </Text>
+          </View>
+          <Text
+            style={{ fontSize: 13, fontWeight: '500', color: config.color, letterSpacing: -0.01 }}
+          >
+            {item.amountEth}
+          </Text>
+          <Text style={{ fontSize: 12, fontWeight: '400', color: '#62748e', letterSpacing: -0.01 }}>
+            {item.amountUsd}
+          </Text>
+        </View>
+      </View>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 6,
+          backgroundColor: '#f1f5f9',
+          borderRadius: 8,
+          padding: 10,
+        }}
+      >
+        <Text
+          style={{ fontSize: 11, fontWeight: '400', color: '#62748e', fontFamily: 'monospace' }}
+          numberOfLines={1}
+        >
+          {shortenAddress(item.fromAddress)}
+        </Text>
+        <ArrowRight
+          size={12}
+          color="#94a3b8"
+          strokeWidth={2}
+        />
+        <Text
+          style={{ fontSize: 11, fontWeight: '400', color: '#62748e', fontFamily: 'monospace' }}
+          numberOfLines={1}
+        >
+          {shortenAddress(item.toAddress)}
+        </Text>
+      </View>
+
+      <Pressable
+        onPressIn={() => {
+          scale.value = withSpring(0.97, TOSS_PRESS);
+        }}
+        onPressOut={() => {
+          scale.value = withSpring(1, TOSS_PRESS);
+        }}
+        onPress={handleViewDetail}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          paddingVertical: 8,
+          borderRadius: 10,
+          borderWidth: 1,
+          borderColor: '#e2e8f0',
+          backgroundColor: 'white',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 13,
+            fontWeight: '500',
+            color: '#2b7fff',
+            letterSpacing: -0.02,
+          }}
+        >
+          거래 상세 보기
+        </Text>
+        <ArrowUpRight
+          size={14}
+          color="#2b7fff"
+          strokeWidth={2}
+        />
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+export function WhaleMovementItemSeparator() {
+  return (
+    <Animated.View
+      entering={withTiming as never}
+      style={{ height: 12 }}
+    />
+  );
+}
+
+export function RadarPulse() {
+  const opacity = useSharedValue(1);
+
+  React.useEffect(() => {
+    opacity.value = withTiming(0.3, {
+      duration: 1200,
+      easing: Easing.inOut(Easing.ease),
+    });
+    const interval = setInterval(() => {
+      opacity.value = withTiming(opacity.value < 0.5 ? 1 : 0.3, {
+        duration: 1200,
+        easing: Easing.inOut(Easing.ease),
+      });
+    }, 1200);
+    return () => clearInterval(interval);
+  }, [opacity]);
+
+  const pulseStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+  return (
+    <Animated.View
+      style={[
+        {
+          width: 8,
+          height: 8,
+          borderRadius: 4,
+          backgroundColor: '#22c55e',
+        },
+        pulseStyle,
+      ]}
+    />
+  );
+}

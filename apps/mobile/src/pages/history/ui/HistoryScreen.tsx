@@ -1,19 +1,22 @@
-import { ScreenTitle, typography } from '@shared/ui';
-import React from 'react';
-import { Text, View } from 'react-native';
+import { useAppNavigation } from '@shared/lib/navigation';
+import { ScreenTitle } from '@shared/ui';
+import { WhaleMovementList } from '@widgets/whale-movements';
+import React, { useCallback } from 'react';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function HistoryScreen() {
+  const { toSettings } = useAppNavigation();
+
+  const handleUpgrade = useCallback(() => toSettings(), [toSettings]);
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fcfcfc' }}>
-      <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
-        <ScreenTitle>내역</ScreenTitle>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 4 }}>
+        <ScreenTitle>고래 이동 레이더</ScreenTitle>
       </View>
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
-        <Text style={{ fontSize: 40, marginBottom: 16 }}>📭</Text>
-        <Text style={[typography.heading1, { color: '#62748e', textAlign: 'center' }]}>
-          아직 내역이 없습니다
-        </Text>
+      <View style={{ flex: 1 }}>
+        <WhaleMovementList onUpgrade={handleUpgrade} />
       </View>
     </SafeAreaView>
   );

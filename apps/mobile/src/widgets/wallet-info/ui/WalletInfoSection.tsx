@@ -17,7 +17,7 @@ export function WalletAddressCard({ address }: WalletAddressCardProps) {
           lineHeight: 21,
         }}
       >
-        연결된 주소
+        추적 중인 고래 주소
       </Text>
       <Text
         style={{ fontSize: 12, fontWeight: '400', color: '#0f172b', lineHeight: 18 }}
@@ -60,7 +60,7 @@ export function AppInfoCard() {
       />
       <InfoRow
         label="네트워크"
-        value="LockFi Mainnet"
+        value="Ethereum Mainnet"
       />
     </View>
   );
