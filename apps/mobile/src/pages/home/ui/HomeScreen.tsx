@@ -3,8 +3,10 @@ import { useSubscriptionStore } from '@entities/subscription';
 import type { WhaleProfile } from '@entities/whale';
 import { useStreakTracker } from '@features/streak-tracker';
 import { useWhaleFeed } from '@features/whale-feed';
+import { useWhaleMovements } from '@features/whale-movements';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { ChainFilterBar, Skeleton, StreakBadge } from '@shared/ui';
+import { DailySummaryCard } from '@widgets/daily-summary';
 import { WhaleCard } from '@widgets/whale-card';
 import React, { useCallback, useMemo } from 'react';
 import { FlatList, Text, View } from 'react-native';
@@ -150,6 +152,7 @@ export function HomeScreen() {
   const selectedChain = useAppSettingsStore(s => s.selectedChain);
   const setSelectedChain = useAppSettingsStore(s => s.setSelectedChain);
   const { data: whales, isLoading } = useWhaleFeed();
+  const { data: movements } = useWhaleMovements();
   const { toWhaleDetail, toSettings } = useAppNavigation();
   const streakCount = useStreakTracker();
 
@@ -230,6 +233,7 @@ export function HomeScreen() {
                 </View>
                 <StreakBadge count={streakCount} />
               </View>
+              <DailySummaryCard movements={movements} />
               <ChainFilterBar
                 value={selectedChain}
                 onChange={setSelectedChain}
