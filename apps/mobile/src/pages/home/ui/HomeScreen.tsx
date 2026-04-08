@@ -1,6 +1,7 @@
 import { useAppSettingsStore } from '@entities/app-settings';
 import { useSubscriptionStore } from '@entities/subscription';
 import type { WhaleProfile } from '@entities/whale';
+import { useDailyBriefing } from '@features/daily-briefing';
 import { useStreakTracker } from '@features/streak-tracker';
 import { useWhaleFeed } from '@features/whale-feed';
 import { useWhaleMovements } from '@features/whale-movements';
@@ -22,14 +23,7 @@ function ItemSeparator() {
 function SkeletonCard({ offset = 0 }: { offset?: number }) {
   const d = (n: number) => offset + n;
   return (
-    <View
-      style={{
-        backgroundColor: '#F2F4F6',
-        borderRadius: 20,
-        padding: 18,
-        gap: 15,
-      }}
-    >
+    <View style={{ backgroundColor: '#F2F4F6', borderRadius: 20, padding: 18, gap: 15 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <Skeleton
           width={44}
@@ -37,7 +31,6 @@ function SkeletonCard({ offset = 0 }: { offset?: number }) {
           borderRadius={13}
           delay={d(0)}
         />
-
         <View style={{ flex: 1, gap: 8 }}>
           <Skeleton
             width="52%"
@@ -60,7 +53,6 @@ function SkeletonCard({ offset = 0 }: { offset?: number }) {
             />
           </View>
         </View>
-
         <Skeleton
           width={18}
           height={18}
@@ -68,9 +60,7 @@ function SkeletonCard({ offset = 0 }: { offset?: number }) {
           delay={d(55)}
         />
       </View>
-
       <View style={{ height: 1, backgroundColor: 'rgba(0,0,0,0.05)' }} />
-
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View style={{ gap: 7 }}>
           <Skeleton
@@ -93,7 +83,6 @@ function SkeletonCard({ offset = 0 }: { offset?: number }) {
           delay={d(100)}
         />
       </View>
-
       <Skeleton
         width="62%"
         height={9}
@@ -134,7 +123,6 @@ function SkeletonList() {
           ))}
         </View>
       </View>
-
       <View style={{ gap: 12 }}>
         {Array.from({ length: 3 }).map((_, i) => (
           <SkeletonCard
@@ -155,6 +143,8 @@ export function HomeScreen() {
   const { data: movements } = useWhaleMovements();
   const { toWhaleDetail, toSettings } = useAppNavigation();
   const streakCount = useStreakTracker();
+
+  useDailyBriefing(movements);
 
   const filteredWhales = useMemo(() => {
     if (!whales) {
