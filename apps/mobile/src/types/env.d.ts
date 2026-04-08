@@ -5,6 +5,7 @@ declare module 'react-native-config' {
     CHAIN_ID?: string;
     ALCHEMY_API_KEY?: string;
     ALCHEMY_NETWORK?: string;
+    WORKER_URL?: string;
     [key: string]: string | undefined;
   };
   export = Config;

@@ -39,20 +39,13 @@ jest.mock('@entities/whale', () => ({
   },
 }));
 
-jest.mock('@shared/api/coingecko', () => ({
-  fetchEthPriceUsd: jest.fn(),
-}));
-
 import { fetchWhaleProfile } from '@entities/whale';
-import { fetchEthPriceUsd } from '@shared/api/coingecko';
 
 import { useWhaleFeed } from '../use-whale-feed';
 
-const ETH_PRICE = 2450;
-
 const MOCK_ONCHAIN_DATA: WhaleOnchainData = {
   ethBalance: BigInt('0xDE0B6B3A7640000'),
-  totalValueUsd: ETH_PRICE,
+  totalValueUsd: 2450,
   tokens: [],
 };
 
@@ -67,7 +60,6 @@ function createWrapper() {
 }
 
 beforeEach(() => {
-  (fetchEthPriceUsd as jest.Mock).mockResolvedValue(ETH_PRICE);
   (fetchWhaleProfile as jest.Mock).mockResolvedValue(MOCK_ONCHAIN_DATA);
 });
 
@@ -88,20 +80,20 @@ describe('useWhaleFeed', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
   });
 
-  it('calls fetchEthPriceUsd once per query', async () => {
-    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    expect(fetchEthPriceUsd).toHaveBeenCalledTimes(1);
-  });
-
   it('calls fetchWhaleProfile only for ETH-chain whales', async () => {
     const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(fetchWhaleProfile).toHaveBeenCalledTimes(2);
+  });
+
+  it('calls fetchWhaleProfile with just the whale address', async () => {
+    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(fetchWhaleProfile).toHaveBeenCalledWith('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045');
   });
 
   it('does not call fetchWhaleProfile for non-ETH-chain whales', async () => {
@@ -129,7 +121,7 @@ describe('useWhaleFeed', () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     const vitalik = result.current.data?.find(w => w.id === 'vitalik');
-    expect(vitalik?.totalValueUsd).toBe(ETH_PRICE);
+    expect(vitalik?.totalValueUsd).toBe(2450);
   });
 
   it('preserves static metadata fields in returned profiles', async () => {
@@ -143,8 +135,8 @@ describe('useWhaleFeed', () => {
     expect(vitalik?.isLocked).toBe(false);
   });
 
-  it('sets isError true when fetchEthPriceUsd rejects', async () => {
-    (fetchEthPriceUsd as jest.Mock).mockRejectedValueOnce(new Error('network'));
+  it('sets isError true when fetchWhaleProfile rejects', async () => {
+    (fetchWhaleProfile as jest.Mock).mockRejectedValueOnce(new Error('network'));
 
     const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
 

@@ -1,0 +1,14 @@
+name = "lockfi-api"
+main = "src/index.ts"
+compatibility_date = "2025-04-09"
+
+# 배포 후 wrangler kv namespace create CACHE 실행하여 id 교체
+[[kv_namespaces]]
+binding = "CACHE"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+preview_id = "REPLACE_WITH_KV_NAMESPACE_PREVIEW_ID"
+
+# 시크릿은 wrangler secret put ALCHEMY_API_KEY 로 등록
+# [vars] 에는 공개 값만 넣을 것
+[vars]
+ALCHEMY_NETWORK = "eth-mainnet"

@@ -30,17 +30,10 @@ jest.mock('@entities/whale-tx', () => ({
   fetchWhaleTransfers: jest.fn(),
 }));
 
-jest.mock('@shared/api/coingecko', () => ({
-  fetchEthPriceUsd: jest.fn(),
-}));
-
 import { fetchWhaleProfile } from '@entities/whale';
 import { fetchWhaleTransfers } from '@entities/whale-tx';
-import { fetchEthPriceUsd } from '@shared/api/coingecko';
 
 import { useWhaleDetail } from '../use-whale-detail';
-
-const ETH_PRICE = 2450;
 
 const MOCK_ONCHAIN: WhaleOnchainData = {
   ethBalance: BigInt('0xDE0B6B3A7640000'),
@@ -77,7 +70,6 @@ function createWrapper() {
 }
 
 beforeEach(() => {
-  (fetchEthPriceUsd as jest.Mock).mockResolvedValue(ETH_PRICE);
   (fetchWhaleProfile as jest.Mock).mockResolvedValue(MOCK_ONCHAIN);
   (fetchWhaleTransfers as jest.Mock).mockResolvedValue([MOCK_TX]);
 });
@@ -95,21 +87,17 @@ describe('useWhaleDetail', () => {
     expect(result.current.isLoading).toBe(true);
   });
 
-  it('calls fetchWhaleProfile with the whale address for an ETH whale', async () => {
+  it('calls fetchWhaleProfile with just the whale address', async () => {
     const { result } = renderHook(() => useWhaleDetail('vitalik'), {
       wrapper: createWrapper(),
     });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(fetchWhaleProfile).toHaveBeenCalledWith(
-      '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
-      expect.anything(),
-      ETH_PRICE,
-    );
+    expect(fetchWhaleProfile).toHaveBeenCalledWith('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045');
   });
 
-  it('calls fetchWhaleTransfers with the whale address for an ETH whale', async () => {
+  it('calls fetchWhaleTransfers with the whale address and opts', async () => {
     const { result } = renderHook(() => useWhaleDetail('vitalik'), {
       wrapper: createWrapper(),
     });
@@ -118,8 +106,7 @@ describe('useWhaleDetail', () => {
 
     expect(fetchWhaleTransfers).toHaveBeenCalledWith(
       '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
-      expect.anything(),
-      expect.anything(),
+      expect.objectContaining({ minValueEth: 0 }),
     );
   });
 

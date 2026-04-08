@@ -7,7 +7,9 @@
     "mobile": "pnpm --filter @lockfi/mobile start",
     "android": "pnpm --filter @lockfi/mobile android",
     "ios": "pnpm --filter @lockfi/mobile ios",
-    "lint:mobile": "pnpm --filter @lockfi/mobile lint"
+    "lint:mobile": "pnpm --filter @lockfi/mobile lint",
+    "worker:dev": "pnpm --filter @lockfi/worker dev",
+    "worker:deploy": "pnpm --filter @lockfi/worker deploy"
   },
   "keywords": [],
   "author": "sunggyu-jeong",
