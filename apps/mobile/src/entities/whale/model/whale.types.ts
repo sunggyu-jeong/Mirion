@@ -9,15 +9,29 @@ export const CHAIN_CONFIG: Record<Chain, { label: string; color: string }> = {
   BNB: { label: 'BNB', color: '#F3BA2F' },
 };
 
-export interface WhaleProfile {
+export interface WhaleMetadata {
   id: string;
   name: string;
   address: string;
   tag: string;
-  emoji: string;
   chain: Chain;
-  totalValueUsd: string;
-  recentActivity: string;
-  activityType: WhaleActivityType;
   isLocked: boolean;
+}
+
+export interface RawTokenBalance {
+  contractAddress: string;
+  rawBalance: bigint;
+}
+
+export interface WhaleOnchainData {
+  ethBalance: bigint;
+  totalValueUsd: number;
+  tokens: RawTokenBalance[];
+}
+
+export interface WhaleProfile extends WhaleMetadata {
+  ethBalance: bigint;
+  totalValueUsd: number;
+  recentActivity?: string;
+  activityType: WhaleActivityType;
 }

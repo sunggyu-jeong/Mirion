@@ -60,7 +60,6 @@ export function WhaleDetailScreen() {
 
         <View style={{ flex: 1, gap: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Text style={{ fontSize: 16 }}>{whale?.emoji ?? '🐋'}</Text>
             <Text
               style={{
                 fontSize: 17,

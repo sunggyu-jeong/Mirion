@@ -9,9 +9,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 
 const FEATURES = [
-  { emoji: '🐋', title: '실시간 고래 추적', desc: '세계 최대 규모 투자자들의 매수·매도 포착' },
-  { emoji: '📊', title: '포트폴리오 분석', desc: '고래의 자산 구성과 비중을 한눈에 파악' },
-  { emoji: '🔔', title: '즉시 알림 (PRO)', desc: '대규모 이체 발생 시 실시간 푸시 수신' },
+  { title: '실시간 고래 추적', desc: '세계 최대 규모 투자자들의 매수·매도 포착' },
+  { title: '포트폴리오 분석', desc: '고래의 자산 구성과 비중을 한눈에 파악' },
+  { title: '즉시 알림 (PRO)', desc: '대규모 이체 발생 시 실시간 푸시 수신' },
 ];
 
 export function OnboardingScreen() {
@@ -29,7 +29,6 @@ export function OnboardingScreen() {
           entering={FadeInUp.delay(0).duration(320).easing(EASE_OUT)}
           style={{ alignItems: 'center', marginBottom: 48 }}
         >
-          <Text style={{ fontSize: 48, marginBottom: 16 }}>🐋</Text>
           <Text
             style={{
               fontSize: 28,
@@ -73,7 +72,6 @@ export function OnboardingScreen() {
                 padding: 16,
               }}
             >
-              <Text style={{ fontSize: 26 }}>{f.emoji}</Text>
               <View style={{ flex: 1, gap: 3 }}>
                 <Text
                   style={{

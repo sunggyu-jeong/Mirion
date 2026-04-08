@@ -9,9 +9,9 @@ const baseWhale: WhaleProfile = {
   name: 'Vitalik Buterin',
   address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
   tag: 'ETH 창시자',
-  emoji: '🐋',
   chain: 'ETH',
-  totalValueUsd: '$847M',
+  ethBalance: 345_678_000_000_000_000_000_000n,
+  totalValueUsd: 847_000_000,
   recentActivity: '3시간 전 · 100 ETH 전송',
   activityType: 'transfer',
   isLocked: false,
@@ -55,7 +55,7 @@ describe('WhaleCard', () => {
     expect(screen.getByText('BTC')).toBeTruthy();
   });
 
-  it('should show total value for free unlocked whale', () => {
+  it('should show formatted total value for free unlocked whale', () => {
     render(
       <WhaleCard
         whale={baseWhale}
@@ -142,6 +142,18 @@ describe('WhaleCard', () => {
       />,
     );
     expect(screen.getByText('3시간 전 · 100 ETH 전송')).toBeTruthy();
+  });
+
+  it('should show dash when recentActivity is undefined', () => {
+    render(
+      <WhaleCard
+        whale={{ ...baseWhale, recentActivity: undefined }}
+        isPro={false}
+        onPress={() => {}}
+        onUpgrade={() => {}}
+      />,
+    );
+    expect(screen.getByText('—')).toBeTruthy();
   });
 
   it('should hide recent activity for locked whale when not pro', () => {

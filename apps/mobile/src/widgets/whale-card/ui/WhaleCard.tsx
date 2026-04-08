@@ -1,5 +1,6 @@
 import type { WhaleProfile } from '@entities/whale';
 import { CHAIN_CONFIG } from '@entities/whale';
+import { formatUsd } from '@shared/lib/format';
 import { ArrowRight, Lock, TrendingDown, TrendingUp } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -63,19 +64,6 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
         ]}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <View
-            style={{
-              width: 46,
-              height: 46,
-              borderRadius: 14,
-              backgroundColor: 'white',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Text style={{ fontSize: 22 }}>{whale.emoji}</Text>
-          </View>
-
           <View style={{ flex: 1, gap: 2 }}>
             <Text
               style={{
@@ -159,12 +147,7 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
           )}
         </View>
 
-        <View
-          style={{
-            height: 1,
-            backgroundColor: '#f1f5f9',
-          }}
-        />
+        <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />
 
         <View
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
@@ -183,7 +166,7 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
                 letterSpacing: -0.03,
               }}
             >
-              {isLocked ? '****' : whale.totalValueUsd}
+              {isLocked ? '****' : formatUsd(whale.totalValueUsd)}
             </Text>
           </View>
 
@@ -225,7 +208,7 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
           }}
           numberOfLines={1}
         >
-          {isLocked ? '구독 후 최근 활동 확인 가능' : whale.recentActivity}
+          {isLocked ? '구독 후 최근 활동 확인 가능' : (whale.recentActivity ?? '—')}
         </Text>
       </Animated.View>
     </Pressable>

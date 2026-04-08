@@ -1,4 +1,5 @@
 import type { WhaleTx } from '@entities/whale-tx';
+import { formatEth, formatRelativeTime, formatUsd } from '@shared/lib/format';
 import { ArrowDownLeft, ArrowRight, ArrowUpRight, RefreshCw } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { Linking, Pressable, Text, View } from 'react-native';
@@ -42,12 +43,7 @@ export function WhaleMovementItem({ item }: Props) {
   return (
     <Animated.View
       style={[
-        {
-          backgroundColor: '#f8fafc',
-          borderRadius: 16,
-          padding: 16,
-          gap: 12,
-        },
+        { backgroundColor: '#f8fafc', borderRadius: 16, padding: 16, gap: 12 },
         animatedStyle,
       ]}
     >
@@ -81,16 +77,16 @@ export function WhaleMovementItem({ item }: Props) {
             <Text
               style={{ fontSize: 12, fontWeight: '400', color: '#94a3b8', letterSpacing: -0.01 }}
             >
-              {item.timestamp}
+              {formatRelativeTime(item.timestampMs)}
             </Text>
           </View>
           <Text
             style={{ fontSize: 13, fontWeight: '500', color: config.color, letterSpacing: -0.01 }}
           >
-            {item.amountEth}
+            {formatEth(item.amountEth)}
           </Text>
           <Text style={{ fontSize: 12, fontWeight: '400', color: '#62748e', letterSpacing: -0.01 }}>
-            {item.amountUsd}
+            {formatUsd(item.amountUsd)}
           </Text>
         </View>
       </View>
@@ -144,14 +140,7 @@ export function WhaleMovementItem({ item }: Props) {
           backgroundColor: 'white',
         }}
       >
-        <Text
-          style={{
-            fontSize: 13,
-            fontWeight: '500',
-            color: '#2b7fff',
-            letterSpacing: -0.02,
-          }}
-        >
+        <Text style={{ fontSize: 13, fontWeight: '500', color: '#2b7fff', letterSpacing: -0.02 }}>
           거래 상세 보기
         </Text>
         <ArrowUpRight
@@ -194,15 +183,7 @@ export function RadarPulse() {
 
   return (
     <Animated.View
-      style={[
-        {
-          width: 8,
-          height: 8,
-          borderRadius: 4,
-          backgroundColor: '#22c55e',
-        },
-        pulseStyle,
-      ]}
+      style={[{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#22c55e' }, pulseStyle]}
     />
   );
 }

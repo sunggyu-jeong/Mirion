@@ -1,4 +1,6 @@
-import type { TokenHolding, WhaleDetailData } from '@features/whale-detail';
+import type { RawTokenBalance } from '@entities/whale';
+import type { WhaleDetailData } from '@features/whale-detail';
+import { formatRelativeTime, formatUsd } from '@shared/lib/format';
 import { ArrowDownLeft, ArrowRight, ArrowUpRight, RefreshCw } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import { FlatList, Linking, Pressable, Text, View } from 'react-native';
@@ -23,7 +25,41 @@ const TX_CONFIG = {
   transfer: { label: '전송', Icon: ArrowRight, color: '#f97316', bg: '#fff7ed' },
 } as const;
 
-function buildSlices(tokens: TokenHolding[]) {
+const TOKEN_DISPLAY_MAP: Record<string, { symbol: string; color: string }> = {
+  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48': { symbol: 'USDC', color: '#2775CA' },
+  '0xdAC17F958D2ee523a2206206994597C13D831ec7': { symbol: 'USDT', color: '#26A17B' },
+  '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599': { symbol: 'WBTC', color: '#F7931A' },
+  '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84': { symbol: 'stETH', color: '#00A3FF' },
+  '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984': { symbol: 'UNI', color: '#FF007A' },
+  '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9': { symbol: 'AAVE', color: '#B6509E' },
+};
+
+interface DisplayToken {
+  contractAddress: string;
+  symbol: string;
+  color: string;
+  percentage: number;
+}
+
+function toDisplayTokens(tokens: RawTokenBalance[]): DisplayToken[] {
+  if (tokens.length === 0) {
+    return [];
+  }
+  const total = tokens.reduce((sum, t) => sum + t.rawBalance, 0n);
+  if (total === 0n) {
+    return [];
+  }
+  return tokens.map(t => {
+    const info = TOKEN_DISPLAY_MAP[t.contractAddress] ?? {
+      symbol: `${t.contractAddress.slice(0, 6)}…`,
+      color: '#94a3b8',
+    };
+    const percentage = Number((t.rawBalance * 10_000n) / total) / 100;
+    return { contractAddress: t.contractAddress, ...info, percentage };
+  });
+}
+
+function buildSlices(tokens: DisplayToken[]) {
   let cumulative = 0;
   return tokens.map(t => {
     const start = (cumulative / 100) * 2 * Math.PI - Math.PI / 2;
@@ -75,16 +111,14 @@ function TxItem({ item, index }: TxItemProps) {
         onPress={handlePress}
       >
         <Animated.View
-          style={[
-            {
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 12,
-              paddingVertical: 12,
-              borderBottomWidth: 1,
-              borderBottomColor: '#f1f5f9',
-            },
-          ]}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+            paddingVertical: 12,
+            borderBottomWidth: 1,
+            borderBottomColor: '#f1f5f9',
+          }}
         >
           <View
             style={{
@@ -113,7 +147,7 @@ function TxItem({ item, index }: TxItemProps) {
               <Text
                 style={{ fontSize: 13, fontWeight: '700', color: cfg.color, letterSpacing: -0.02 }}
               >
-                {item.amountUsd}
+                {formatUsd(item.amountUsd)}
               </Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
@@ -130,7 +164,7 @@ function TxItem({ item, index }: TxItemProps) {
               </Text>
             </View>
             <Text style={{ fontSize: 11, color: '#cbd5e1', letterSpacing: -0.01 }}>
-              {item.timestamp}
+              {formatRelativeTime(item.timestampMs)}
             </Text>
           </View>
         </Animated.View>
@@ -147,7 +181,8 @@ type Props = {
 
 export function WhaleDetailView({ data, isPro, onUpgrade }: Props) {
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
-  const slices = buildSlices(data.tokens);
+  const displayTokens = toDisplayTokens(data.tokens);
+  const slices = buildSlices(displayTokens);
   const visibleTxs = isPro ? data.transactions : data.transactions.slice(0, FREE_TX_LIMIT);
   const hasLocked = !isPro && data.transactions.length > FREE_TX_LIMIT;
 
@@ -184,66 +219,68 @@ export function WhaleDetailView({ data, isPro, onUpgrade }: Props) {
               <Text
                 style={{ fontSize: 26, fontWeight: '800', color: '#0f172b', letterSpacing: -0.04 }}
               >
-                {data.totalValueUsd}
+                {formatUsd(data.totalValueUsd)}
               </Text>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-              <Svg
-                width={PIE_SIZE}
-                height={PIE_SIZE}
-              >
-                <G>
-                  {slices.map((s, i) => (
-                    <Path
-                      key={i}
-                      d={s.d}
-                      fill={s.color}
-                      opacity={activeIdx === null || activeIdx === i ? 1 : 0.35}
-                      onPress={() => setActiveIdx(p => (p === i ? null : i))}
-                    />
-                  ))}
-                </G>
-              </Svg>
+            {displayTokens.length > 0 && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+                <Svg
+                  width={PIE_SIZE}
+                  height={PIE_SIZE}
+                >
+                  <G>
+                    {slices.map((s, i) => (
+                      <Path
+                        key={i}
+                        d={s.d}
+                        fill={s.color}
+                        opacity={activeIdx === null || activeIdx === i ? 1 : 0.35}
+                        onPress={() => setActiveIdx(p => (p === i ? null : i))}
+                      />
+                    ))}
+                  </G>
+                </Svg>
 
-              <View style={{ flex: 1, gap: 7 }}>
-                {data.tokens.map((t, i) => (
-                  <View
-                    key={t.symbol}
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}
-                  >
+                <View style={{ flex: 1, gap: 7 }}>
+                  {displayTokens.map((t, i) => (
                     <View
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: 4,
-                        backgroundColor: t.color,
-                        opacity: activeIdx === null || activeIdx === i ? 1 : 0.3,
-                      }}
-                    />
-                    <Text
-                      style={{
-                        flex: 1,
-                        fontSize: 13,
-                        fontWeight: '500',
-                        color: activeIdx === null || activeIdx === i ? '#0f172b' : '#94a3b8',
-                      }}
+                      key={t.contractAddress}
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }}
                     >
-                      {t.symbol}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontWeight: '600',
-                        color: activeIdx === null || activeIdx === i ? '#62748e' : '#cbd5e1',
-                      }}
-                    >
-                      {t.percentage.toFixed(1)}%
-                    </Text>
-                  </View>
-                ))}
+                      <View
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: 4,
+                          backgroundColor: t.color,
+                          opacity: activeIdx === null || activeIdx === i ? 1 : 0.3,
+                        }}
+                      />
+                      <Text
+                        style={{
+                          flex: 1,
+                          fontSize: 13,
+                          fontWeight: '500',
+                          color: activeIdx === null || activeIdx === i ? '#0f172b' : '#94a3b8',
+                        }}
+                      >
+                        {t.symbol}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontWeight: '600',
+                          color: activeIdx === null || activeIdx === i ? '#62748e' : '#cbd5e1',
+                        }}
+                      >
+                        {t.percentage.toFixed(1)}%
+                      </Text>
+                    </View>
+                  ))}
+                </View>
               </View>
-            </View>
+            )}
           </Animated.View>
 
           <Animated.View

@@ -1,16 +1,12 @@
-import type { WhaleProfile } from './whale.types';
+import type { WhaleMetadata } from './whale.types';
 
-export const CURATED_WHALES: WhaleProfile[] = [
+export const CURATED_WHALES: WhaleMetadata[] = [
   {
     id: 'vitalik',
     name: 'Vitalik Buterin',
     address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
     tag: 'ETH 창시자',
-    emoji: '🐋',
     chain: 'ETH',
-    totalValueUsd: '$847M',
-    recentActivity: '3시간 전 · 100 ETH 전송',
-    activityType: 'transfer',
     isLocked: false,
   },
   {
@@ -18,11 +14,7 @@ export const CURATED_WHALES: WhaleProfile[] = [
     name: 'MicroStrategy',
     address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
     tag: '기관 투자자',
-    emoji: '🏢',
     chain: 'BTC',
-    totalValueUsd: '$16.5B',
-    recentActivity: '1시간 전 · 2,142 BTC 매수',
-    activityType: 'buy',
     isLocked: false,
   },
   {
@@ -30,11 +22,7 @@ export const CURATED_WHALES: WhaleProfile[] = [
     name: '익명 고래 #7',
     address: 'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH',
     tag: '대형 투자자',
-    emoji: '🎭',
     chain: 'SOL',
-    totalValueUsd: '$480M',
-    recentActivity: '2시간 전 · 420,000 SOL 매도',
-    activityType: 'sell',
     isLocked: false,
   },
   {
@@ -42,11 +30,7 @@ export const CURATED_WHALES: WhaleProfile[] = [
     name: 'Jump Crypto',
     address: '0x4C6f947Ae67F572afa4ae0730947DE7C874F95Ef',
     tag: '헤지펀드',
-    emoji: '🏦',
     chain: 'ETH',
-    totalValueUsd: '$2.1B',
-    recentActivity: '47분 전 · 8,500 ETH 매수',
-    activityType: 'buy',
     isLocked: true,
   },
   {
@@ -54,11 +38,7 @@ export const CURATED_WHALES: WhaleProfile[] = [
     name: 'Binance Hot Wallet',
     address: '0x28C6c06298d514Db089934071355E5743bf21d60',
     tag: '거래소',
-    emoji: '🏛️',
-    chain: 'BNB',
-    totalValueUsd: '$8.4B',
-    recentActivity: '5분 전 · 850,000 BNB 입금',
-    activityType: 'buy',
+    chain: 'ETH',
     isLocked: true,
   },
   {
@@ -66,11 +46,7 @@ export const CURATED_WHALES: WhaleProfile[] = [
     name: 'Grayscale',
     address: '1P5ZEDWTKTFGxQjZphgWPQUpe554WKDfHQ',
     tag: 'ETF 운용사',
-    emoji: '📊',
     chain: 'BTC',
-    totalValueUsd: '$4.2B',
-    recentActivity: '1시간 전 · 1,200 BTC 매수',
-    activityType: 'buy',
     isLocked: true,
   },
   {
@@ -78,11 +54,7 @@ export const CURATED_WHALES: WhaleProfile[] = [
     name: 'Wintermute',
     address: '0x00000000219ab540356cBB839Cbe05303d7705Fa',
     tag: '마켓메이커',
-    emoji: '🤖',
     chain: 'ETH',
-    totalValueUsd: '$1.2B',
-    recentActivity: '15분 전 · 12,000 ETH 스왑',
-    activityType: 'buy',
     isLocked: true,
   },
   {
@@ -90,11 +62,7 @@ export const CURATED_WHALES: WhaleProfile[] = [
     name: '익명 고래 #23',
     address: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
     tag: '익명 투자자',
-    emoji: '🎭',
     chain: 'SOL',
-    totalValueUsd: '$230M',
-    recentActivity: '30분 전 · 180,000 SOL 매수',
-    activityType: 'buy',
     isLocked: true,
   },
 ];
