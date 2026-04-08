@@ -1,5 +1,5 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Home, List, Settings } from 'lucide-react-native';
+import { Home, List, Settings, TrendingUp } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, {
@@ -27,6 +27,7 @@ type TabConfig = {
 const TABS: TabConfig[] = [
   { name: 'Home', label: '홈', Icon: Home },
   { name: 'History', label: '레이더', Icon: List },
+  { name: 'Market', label: '마켓', Icon: TrendingUp },
   { name: 'Settings', label: '설정', Icon: Settings },
 ];
 

@@ -2,6 +2,7 @@ export { ErrorScreen } from './error';
 export { HistoryScreen } from './history';
 export { HomeScreen } from './home';
 export { LegalScreen } from './legal';
+export { MarketScreen } from './market';
 export { OnboardingScreen } from './onboarding';
 export { SettingsScreen } from './settings';
 export { SplashScreen } from './splash';
