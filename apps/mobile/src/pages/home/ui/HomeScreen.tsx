@@ -21,74 +21,80 @@ function SkeletonCard({ offset = 0 }: { offset?: number }) {
   return (
     <View
       style={{
-        backgroundColor: '#f8fafc',
+        backgroundColor: '#F2F4F6',
         borderRadius: 20,
         padding: 18,
-        gap: 14,
+        gap: 15,
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <View style={{ flex: 1, gap: 7 }}>
+        <Skeleton
+          width={44}
+          height={44}
+          borderRadius={13}
+          delay={d(0)}
+        />
+
+        <View style={{ flex: 1, gap: 8 }}>
           <Skeleton
-            width="42%"
-            height={14}
-            borderRadius={7}
-            delay={d(0)}
+            width="52%"
+            height={12}
+            borderRadius={6}
+            delay={d(40)}
           />
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Skeleton
-              width="28%"
-              height={11}
-              borderRadius={5}
-              delay={d(50)}
-            />
-            <Skeleton
-              width={36}
-              height={16}
+              width="30%"
+              height={9}
               borderRadius={4}
               delay={d(70)}
             />
+            <Skeleton
+              width={38}
+              height={15}
+              borderRadius={7}
+              delay={d(85)}
+            />
           </View>
         </View>
+
         <Skeleton
-          width={20}
-          height={20}
-          borderRadius={10}
-          delay={d(40)}
+          width={18}
+          height={18}
+          borderRadius={9}
+          delay={d(55)}
         />
       </View>
 
-      <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />
+      <View style={{ height: 1, backgroundColor: 'rgba(0,0,0,0.05)' }} />
 
-      <View
-        style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}
-      >
-        <View style={{ gap: 6 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ gap: 7 }}>
           <Skeleton
-            width={44}
-            height={11}
-            borderRadius={5}
+            width={38}
+            height={9}
+            borderRadius={4}
             delay={d(90)}
           />
           <Skeleton
-            width={110}
-            height={20}
-            borderRadius={7}
+            width={108}
+            height={15}
+            borderRadius={6}
             delay={d(110)}
           />
         </View>
         <Skeleton
-          width={62}
-          height={28}
-          borderRadius={10}
+          width={64}
+          height={26}
+          borderRadius={13}
           delay={d(100)}
         />
       </View>
 
       <Skeleton
-        width="68%"
-        height={11}
-        borderRadius={5}
+        width="62%"
+        height={9}
+        borderRadius={4}
         delay={d(130)}
       />
     </View>
@@ -101,26 +107,26 @@ function SkeletonList() {
       <View style={{ paddingTop: 20, paddingBottom: 16, gap: 12 }}>
         <View style={{ gap: 8 }}>
           <Skeleton
-            width={120}
-            height={22}
-            borderRadius={8}
+            width={116}
+            height={20}
+            borderRadius={7}
             delay={0}
           />
           <Skeleton
-            width={160}
-            height={12}
+            width={148}
+            height={10}
             borderRadius={5}
             delay={40}
           />
         </View>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          {[0, 1, 2, 3, 4].map(i => (
+        <View style={{ flexDirection: 'row', gap: 7 }}>
+          {[60, 44, 44, 44, 44].map((w, i) => (
             <Skeleton
               key={i}
-              width={52}
-              height={30}
-              borderRadius={15}
-              delay={i * 30}
+              width={w}
+              height={28}
+              borderRadius={14}
+              delay={i * 25}
             />
           ))}
         </View>

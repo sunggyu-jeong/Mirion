@@ -20,74 +20,57 @@ type SkeletonCardProps = { offset?: number };
 function SkeletonCard({ offset = 0 }: SkeletonCardProps) {
   const d = (n: number) => offset + n;
   return (
-    <View
-      style={{
-        backgroundColor: '#F2F4F6',
-        borderRadius: 16,
-        padding: 18,
-        gap: 16,
-      }}
-    >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+    <View style={{ backgroundColor: '#F2F4F6', borderRadius: 16, padding: 16, gap: 14 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
         <Skeleton
-          width={38}
-          height={38}
+          width={40}
+          height={40}
           borderRadius={12}
           delay={d(0)}
         />
         <View style={{ flex: 1, gap: 7 }}>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            <Skeleton
+              width="36%"
+              height={10}
+              borderRadius={5}
+              delay={d(40)}
+            />
+            <Skeleton
+              width="18%"
+              height={9}
+              borderRadius={4}
+              delay={d(50)}
+            />
+          </View>
           <Skeleton
-            width="38%"
+            width="44%"
             height={11}
-            borderRadius={6}
-            delay={d(40)}
-          />
-          <Skeleton
-            width="56%"
-            height={10}
             borderRadius={5}
             delay={d(70)}
           />
+          <Skeleton
+            width="34%"
+            height={9}
+            borderRadius={4}
+            delay={d(90)}
+          />
         </View>
-        <Skeleton
-          width={46}
-          height={20}
-          borderRadius={7}
-          delay={d(55)}
-        />
       </View>
-
-      <View style={{ height: 1, backgroundColor: '#EAECEF' }} />
-
-      <View style={{ gap: 7 }}>
-        <Skeleton
-          width="28%"
-          height={10}
-          borderRadius={5}
-          delay={d(100)}
-        />
-        <Skeleton
-          width="48%"
-          height={16}
-          borderRadius={6}
-          delay={d(120)}
-        />
-      </View>
-
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        <Skeleton
-          width="48%"
-          height={30}
-          borderRadius={9}
-          delay={d(150)}
-        />
-        <Skeleton
-          width="38%"
-          height={30}
-          borderRadius={9}
-          delay={d(165)}
-        />
-      </View>
+      <Skeleton
+        width="100%"
+        height={30}
+        borderRadius={8}
+        delay={d(110)}
+      />
+      <Skeleton
+        width="100%"
+        height={34}
+        borderRadius={10}
+        delay={d(130)}
+      />
     </View>
   );
 }
