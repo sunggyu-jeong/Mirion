@@ -23,4 +23,4 @@ export { StreakBadge } from './StreakBadge';
 export { ToastView } from './Toast';
 export type { TypographyProps } from './Typography';
 export { Typography } from './Typography';
-export { typography } from './typography';
+export { typography } from './typography-styles';

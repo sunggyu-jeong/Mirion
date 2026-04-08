@@ -65,4 +65,12 @@ export const CURATED_WHALES: WhaleMetadata[] = [
     chain: 'SOL',
     isLocked: true,
   },
+  {
+    id: 'bnb-foundation',
+    name: 'BNB Foundation',
+    address: '0x0000000000000000000000000000000000001004',
+    tag: 'BNB 재단',
+    chain: 'BNB',
+    isLocked: true,
+  },
 ];

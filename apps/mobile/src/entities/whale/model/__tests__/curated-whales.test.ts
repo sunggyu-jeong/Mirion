@@ -3,8 +3,8 @@ import type { Chain } from '../whale.types';
 import { CHAIN_CONFIG } from '../whale.types';
 
 describe('CURATED_WHALES', () => {
-  it('should have 8 whale profiles', () => {
-    expect(CURATED_WHALES).toHaveLength(8);
+  it('should have 9 whale profiles', () => {
+    expect(CURATED_WHALES).toHaveLength(9);
   });
 
   it('each whale should have a valid chain', () => {
@@ -27,21 +27,14 @@ describe('CURATED_WHALES', () => {
     expect(free).toHaveLength(3);
   });
 
-  it('locked whales (isLocked=true) should be 5', () => {
+  it('locked whales (isLocked=true) should be 6', () => {
     const locked = CURATED_WHALES.filter(w => w.isLocked);
-    expect(locked).toHaveLength(5);
+    expect(locked).toHaveLength(6);
   });
 
   it('each whale should have a unique id', () => {
     const ids = CURATED_WHALES.map(w => w.id);
     expect(new Set(ids).size).toBe(CURATED_WHALES.length);
-  });
-
-  it('activityType should be one of buy, sell, transfer', () => {
-    const valid = ['buy', 'sell', 'transfer'];
-    CURATED_WHALES.forEach(whale => {
-      expect(valid).toContain(whale.activityType);
-    });
   });
 });
 

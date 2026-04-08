@@ -14,9 +14,10 @@ describe('useCountUp', () => {
   });
 
   it('updates when target changes', () => {
-    const { result, rerender } = renderHook(({ target }) => useCountUp(target), {
-      initialProps: { target: 100 },
-    });
+    const { result, rerender } = renderHook<number, { target: number }>(
+      ({ target }) => useCountUp(target),
+      { initialProps: { target: 100 } },
+    );
     expect(result.current).toBe(100);
 
     rerender({ target: 500 });

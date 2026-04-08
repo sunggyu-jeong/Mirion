@@ -1,6 +1,6 @@
+import { useAppSettingsStore } from '@entities/app-settings';
 import type { WhaleMetadata } from '@entities/whale';
 import type { WhaleTx } from '@entities/whale-tx';
-import { useAppSettingsStore } from '@entities/app-settings';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import React from 'react';
@@ -62,9 +62,10 @@ function createWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: 0 } },
   });
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  }
+  return Wrapper;
 }
 
 beforeEach(() => {
@@ -99,14 +100,14 @@ describe('useWhaleMovements', () => {
   });
 
   it('passes minDetectionEth from the app-settings store', async () => {
-    useAppSettingsStore.setState({ minDetectionEth: 250 });
+    useAppSettingsStore.setState({ minDetectionEth: 500 });
 
     const { result } = renderHook(() => useWhaleMovements(), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     (fetchWhaleTransfers as jest.Mock).mock.calls.forEach((args: unknown[]) => {
-      expect((args[1] as { minValueEth: number }).minValueEth).toBe(250);
+      expect((args[1] as { minValueEth: number }).minValueEth).toBe(500);
     });
   });
 
@@ -145,9 +146,7 @@ describe('useWhaleMovements', () => {
   it('deduplicates transactions with identical txHash', async () => {
     const tx = makeTx({ txHash: '0xDUP', timestampMs: 1000 });
 
-    (fetchWhaleTransfers as jest.Mock)
-      .mockResolvedValueOnce([tx])
-      .mockResolvedValueOnce([tx]);
+    (fetchWhaleTransfers as jest.Mock).mockResolvedValueOnce([tx]).mockResolvedValueOnce([tx]);
 
     const { result } = renderHook(() => useWhaleMovements(), { wrapper: createWrapper() });
 
