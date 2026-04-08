@@ -29,6 +29,7 @@
     "react-native-biometrics": "^3.0.1",
     "react-native-config": "^1.6.1",
     "react-native-get-random-values": "^2.0.0",
+    "react-native-haptic-feedback": "^3.0.0",
     "react-native-mmkv": "^4.2.0",
     "react-native-nitro-modules": "^0.35.2",
     "react-native-reanimated": "^4.2.3",

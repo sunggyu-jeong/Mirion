@@ -1,13 +1,17 @@
 import type { WhaleTx } from '@entities/whale-tx';
 import { getMagnitudeInfo } from '@entities/whale-tx';
 import { formatEth, formatRelativeTime, formatUsd } from '@shared/lib/format';
+import { haptic } from '@shared/lib/haptic';
 import { ArrowDownLeft, ArrowRight, ArrowUpRight, RefreshCw } from 'lucide-react-native';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Linking, Pressable, Text, View } from 'react-native';
 import Animated, {
   Easing,
+  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
+  withSequence,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -26,16 +30,31 @@ function shortenAddress(addr: string): string {
 
 type Props = {
   item: WhaleTx;
+  isNew?: boolean;
 };
 
-export function WhaleMovementItem({ item }: Props) {
+export function WhaleMovementItem({ item, isNew = false }: Props) {
   const scale = useSharedValue(1);
+  const glowProgress = useSharedValue(0);
   const config = TX_TYPE_CONFIG[item.type];
   const { Icon } = config;
   const magnitude = getMagnitudeInfo(item.amountEth);
 
+  useEffect(() => {
+    if (!isNew) {
+      return;
+    }
+    haptic.impact();
+    glowProgress.value = withSequence(
+      withTiming(1, { duration: 180, easing: Easing.out(Easing.quad) }),
+      withDelay(220, withTiming(0, { duration: 400, easing: Easing.in(Easing.quad) })),
+    );
+  }, [isNew, glowProgress]);
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
+    borderWidth: glowProgress.value > 0 ? 1.5 : 0,
+    borderColor: interpolateColor(glowProgress.value, [0, 1], ['transparent', config.color]),
   }));
 
   const handleViewDetail = useCallback(() => {
@@ -182,10 +201,7 @@ export function RadarPulse() {
   const opacity = useSharedValue(1);
 
   React.useEffect(() => {
-    opacity.value = withTiming(0.3, {
-      duration: 1200,
-      easing: Easing.inOut(Easing.ease),
-    });
+    opacity.value = withTiming(0.3, { duration: 1200, easing: Easing.inOut(Easing.ease) });
     const interval = setInterval(() => {
       opacity.value = withTiming(opacity.value < 0.5 ? 1 : 0.3, {
         duration: 1200,
