@@ -1,9 +1,10 @@
 import { useAppSettingsStore } from '@entities/app-settings';
 import { useSubscriptionStore } from '@entities/subscription';
 import type { WhaleProfile } from '@entities/whale';
+import { useStreakTracker } from '@features/streak-tracker';
 import { useWhaleFeed } from '@features/whale-feed';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { ChainFilterBar, Skeleton } from '@shared/ui';
+import { ChainFilterBar, Skeleton, StreakBadge } from '@shared/ui';
 import { WhaleCard } from '@widgets/whale-card';
 import React, { useCallback, useMemo } from 'react';
 import { FlatList, Text, View } from 'react-native';
@@ -150,6 +151,7 @@ export function HomeScreen() {
   const setSelectedChain = useAppSettingsStore(s => s.setSelectedChain);
   const { data: whales, isLoading } = useWhaleFeed();
   const { toWhaleDetail, toSettings } = useAppNavigation();
+  const streakCount = useStreakTracker();
 
   const filteredWhales = useMemo(() => {
     if (!whales) {
@@ -195,29 +197,38 @@ export function HomeScreen() {
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <View style={{ paddingTop: 20, paddingBottom: 16, gap: 12 }}>
-              <View style={{ gap: 4 }}>
-                <Text
-                  style={{
-                    fontSize: 22,
-                    fontWeight: '800',
-                    color: '#0f172b',
-                    letterSpacing: -0.04,
-                  }}
-                >
-                  고래 목록
-                </Text>
-                {!isPro && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <View style={{ gap: 4 }}>
                   <Text
                     style={{
-                      fontSize: 13,
-                      fontWeight: '400',
-                      color: '#94a3b8',
-                      letterSpacing: -0.01,
+                      fontSize: 22,
+                      fontWeight: '800',
+                      color: '#0f172b',
+                      letterSpacing: -0.04,
                     }}
                   >
-                    무료 플랜 · 3개 고래 제공 중
+                    고래 목록
                   </Text>
-                )}
+                  {!isPro && (
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: '400',
+                        color: '#94a3b8',
+                        letterSpacing: -0.01,
+                      }}
+                    >
+                      무료 플랜 · 3개 고래 제공 중
+                    </Text>
+                  )}
+                </View>
+                <StreakBadge count={streakCount} />
               </View>
               <ChainFilterBar
                 value={selectedChain}

@@ -19,6 +19,7 @@ export { SegmentedControl } from './SegmentedControl';
 export { Skeleton } from './Skeleton';
 export type { Step } from './StepIndicator';
 export { StepIndicator } from './StepIndicator';
+export { StreakBadge } from './StreakBadge';
 export { ToastView } from './Toast';
 export type { TypographyProps } from './Typography';
 export { Typography } from './Typography';
