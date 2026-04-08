@@ -11,6 +11,7 @@ export { LoadingOverlay } from './LoadingOverlay';
 export { PaywallOverlay } from './PaywallOverlay';
 export { PrimaryButton } from './PrimaryButton';
 export { ReceiptRow } from './ReceiptRow';
+export { RollupText } from './RollupText';
 export { ScreenHeader } from './ScreenHeader';
 export { ScreenTitle } from './ScreenTitle';
 export { SectionTitle } from './SectionTitle';
