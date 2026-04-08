@@ -1,0 +1,68 @@
+import type { WhaleMetadata } from './whale.types';
+
+export const CURATED_WHALES: WhaleMetadata[] = [
+  {
+    id: 'vitalik',
+    name: 'Vitalik Buterin',
+    address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+    tag: 'ETH 창시자',
+    chain: 'ETH',
+    isLocked: false,
+  },
+  {
+    id: 'microstrategy',
+    name: 'MicroStrategy',
+    address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+    tag: '기관 투자자',
+    chain: 'BTC',
+    isLocked: false,
+  },
+  {
+    id: 'anon-7',
+    name: '익명 고래 #7',
+    address: 'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH',
+    tag: '대형 투자자',
+    chain: 'SOL',
+    isLocked: false,
+  },
+  {
+    id: 'jump-crypto',
+    name: 'Jump Crypto',
+    address: '0x4C6f947Ae67F572afa4ae0730947DE7C874F95Ef',
+    tag: '헤지펀드',
+    chain: 'ETH',
+    isLocked: true,
+  },
+  {
+    id: 'binance',
+    name: 'Binance Hot Wallet',
+    address: '0x28C6c06298d514Db089934071355E5743bf21d60',
+    tag: '거래소',
+    chain: 'ETH',
+    isLocked: true,
+  },
+  {
+    id: 'grayscale',
+    name: 'Grayscale',
+    address: '1P5ZEDWTKTFGxQjZphgWPQUpe554WKDfHQ',
+    tag: 'ETF 운용사',
+    chain: 'BTC',
+    isLocked: true,
+  },
+  {
+    id: 'wintermute',
+    name: 'Wintermute',
+    address: '0x00000000219ab540356cBB839Cbe05303d7705Fa',
+    tag: '마켓메이커',
+    chain: 'ETH',
+    isLocked: true,
+  },
+  {
+    id: 'anon-23',
+    name: '익명 고래 #23',
+    address: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+    tag: '익명 투자자',
+    chain: 'SOL',
+    isLocked: true,
+  },
+];

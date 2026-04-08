@@ -1,6 +1,5 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/native';
-import { BarChart2, Home, Plus, Settings, TrendingUp } from 'lucide-react-native';
+import { Home, List, Settings } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, {
@@ -27,14 +26,9 @@ type TabConfig = {
 
 const TABS: TabConfig[] = [
   { name: 'Home', label: '홈', Icon: Home },
-  { name: 'Simulator', label: '시뮬', Icon: TrendingUp },
-  { name: 'History', label: '내역', Icon: BarChart2 },
+  { name: 'History', label: '레이더', Icon: List },
   { name: 'Settings', label: '설정', Icon: Settings },
 ];
-
-function toVisualSlot(tabIndex: number): number {
-  return tabIndex < 2 ? tabIndex : tabIndex + 1;
-}
 
 function TabItem({
   config,
@@ -67,7 +61,7 @@ function TabItem({
 
   return (
     <Pressable
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 8 }}
+      style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 8 }}
       onPressIn={() => {
         scale.value = withSpring(0.88, TOSS_PRESS_SPRING);
       }}
@@ -95,68 +89,18 @@ function TabItem({
   );
 }
 
-function FabButton() {
-  const scale = useSharedValue(1);
-  const navigation = useNavigation<any>();
-
-  const fabStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 4 }}>
-      <Pressable
-        onPressIn={() => {
-          scale.value = withSpring(0.92, TOSS_PRESS_SPRING);
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1, TOSS_PRESS_SPRING);
-        }}
-        onPress={() => navigation.navigate('DepositSetup')}
-      >
-        <Animated.View
-          style={[
-            {
-              width: 50,
-              height: 50,
-              borderRadius: 25,
-              backgroundColor: ACTIVE_COLOR,
-              alignItems: 'center',
-              justifyContent: 'center',
-              shadowColor: ACTIVE_COLOR,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.4,
-              shadowRadius: 10,
-              elevation: 8,
-            },
-            fabStyle,
-          ]}
-        >
-          <Plus
-            size={24}
-            color="#fff"
-            strokeWidth={2.5}
-          />
-        </Animated.View>
-      </Pressable>
-    </View>
-  );
-}
-
 export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const [barWidth, setBarWidth] = useState(0);
 
-  const slotWidth = barWidth > 0 ? barWidth / 5 : 0;
+  const slotWidth = barWidth > 0 ? barWidth / TABS.length : 0;
   const indicatorX = useSharedValue(0);
 
   useEffect(() => {
     if (barWidth === 0) {
       return;
     }
-    const visualSlot = toVisualSlot(state.index);
-    // 인디케이터 중앙 정렬: 슬롯 중앙 - 인디케이터 반너비(16)
-    indicatorX.value = withSpring(visualSlot * slotWidth + slotWidth / 2 - 16, TOSS_SPRING);
+    indicatorX.value = withSpring(state.index * slotWidth + slotWidth / 2 - 16, TOSS_SPRING);
   }, [state.index, barWidth, slotWidth, indicatorX]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
@@ -173,7 +117,6 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
       }}
       onLayout={e => setBarWidth(e.nativeEvent.layout.width)}
     >
-      {/* 슬라이딩 인디케이터 */}
       {barWidth > 0 && (
         <Animated.View
           style={[
@@ -192,8 +135,7 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
       )}
 
       <View style={{ flexDirection: 'row', height: 56 }}>
-        {/* 홈, 시뮬 */}
-        {TABS.slice(0, 2).map((config, i) => (
+        {TABS.map((config, i) => (
           <TabItem
             key={config.name}
             config={config}
@@ -210,31 +152,6 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
             }}
           />
         ))}
-
-        {/* 중앙 FAB */}
-        <FabButton />
-
-        {/* 내역, 설정 */}
-        {TABS.slice(2).map((config, i) => {
-          const tabIndex = i + 2;
-          return (
-            <TabItem
-              key={config.name}
-              config={config}
-              isActive={state.index === tabIndex}
-              onPress={() => {
-                const event = navigation.emit({
-                  type: 'tabPress',
-                  target: state.routes[tabIndex].key,
-                  canPreventDefault: true,
-                });
-                if (!event.defaultPrevented) {
-                  navigation.navigate(state.routes[tabIndex].name);
-                }
-              }}
-            />
-          );
-        })}
       </View>
     </View>
   );

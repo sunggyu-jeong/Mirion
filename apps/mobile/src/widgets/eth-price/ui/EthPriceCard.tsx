@@ -1,4 +1,4 @@
-import { useEthPrice, useEthPriceChart } from '@features/staking';
+import { useEthPrice, useEthPriceChart } from '@features/eth-price';
 import { AnimatedNumber, InfoCard } from '@shared/ui';
 import React from 'react';
 import { Text, View } from 'react-native';

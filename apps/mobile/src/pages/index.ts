@@ -1,12 +1,8 @@
-export { DepositConfirmScreen } from './deposit-confirm';
-export { DepositSetupScreen } from './deposit-setup';
-export { DepositSuccessScreen } from './deposit-success';
 export { ErrorScreen } from './error';
 export { HistoryScreen } from './history';
 export { HomeScreen } from './home';
+export { LegalScreen } from './legal';
 export { OnboardingScreen } from './onboarding';
 export { SettingsScreen } from './settings';
 export { SplashScreen } from './splash';
-export { TransactionProgressScreen } from './transaction-progress';
-export { WalletConnectScreen } from './wallet-connect';
-export { WalletConnectingScreen } from './wallet-connecting';
+export { WhaleDetailScreen } from './whale-detail';

@@ -1,27 +1,17 @@
-import { CB_SESSION_KEY, useWalletStore, WC_SESSION_KEY } from '@entities/wallet';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { LEGAL_ACCEPTED_KEY, storage } from '@shared/lib/storage';
+import { LEGAL_ACCEPTED_KEY, ONBOARDING_SEEN_KEY, storage } from '@shared/lib/storage';
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 
 export function SplashScreen() {
   const { toOnboarding, toMain, toLegal } = useAppNavigation();
-  const setSession = useWalletStore(s => s.setSession);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
     const init = () => {
-      const wcAddress = storage.getString(WC_SESSION_KEY);
-      const cbAddress = storage.getString(CB_SESSION_KEY);
-
-      if (wcAddress) {
-        setSession(wcAddress, 'walletconnect');
-        toMain();
-        return;
-      }
-      if (cbAddress) {
-        setSession(cbAddress, 'coinbase');
+      const onboardingSeen = storage.getString(ONBOARDING_SEEN_KEY);
+      if (onboardingSeen) {
         toMain();
         return;
       }
@@ -38,11 +28,13 @@ export function SplashScreen() {
     init();
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <View className="flex-1 bg-[#2b7fff] items-center justify-center">
-      <Text className="text-[44px] font-black text-white tracking-[-1.135px]">LockFi</Text>
+      <Text className="text-[44px] font-black text-white tracking-[-1.135px]">WhaleTracker</Text>
+      <Text className="text-[14px] text-white/70 tracking-[-0.02px] mt-2">고래를 따라가세요</Text>
     </View>
   );
 }

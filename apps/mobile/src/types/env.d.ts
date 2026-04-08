@@ -3,6 +3,8 @@ declare module 'react-native-config' {
     TIMELOCK_CONTRACT_ADDRESS?: string;
     RPC_URL?: string;
     CHAIN_ID?: string;
+    ALCHEMY_API_KEY?: string;
+    ALCHEMY_NETWORK?: string;
     [key: string]: string | undefined;
   };
   export = Config;

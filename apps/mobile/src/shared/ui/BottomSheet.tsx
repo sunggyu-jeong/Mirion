@@ -46,8 +46,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(
             runOnJS(setMounted)(false);
             if (callback) {
               runOnJS(callback)();
-            }
-            if (onDismissRef.current) {
+            } else if (onDismissRef.current) {
               runOnJS(onDismissRef.current)();
             }
           }
@@ -117,6 +116,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, Props>(
           ]}
         />
         <Pressable
+          testID="bottom-sheet-backdrop"
           style={StyleSheet.absoluteFillObject}
           onPress={() => dismissRef.current()}
         />
