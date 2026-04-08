@@ -1,4 +1,5 @@
 import type { WhaleTx } from '@entities/whale-tx';
+import { getMagnitudeInfo } from '@entities/whale-tx';
 import { formatEth, formatRelativeTime, formatUsd } from '@shared/lib/format';
 import { ArrowDownLeft, ArrowRight, ArrowUpRight, RefreshCw } from 'lucide-react-native';
 import React, { useCallback } from 'react';
@@ -31,6 +32,7 @@ export function WhaleMovementItem({ item }: Props) {
   const scale = useSharedValue(1);
   const config = TX_TYPE_CONFIG[item.type];
   const { Icon } = config;
+  const magnitude = getMagnitudeInfo(item.amountEth);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -69,11 +71,25 @@ export function WhaleMovementItem({ item }: Props) {
           <View
             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
           >
-            <Text
-              style={{ fontSize: 14, fontWeight: '600', color: '#0f172b', letterSpacing: -0.02 }}
-            >
-              {config.label}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text
+                style={{ fontSize: 14, fontWeight: '600', color: '#0f172b', letterSpacing: -0.02 }}
+              >
+                {config.label}
+              </Text>
+              <View
+                style={{
+                  backgroundColor: magnitude.bg,
+                  borderRadius: 5,
+                  paddingHorizontal: 6,
+                  paddingVertical: 2,
+                }}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '600', color: magnitude.color }}>
+                  {magnitude.label}
+                </Text>
+              </View>
+            </View>
             <Text
               style={{ fontSize: 12, fontWeight: '400', color: '#94a3b8', letterSpacing: -0.01 }}
             >
