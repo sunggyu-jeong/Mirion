@@ -3,7 +3,14 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}', './App.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'pretendard-regular': ['Pretendard-Regular'],
+        'pretendard-medium': ['Pretendard-Medium'],
+        'pretendard-semibold': ['Pretendard-SemiBold'],
+        'pretendard-bold': ['Pretendard-Bold'],
+      },
+    },
   },
   plugins: [],
 };

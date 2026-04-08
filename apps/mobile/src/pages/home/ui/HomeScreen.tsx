@@ -16,17 +16,124 @@ function ItemSeparator() {
   return <View style={{ height: 12 }} />;
 }
 
+function SkeletonCard({ offset = 0 }: { offset?: number }) {
+  const d = (n: number) => offset + n;
+  return (
+    <View
+      style={{
+        backgroundColor: '#f8fafc',
+        borderRadius: 20,
+        padding: 18,
+        gap: 14,
+      }}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <View style={{ flex: 1, gap: 7 }}>
+          <Skeleton
+            width="42%"
+            height={14}
+            borderRadius={7}
+            delay={d(0)}
+          />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Skeleton
+              width="28%"
+              height={11}
+              borderRadius={5}
+              delay={d(50)}
+            />
+            <Skeleton
+              width={36}
+              height={16}
+              borderRadius={4}
+              delay={d(70)}
+            />
+          </View>
+        </View>
+        <Skeleton
+          width={20}
+          height={20}
+          borderRadius={10}
+          delay={d(40)}
+        />
+      </View>
+
+      <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />
+
+      <View
+        style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' }}
+      >
+        <View style={{ gap: 6 }}>
+          <Skeleton
+            width={44}
+            height={11}
+            borderRadius={5}
+            delay={d(90)}
+          />
+          <Skeleton
+            width={110}
+            height={20}
+            borderRadius={7}
+            delay={d(110)}
+          />
+        </View>
+        <Skeleton
+          width={62}
+          height={28}
+          borderRadius={10}
+          delay={d(100)}
+        />
+      </View>
+
+      <Skeleton
+        width="68%"
+        height={11}
+        borderRadius={5}
+        delay={d(130)}
+      />
+    </View>
+  );
+}
+
 function SkeletonList() {
   return (
-    <View style={{ gap: 12, paddingHorizontal: 20 }}>
-      {Array.from({ length: 3 }).map((_, i) => (
-        <Skeleton
-          key={i}
-          width="100%"
-          height={148}
-          borderRadius={20}
-        />
-      ))}
+    <View style={{ paddingHorizontal: 20 }}>
+      <View style={{ paddingTop: 20, paddingBottom: 16, gap: 12 }}>
+        <View style={{ gap: 8 }}>
+          <Skeleton
+            width={120}
+            height={22}
+            borderRadius={8}
+            delay={0}
+          />
+          <Skeleton
+            width={160}
+            height={12}
+            borderRadius={5}
+            delay={40}
+          />
+        </View>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {[0, 1, 2, 3, 4].map(i => (
+            <Skeleton
+              key={i}
+              width={52}
+              height={30}
+              borderRadius={15}
+              delay={i * 30}
+            />
+          ))}
+        </View>
+      </View>
+
+      <View style={{ gap: 12 }}>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <SkeletonCard
+            key={i}
+            offset={i * 70}
+          />
+        ))}
+      </View>
     </View>
   );
 }

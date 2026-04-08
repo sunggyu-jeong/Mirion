@@ -12,18 +12,93 @@ const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 const FREE_LIMIT = 3;
 
 function ItemSeparator() {
-  return <View style={{ height: 12 }} />;
+  return <View style={{ height: 10 }} />;
+}
+
+type SkeletonCardProps = { offset?: number };
+
+function SkeletonCard({ offset = 0 }: SkeletonCardProps) {
+  const d = (n: number) => offset + n;
+  return (
+    <View
+      style={{
+        backgroundColor: '#F2F4F6',
+        borderRadius: 16,
+        padding: 18,
+        gap: 16,
+      }}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <Skeleton
+          width={38}
+          height={38}
+          borderRadius={12}
+          delay={d(0)}
+        />
+        <View style={{ flex: 1, gap: 7 }}>
+          <Skeleton
+            width="38%"
+            height={11}
+            borderRadius={6}
+            delay={d(40)}
+          />
+          <Skeleton
+            width="56%"
+            height={10}
+            borderRadius={5}
+            delay={d(70)}
+          />
+        </View>
+        <Skeleton
+          width={46}
+          height={20}
+          borderRadius={7}
+          delay={d(55)}
+        />
+      </View>
+
+      <View style={{ height: 1, backgroundColor: '#EAECEF' }} />
+
+      <View style={{ gap: 7 }}>
+        <Skeleton
+          width="28%"
+          height={10}
+          borderRadius={5}
+          delay={d(100)}
+        />
+        <Skeleton
+          width="48%"
+          height={16}
+          borderRadius={6}
+          delay={d(120)}
+        />
+      </View>
+
+      <View style={{ flexDirection: 'row', gap: 8 }}>
+        <Skeleton
+          width="48%"
+          height={30}
+          borderRadius={9}
+          delay={d(150)}
+        />
+        <Skeleton
+          width="38%"
+          height={30}
+          borderRadius={9}
+          delay={d(165)}
+        />
+      </View>
+    </View>
+  );
 }
 
 function SkeletonList() {
   return (
-    <View style={{ gap: 12, paddingHorizontal: 20 }}>
-      {Array.from({ length: 3 }).map((_, i) => (
-        <Skeleton
+    <View style={{ gap: 10, paddingHorizontal: 20 }}>
+      {Array.from({ length: 4 }).map((_, i) => (
+        <SkeletonCard
           key={i}
-          width="100%"
-          height={148}
-          borderRadius={16}
+          offset={i * 60}
         />
       ))}
     </View>
@@ -63,7 +138,6 @@ export function WhaleMovementList({ onUpgrade }: Props) {
   if (!visibleMovements || visibleMovements.length === 0) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 80 }}>
-        <Text style={{ fontSize: 40, marginBottom: 16 }}>📡</Text>
         <Text style={{ fontSize: 16, fontWeight: '600', color: '#62748e', textAlign: 'center' }}>
           감지된 이동이 없습니다
         </Text>

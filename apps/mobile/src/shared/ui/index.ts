@@ -19,4 +19,6 @@ export { Skeleton } from './Skeleton';
 export type { Step } from './StepIndicator';
 export { StepIndicator } from './StepIndicator';
 export { ToastView } from './Toast';
+export type { TypographyProps } from './Typography';
+export { Typography } from './Typography';
 export { typography } from './typography';
