@@ -24,12 +24,12 @@ type TabConfig = {
   Icon: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
 };
 
-const TABS: TabConfig[] = [
-  { name: 'Home', label: '홈', Icon: Home },
-  { name: 'History', label: '레이더', Icon: List },
-  { name: 'Market', label: '마켓', Icon: TrendingUp },
-  { name: 'Settings', label: '설정', Icon: Settings },
-];
+const TAB_CONFIG: Record<string, Omit<TabConfig, 'name'>> = {
+  Home: { label: '홈', Icon: Home },
+  History: { label: '레이더', Icon: List },
+  Market: { label: '마켓', Icon: TrendingUp },
+  Settings: { label: '설정', Icon: Settings },
+};
 
 function TabItem({
   config,
@@ -94,7 +94,7 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const [barWidth, setBarWidth] = useState(0);
 
-  const slotWidth = barWidth > 0 ? barWidth / TABS.length : 0;
+  const slotWidth = barWidth > 0 ? barWidth / state.routes.length : 0;
   const indicatorX = useSharedValue(0);
 
   useEffect(() => {
@@ -136,23 +136,30 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
       )}
 
       <View style={{ flexDirection: 'row', height: 56 }}>
-        {TABS.map((config, i) => (
-          <TabItem
-            key={config.name}
-            config={config}
-            isActive={state.index === i}
-            onPress={() => {
-              const event = navigation.emit({
-                type: 'tabPress',
-                target: state.routes[i].key,
-                canPreventDefault: true,
-              });
-              if (!event.defaultPrevented) {
-                navigation.navigate(state.routes[i].name);
-              }
-            }}
-          />
-        ))}
+        {state.routes.map((route, i) => {
+          const cfg = TAB_CONFIG[route.name];
+          if (!cfg) {
+            return null;
+          }
+          const config: TabConfig = { name: route.name, ...cfg };
+          return (
+            <TabItem
+              key={route.key}
+              config={config}
+              isActive={state.index === i}
+              onPress={() => {
+                const event = navigation.emit({
+                  type: 'tabPress',
+                  target: route.key,
+                  canPreventDefault: true,
+                });
+                if (!event.defaultPrevented) {
+                  navigation.navigate(route.name);
+                }
+              }}
+            />
+          );
+        })}
       </View>
     </View>
   );
