@@ -9,16 +9,10 @@ import { useAppNavigation } from '@shared/lib/navigation';
 import { ChainFilterBar, Skeleton, StreakBadge } from '@shared/ui';
 import { DailySummaryCard } from '@widgets/daily-summary';
 import { WhaleCard } from '@widgets/whale-card';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import { RefreshCcw, SearchX, WifiOff } from 'lucide-react-native';
+import React, { useCallback, useMemo } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
-import Animated, {
-  Easing,
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, FadeIn, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
@@ -143,144 +137,147 @@ function SkeletonList() {
 }
 
 function EmptyFiltered({ chain, onReset }: { chain: ChainFilter; onReset: () => void }) {
-  const scale = useSharedValue(0.82);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    scale.value = withSpring(1, { damping: 14, stiffness: 200 });
-    opacity.value = withTiming(1, { duration: 300 });
-  }, [scale, opacity]);
-
-  const animStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
-
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 60 }}>
-      <Animated.View style={[{ alignItems: 'center', gap: 20 }, animStyle]}>
+    <Animated.View
+      entering={FadeIn.delay(60).duration(340).easing(EASE_OUT)}
+      style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 72 }}
+    >
+      <View style={{ alignItems: 'center', gap: 28 }}>
         <View
           style={{
-            width: 88,
-            height: 88,
+            width: 80,
+            height: 80,
             borderRadius: 26,
-            backgroundColor: '#f1f5f9',
+            backgroundColor: '#F2F4F6',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text style={{ fontSize: 42 }}>🔍</Text>
+          <SearchX
+            size={34}
+            color="#B0B8C1"
+            strokeWidth={1.5}
+          />
         </View>
+
         <View style={{ alignItems: 'center', gap: 8 }}>
           <Text
             style={{
-              fontSize: 17,
-              fontWeight: '800',
-              color: '#0f172b',
-              letterSpacing: -0.3,
+              fontSize: 19,
+              fontWeight: '700',
+              color: '#191F28',
+              letterSpacing: -0.5,
               textAlign: 'center',
             }}
           >
-            {chain} 체인 고래 없음
+            {chain} 체인 고래가 없어요
           </Text>
           <Text
             style={{
               fontSize: 14,
-              color: '#94a3b8',
+              color: '#8B95A1',
               textAlign: 'center',
               lineHeight: 21,
               letterSpacing: -0.01,
             }}
           >
-            {`${chain} 체인에 등록된 고래가 없습니다\n다른 체인을 선택해 보세요`}
+            {'해당 체인에 등록된 고래가 없습니다\n다른 체인을 선택해 보세요'}
           </Text>
         </View>
+
         <Pressable
           onPress={onReset}
           style={{
             paddingHorizontal: 22,
-            paddingVertical: 10,
+            paddingVertical: 11,
             borderRadius: 12,
-            backgroundColor: '#eff6ff',
+            backgroundColor: '#F2F4F6',
           }}
         >
-          <Text style={{ fontSize: 14, fontWeight: '600', color: '#2b7fff' }}>전체 보기</Text>
+          <Text style={{ fontSize: 14, fontWeight: '600', color: '#3182F6', letterSpacing: -0.01 }}>
+            전체 고래 보기
+          </Text>
         </Pressable>
-      </Animated.View>
-    </View>
+      </View>
+    </Animated.View>
   );
 }
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
-  const scale = useSharedValue(0.82);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    scale.value = withSpring(1, { damping: 14, stiffness: 200 });
-    opacity.value = withTiming(1, { duration: 300 });
-  }, [scale, opacity]);
-
-  const animStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
-
   return (
-    <View
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 40 }}
+    <Animated.View
+      entering={FadeInDown.delay(0).duration(380).easing(EASE_OUT)}
+      style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 48 }}
     >
-      <Animated.View style={[{ alignItems: 'center', gap: 24 }, animStyle]}>
+      <View style={{ alignItems: 'center', gap: 32 }}>
+        {/* 아이콘 */}
         <View
           style={{
-            width: 96,
-            height: 96,
-            borderRadius: 30,
-            backgroundColor: '#fff1f2',
+            width: 84,
+            height: 84,
+            borderRadius: 28,
+            backgroundColor: '#F2F4F6',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text style={{ fontSize: 48 }}>🌐</Text>
+          <WifiOff
+            size={36}
+            color="#B0B8C1"
+            strokeWidth={1.5}
+          />
         </View>
+
+        {/* 텍스트 */}
         <View style={{ alignItems: 'center', gap: 10 }}>
           <Text
             style={{
               fontSize: 20,
-              fontWeight: '800',
-              color: '#0f172b',
-              letterSpacing: -0.4,
+              fontWeight: '700',
+              color: '#191F28',
+              letterSpacing: -0.5,
               textAlign: 'center',
             }}
           >
-            데이터를 불러오지 못했습니다
+            연결에 문제가 생겼어요
           </Text>
           <Text
             style={{
               fontSize: 14,
-              color: '#94a3b8',
+              color: '#8B95A1',
               textAlign: 'center',
-              lineHeight: 21,
+              lineHeight: 22,
               letterSpacing: -0.01,
             }}
           >
-            {'네트워크 연결을 확인하거나\n잠시 후 다시 시도해 주세요'}
+            {'네트워크 상태를 확인하고\n잠시 후 다시 시도해 주세요'}
           </Text>
         </View>
+
+        {/* 버튼 */}
         <Pressable
           onPress={onRetry}
           style={{
-            paddingHorizontal: 28,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+            paddingHorizontal: 22,
             paddingVertical: 13,
             borderRadius: 14,
-            backgroundColor: '#2b7fff',
+            backgroundColor: '#F2F4F6',
           }}
         >
-          <Text style={{ fontSize: 15, fontWeight: '700', color: 'white', letterSpacing: -0.02 }}>
-            다시 시도
+          <RefreshCcw
+            size={15}
+            color="#3182F6"
+            strokeWidth={2.2}
+          />
+          <Text style={{ fontSize: 15, fontWeight: '600', color: '#3182F6', letterSpacing: -0.02 }}>
+            다시 시도하기
           </Text>
         </Pressable>
-      </Animated.View>
-    </View>
+      </View>
+    </Animated.View>
   );
 }
 
@@ -324,26 +321,17 @@ export function HomeScreen() {
   );
 
   const keyExtractor = useCallback((item: WhaleProfile) => item.id, []);
-
   const handleResetFilter = useCallback(() => setSelectedChain('ALL'), [setSelectedChain]);
 
   const listHeader = (
     <View style={{ paddingTop: 20, paddingBottom: 16, gap: 12 }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View style={{ gap: 4 }}>
           <Text style={{ fontSize: 22, fontWeight: '800', color: '#0f172b', letterSpacing: -0.04 }}>
             고래 목록
           </Text>
           {!isPro && (
-            <Text
-              style={{ fontSize: 13, fontWeight: '400', color: '#94a3b8', letterSpacing: -0.01 }}
-            >
+            <Text style={{ fontSize: 13, color: '#94a3b8', letterSpacing: -0.01 }}>
               무료 플랜 · 3개 고래 제공 중
             </Text>
           )}
@@ -365,6 +353,7 @@ export function HomeScreen() {
       </SafeAreaView>
     );
   }
+
   if (isError) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
