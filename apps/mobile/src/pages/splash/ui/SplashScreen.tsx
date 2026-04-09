@@ -27,7 +27,7 @@ export function SplashScreen() {
     const init = () => {
       const onboardingSeen = storage.getString(ONBOARDING_SEEN_KEY);
       if (onboardingSeen) {
-        toMain();
+        timer = setTimeout(toMain, 1500);
         return;
       }
 
