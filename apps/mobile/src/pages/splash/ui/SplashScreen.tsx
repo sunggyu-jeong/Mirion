@@ -2,11 +2,26 @@ import { useAppNavigation } from '@shared/lib/navigation';
 import { LEGAL_ACCEPTED_KEY, ONBOARDING_SEEN_KEY, storage } from '@shared/lib/storage';
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 export function SplashScreen() {
   const { toOnboarding, toMain, toLegal } = useAppNavigation();
 
+  const scale = useSharedValue(0.72);
+  const opacity = useSharedValue(0);
+  const subtitleOpacity = useSharedValue(0);
+
   useEffect(() => {
+    scale.value = withSpring(1, { damping: 14, stiffness: 180 });
+    opacity.value = withTiming(1, { duration: 420 });
+    subtitleOpacity.value = withDelay(260, withTiming(1, { duration: 380 }));
+
     let timer: ReturnType<typeof setTimeout>;
 
     const init = () => {
@@ -18,11 +33,11 @@ export function SplashScreen() {
 
       const legalAccepted = storage.getString(LEGAL_ACCEPTED_KEY);
       if (!legalAccepted) {
-        timer = setTimeout(toLegal, 2000);
+        timer = setTimeout(toLegal, 2200);
         return;
       }
 
-      timer = setTimeout(toOnboarding, 2000);
+      timer = setTimeout(toOnboarding, 2200);
     };
 
     init();
@@ -31,10 +46,51 @@ export function SplashScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const logoStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  const subStyle = useAnimatedStyle(() => ({
+    opacity: subtitleOpacity.value,
+  }));
+
   return (
-    <View className="flex-1 bg-[#2b7fff] items-center justify-center">
-      <Text className="text-[44px] font-black text-white tracking-[-1.135px]">WhaleTracker</Text>
-      <Text className="text-[14px] text-white/70 tracking-[-0.02px] mt-2">고래를 따라가세요</Text>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#2b7fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+      }}
+    >
+      <Animated.View style={[{ alignItems: 'center', gap: 10 }, logoStyle]}>
+        <Text style={{ fontSize: 56 }}>🐋</Text>
+        <Text
+          style={{
+            fontSize: 36,
+            fontWeight: '900',
+            color: 'white',
+            letterSpacing: -1.2,
+          }}
+        >
+          WhaleTracker
+        </Text>
+      </Animated.View>
+      <Animated.Text
+        style={[
+          {
+            fontSize: 14,
+            color: 'rgba(255,255,255,0.72)',
+            letterSpacing: -0.02,
+            marginTop: 4,
+          },
+          subStyle,
+        ]}
+      >
+        고래를 따라가세요
+      </Animated.Text>
     </View>
   );
 }
