@@ -43,6 +43,6 @@ module.exports = {
   },
   forceExit: true,
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|react-native-safe-area-context|react-native-nitro-modules|react-native-biometrics|react-native-config|react-native-reanimated|react-native-mmkv|@react-navigation|wagmi|viem|@wagmi|@tanstack|@coinbase|@metamask|uuid)/)',
+    'node_modules/(?!(react-native|@react-native|react-native-safe-area-context|react-native-nitro-modules|react-native-biometrics|react-native-config|react-native-reanimated|react-native-mmkv|@react-navigation|@tanstack|uuid)/)',
   ],
 };
