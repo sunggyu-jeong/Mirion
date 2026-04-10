@@ -14,11 +14,10 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'LockFi' do
+target 'WhaleTracker' do
   config = use_native_modules!
 
   pod 'RNWorklets', :path => '../../../node_modules/react-native-worklets'
-  pod 'LockFi', :path => '..'
 
   use_react_native!(
     :path => config[:reactNativePath],

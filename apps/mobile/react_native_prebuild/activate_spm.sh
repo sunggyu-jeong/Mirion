@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$SCRIPT_DIR/../ios"
-PBXPROJ="$PROJECT_DIR/LockFi.xcodeproj/project.pbxproj"
+PBXPROJ="$PROJECT_DIR/WhaleTracker.xcodeproj/project.pbxproj"
 
 if [ ! -d "$SCRIPT_DIR/Frameworks" ] || [ -z "$(ls -A "$SCRIPT_DIR/Frameworks")" ]; then
   echo "error: Frameworks/ 디렉토리가 비어있습니다. 먼저 ./build_xcframeworks.sh 를 실행하세요."
@@ -26,14 +26,14 @@ content = content.replace(
 
 framework_entry = '\t\t\t\tC3D4E5F6A1B2C3D4E5F6A1B2 /* ReactNativePrebuild in Frameworks */,\n'
 content = content.replace(
-    '\t\t\t\t0C80B921A6F3F58F76C31292 /* libPods-LockFi.a in Frameworks */,',
-    '\t\t\t\t0C80B921A6F3F58F76C31292 /* libPods-LockFi.a in Frameworks */,\n' + framework_entry.rstrip('\n')
+    '\t\t\t\t0C80B921A6F3F58F76C31292 /* libPods-WhaleTracker.a in Frameworks */,',
+    '\t\t\t\t0C80B921A6F3F58F76C31292 /* libPods-WhaleTracker.a in Frameworks */,\n' + framework_entry.rstrip('\n')
 )
 
 pkg_deps = '\t\t\tpackageProductDependencies = (\n\t\t\t\tB2C3D4E5F6A1B2C3D4E5F6A1 /* ReactNativePrebuild */,\n\t\t\t);\n'
 content = content.replace(
-    '\t\t\tname = LockFi;\n\t\t\tproductName = LockFi;',
-    pkg_deps + '\t\t\tname = LockFi;\n\t\t\tproductName = LockFi;'
+    '\t\t\tname = WhaleTracker;\n\t\t\tproductName = WhaleTracker;',
+    pkg_deps + '\t\t\tname = WhaleTracker;\n\t\t\tproductName = WhaleTracker;'
 )
 
 with open(path, 'w') as f:

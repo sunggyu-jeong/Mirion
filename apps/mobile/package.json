@@ -1,5 +1,5 @@
 {
-  "name": "@lockfi/mobile",
+  "name": "@whaletracker/mobile",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -14,7 +14,7 @@
     "test": "jest",
     "test:js:coverage": "jest --coverage",
     "test:android:coverage": "cd android && ./gradlew testDebugUnitTestCoverage",
-    "test:ios:coverage": "xcodebuild test -workspace ios/LockFi.xcworkspace -scheme LockFi -destination 'platform=iOS Simulator,name=iPhone 16' -enableCodeCoverage YES | xcpretty"
+    "test:ios:coverage": "xcodebuild test -workspace ios/WhaleTracker.xcworkspace -scheme WhaleTracker -destination 'platform=iOS Simulator,name=iPhone 16' -enableCodeCoverage YES | xcpretty"
   },
   "dependencies": {
     "@react-native/new-app-screen": "0.84.1",
