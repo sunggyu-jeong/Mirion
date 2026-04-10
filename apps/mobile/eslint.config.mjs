@@ -32,7 +32,7 @@ export default tseslint.config(
       'coverage/',
       'android/',
       'ios/',
-'*.min.*',
+      '*.min.*',
       'supabase',
       '.#',
       'babel.config.js',

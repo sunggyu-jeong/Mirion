@@ -15,13 +15,32 @@ function shortenAddress(addr: string) {
 
 export function WhaleDetailHeader({ whaleId, whale, onBack }: WhaleDetailHeaderProps) {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12, gap: 12 }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        gap: 12,
+      }}
+    >
       <Pressable
         onPress={onBack}
         hitSlop={12}
-        style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#f8fafc', alignItems: 'center', justifyContent: 'center' }}
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 10,
+          backgroundColor: '#f8fafc',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        <ChevronLeft size={20} color="#0f172b" strokeWidth={2} />
+        <ChevronLeft
+          size={20}
+          color="#0f172b"
+          strokeWidth={2}
+        />
       </Pressable>
 
       <View style={{ flex: 1, gap: 1 }}>
@@ -36,7 +55,14 @@ export function WhaleDetailHeader({ whaleId, whale, onBack }: WhaleDetailHeaderP
       </View>
 
       {whale && (
-        <View style={{ backgroundColor: '#f8fafc', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 5 }}>
+        <View
+          style={{
+            backgroundColor: '#f8fafc',
+            borderRadius: 8,
+            paddingHorizontal: 10,
+            paddingVertical: 5,
+          }}
+        >
           <Text style={{ fontSize: 12, fontWeight: '600', color: '#62748e' }}>{whale.tag}</Text>
         </View>
       )}

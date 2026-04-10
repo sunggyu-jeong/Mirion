@@ -58,7 +58,7 @@ export function GrowthChart({ data, xTicks }: Props) {
   if (width === 0) {
     return (
       <View
-        className="h-[140px]"
+        style={{ height: 140 }}
         onLayout={e => setWidth(e.nativeEvent.layout.width)}
       />
     );
@@ -69,7 +69,7 @@ export function GrowthChart({ data, xTicks }: Props) {
 
   return (
     <View
-      className="h-[160px]"
+      style={{ height: 160 }}
       onLayout={e => setWidth(e.nativeEvent.layout.width)}
     >
       <Svg

@@ -1,22 +1,46 @@
 import React from 'react';
-import { Text, type TextProps } from 'react-native';
+import { Text, type TextProps, type TextStyle } from 'react-native';
 
 // ─── Variant ────────────────────────────────────────────────────────────────
 
 type Variant = 'Headline' | 'Title' | 'Subtitle' | 'Body' | 'Callout' | 'Caption';
 
-/**
- * variant → NativeWind className
- * font-pretendard-* 는 tailwind.config.js fontFamily에 등록된 키를 그대로 사용.
- * fontWeight는 fontFamily 이름에 weight가 내장되어 있으므로 별도 지정하지 않음.
- */
-const VARIANT_CLASS: Record<Variant, string> = {
-  Headline: 'text-2xl leading-[34px] tracking-[-0.5px] font-pretendard-bold',
-  Title: 'text-xl  leading-[28px] tracking-[-0.4px] font-pretendard-bold',
-  Subtitle: 'text-lg  leading-[26px] tracking-[-0.3px] font-pretendard-semibold',
-  Body: 'text-base leading-6    tracking-[-0.2px] font-pretendard-regular',
-  Callout: 'text-sm  leading-5    tracking-[-0.1px] font-pretendard-regular',
-  Caption: 'text-[13px] leading-[19px]               font-pretendard-regular',
+const VARIANT_STYLE: Record<Variant, TextStyle> = {
+  Headline: {
+    fontSize: 24,
+    lineHeight: 34,
+    letterSpacing: -0.5,
+    fontFamily: 'Pretendard-Bold',
+  },
+  Title: {
+    fontSize: 20,
+    lineHeight: 28,
+    letterSpacing: -0.4,
+    fontFamily: 'Pretendard-Bold',
+  },
+  Subtitle: {
+    fontSize: 18,
+    lineHeight: 26,
+    letterSpacing: -0.3,
+    fontFamily: 'Pretendard-SemiBold',
+  },
+  Body: {
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: -0.2,
+    fontFamily: 'Pretendard-Regular',
+  },
+  Callout: {
+    fontSize: 14,
+    lineHeight: 20,
+    letterSpacing: -0.1,
+    fontFamily: 'Pretendard-Regular',
+  },
+  Caption: {
+    fontSize: 13,
+    lineHeight: 19,
+    fontFamily: 'Pretendard-Regular',
+  },
 } as const;
 
 // ─── Color tokens ────────────────────────────────────────────────────────────
@@ -37,7 +61,6 @@ const COLOR_VALUE: Record<ColorToken, string> = {
 export interface TypographyProps extends TextProps {
   variant?: Variant;
   color?: ColorToken;
-  className?: string;
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -45,18 +68,16 @@ export interface TypographyProps extends TextProps {
 export function Typography({
   variant = 'Body',
   color = 'primary',
-  className = '',
   style,
   children,
   ...rest
 }: TypographyProps) {
-  const variantClass = VARIANT_CLASS[variant];
+  const variantStyle = VARIANT_STYLE[variant];
   const colorValue = COLOR_VALUE[color];
 
   return (
     <Text
-      className={[variantClass, className].filter(Boolean).join(' ')}
-      style={[{ color: colorValue }, style]}
+      style={[variantStyle, { color: colorValue }, style]}
       {...rest}
     >
       {children}
