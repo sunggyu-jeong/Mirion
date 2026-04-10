@@ -1,5 +1,6 @@
 import { useSubscriptionStore } from '@entities/subscription';
-import type { ChainFilter, WhaleMovement } from '@entities/whale';
+import type { ChainFilter } from '@entities/whale';
+import type { WhaleTx } from '@entities/whale-tx';
 import { ChainFilterBar, StreakBadge } from '@shared/ui';
 import { DailySummaryCard } from '@widgets/daily-summary';
 import React from 'react';
@@ -9,7 +10,7 @@ interface HomeHeaderProps {
   streakCount: number;
   selectedChain: ChainFilter;
   onChainChange: (chain: ChainFilter) => void;
-  movements?: WhaleMovement[];
+  movements?: WhaleTx[];
 }
 
 export function HomeHeader({

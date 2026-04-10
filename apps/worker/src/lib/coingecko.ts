@@ -2,10 +2,24 @@ import type { EthMarketDTO, PricePointDTO } from "../types";
 
 const BASE = "https://api.coingecko.com/api/v3";
 
+let _apiKey = "";
+export function setCoinGeckoApiKey(key: string) {
+  _apiKey = key;
+}
+
 async function getJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
+  const headers: Record<string, string> = {};
+  if (_apiKey) headers["x-cg-demo-api-key"] = _apiKey;
+  const res = await fetch(url, { headers });
   if (!res.ok) throw new Error(`CoinGecko HTTP ${res.status}`);
   return res.json() as Promise<T>;
+}
+
+export interface MultiCoinPrices {
+  eth: number;
+  btc: number;
+  sol: number;
+  bnb: number;
 }
 
 export async function getEthPriceUsd(): Promise<number> {
@@ -13,6 +27,18 @@ export async function getEthPriceUsd(): Promise<number> {
     `${BASE}/simple/price?ids=ethereum&vs_currencies=usd`,
   );
   return json.ethereum.usd;
+}
+
+export async function getMultiCoinPrices(): Promise<MultiCoinPrices> {
+  const json = await getJson<Record<string, { usd: number }>>(
+    `${BASE}/simple/price?ids=ethereum,bitcoin,solana,binancecoin&vs_currencies=usd`,
+  );
+  return {
+    eth: json.ethereum?.usd ?? 0,
+    btc: json.bitcoin?.usd ?? 0,
+    sol: json.solana?.usd ?? 0,
+    bnb: json.binancecoin?.usd ?? 0,
+  };
 }
 
 const PERIOD_DAYS: Record<string, number> = { "1D": 1, "1W": 7, "1M": 30 };

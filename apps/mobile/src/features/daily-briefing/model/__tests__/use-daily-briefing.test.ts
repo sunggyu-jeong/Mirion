@@ -58,7 +58,7 @@ describe('useDailyBriefing', () => {
       {
         txHash: '0x1',
         type: 'send' as const,
-        amountEth: 500,
+        amountNative: 500,
         amountUsd: 1_000_000,
         fromAddress: '0xFrom',
         toAddress: '0xTo',

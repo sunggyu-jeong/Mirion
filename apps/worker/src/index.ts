@@ -3,6 +3,8 @@ import { handleEthChart } from "./routes/eth-chart";
 import { handleEthMarket } from "./routes/eth-market";
 import { handleWhaleProfile } from "./routes/whale-profile";
 import { handleWhaleTransfers } from "./routes/whale-transfers";
+import { handleGetWhales } from "./routes/whales";
+import { setCoinGeckoApiKey } from "./lib/coingecko";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -18,6 +20,8 @@ function withCors(res: Response): Response {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    if (env.COINGECKO_API_KEY) setCoinGeckoApiKey(env.COINGECKO_API_KEY);
+
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS });
     }
@@ -35,6 +39,8 @@ export default {
         res = await handleWhaleTransfers(request, env);
       } else if (pathname === "/api/whale-profile") {
         res = await handleWhaleProfile(request, env);
+      } else if (pathname === "/api/whales") {
+        res = await handleGetWhales(request, env);
       } else if (pathname === "/api/eth-market") {
         res = await handleEthMarket(request, env);
       } else if (pathname.startsWith("/api/eth-chart/")) {

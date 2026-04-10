@@ -3,7 +3,7 @@ export type WhaleTxType = 'send' | 'receive' | 'swap';
 export interface WhaleTx {
   txHash: string;
   type: WhaleTxType;
-  amountEth: number;
+  amountNative: number;
   amountUsd: number;
   fromAddress: string;
   toAddress: string;

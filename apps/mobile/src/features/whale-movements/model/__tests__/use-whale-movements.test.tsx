@@ -46,7 +46,7 @@ function makeTx(overrides: Partial<WhaleTx>): WhaleTx {
   return {
     txHash: '0xdefault',
     type: 'send',
-    amountEth: 500,
+    amountNative: 500,
     amountUsd: 1_225_000,
     fromAddress: '0xVitalik',
     toAddress: '0xOther',

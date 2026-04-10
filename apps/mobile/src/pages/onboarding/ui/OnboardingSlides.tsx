@@ -62,8 +62,6 @@ export function SlideItem({ item }: { item: Slide }) {
         style={{
           width: 120,
           height: 120,
-          borderRadius: 36,
-          backgroundColor: item.bgColor,
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 36,

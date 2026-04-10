@@ -9,6 +9,8 @@ import type {
 } from "../types";
 
 const WEI_PER_ETH = 1_000_000_000_000_000_000n;
+const BLOCKS_PER_DAY = 7200;
+const LOOKBACK_DAYS = 30;
 
 async function alchemyRequest<T>(
   method: string,
@@ -40,13 +42,23 @@ export async function getWhaleTransfers(
   address: string,
   minValueEth: number,
   env: Env,
+  ethPriceUsd: number = 0,
 ): Promise<WhaleTxDTO[]> {
+  const latestBlockHex = await alchemyRequest<string>(
+    "eth_blockNumber",
+    [],
+    env,
+  );
+  const latestBlock = parseInt(latestBlockHex, 16);
+  const fromBlock = "0x" + Math.max(0, latestBlock - BLOCKS_PER_DAY * LOOKBACK_DAYS).toString(16);
+
   const maxCount = "0x14";
   const base = {
-    category: ["external", "internal", "erc20"],
+    category: ["external"],
     withMetadata: true,
     excludeZeroValue: true,
     maxCount,
+    fromBlock,
   };
 
   const [outgoing, incoming] = await Promise.all([
@@ -69,18 +81,21 @@ export async function getWhaleTransfers(
 
   return [...merged.values()]
     .filter((t) => (t.value ?? 0) >= minValueEth)
-    .map((raw) => ({
-      txHash: raw.hash,
-      type: resolveType(raw, address),
-      amountEth: raw.value ?? 0,
-      amountUsd: 0,
-      fromAddress: raw.from,
-      toAddress: raw.to ?? "",
-      timestampMs: new Date(raw.metadata.blockTimestamp).getTime(),
-      blockNumber: raw.blockNum,
-      isLarge: (raw.value ?? 0) >= minValueEth,
-      asset: raw.asset ?? "ETH",
-    }));
+    .map((raw) => {
+      const amountNative = raw.value ?? 0;
+      return {
+        txHash: raw.hash,
+        type: resolveType(raw, address),
+        amountNative,
+        amountUsd: ethPriceUsd > 0 ? amountNative * ethPriceUsd : 0,
+        fromAddress: raw.from,
+        toAddress: raw.to ?? "",
+        timestampMs: new Date(raw.metadata.blockTimestamp).getTime(),
+        blockNumber: raw.blockNum,
+        isLarge: amountNative >= minValueEth,
+        asset: raw.asset ?? "ETH",
+      };
+    });
 }
 
 export async function getWhaleProfile(
@@ -101,7 +116,7 @@ export async function getWhaleProfile(
   const ethAmount = Number(ethBalance) / Number(WEI_PER_ETH);
 
   return {
-    ethBalance: balanceHex,
+    nativeBalance: balanceHex,
     totalValueUsd: ethAmount * ethPriceUsd,
     tokens: tokenData.tokenBalances
       .filter((t) => BigInt(t.tokenBalance) !== 0n)

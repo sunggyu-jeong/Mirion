@@ -1,6 +1,6 @@
 import type { WhaleTx } from '@entities/whale-tx';
 import { getMagnitudeInfo } from '@entities/whale-tx';
-import { formatEth, formatRelativeTime, formatUsd } from '@shared/lib/format';
+import { formatRelativeTime, formatUsd } from '@shared/lib/format';
 import { haptic } from '@shared/lib/haptic';
 import { ArrowDownLeft, ArrowRight, ArrowUpRight, Lock, RefreshCw } from 'lucide-react-native';
 import React, { useCallback, useEffect } from 'react';
@@ -40,7 +40,7 @@ export function WhaleMovementItem({ item, isNew = false, isLocked = false, onUpg
   const glowProgress = useSharedValue(0);
   const config = TX_TYPE_CONFIG[item.type];
   const { Icon } = config;
-  const magnitude = getMagnitudeInfo(item.amountEth);
+  const magnitude = getMagnitudeInfo(item.amountNative);
 
   useEffect(() => {
     if (!isNew) {
@@ -60,8 +60,14 @@ export function WhaleMovementItem({ item, isNew = false, isLocked = false, onUpg
   }));
 
   const handleViewDetail = useCallback(() => {
-    Linking.openURL(`https://etherscan.io/tx/${item.txHash}`);
-  }, [item.txHash]);
+    const explorers: Record<string, string> = {
+      ETH: `https://etherscan.io/tx/${item.txHash}`,
+      BTC: `https://blockstream.info/tx/${item.txHash}`,
+      SOL: `https://solscan.io/tx/${item.txHash}`,
+      BNB: `https://bscscan.com/tx/${item.txHash}`,
+    };
+    Linking.openURL(explorers[item.asset] ?? explorers.ETH);
+  }, [item.txHash, item.asset]);
 
   return (
     <Animated.View
@@ -120,7 +126,7 @@ export function WhaleMovementItem({ item, isNew = false, isLocked = false, onUpg
           <Text
             style={{ fontSize: 13, fontWeight: '500', color: config.color, letterSpacing: -0.01 }}
           >
-            {isLocked ? '••••• ETH' : formatEth(item.amountEth)}
+            {isLocked ? `••••• ${item.asset}` : `${item.amountNative.toFixed(2)} ${item.asset}`}
           </Text>
           <Text style={{ fontSize: 12, fontWeight: '400', color: '#62748e', letterSpacing: -0.01 }}>
             {isLocked ? '•••••' : formatUsd(item.amountUsd)}

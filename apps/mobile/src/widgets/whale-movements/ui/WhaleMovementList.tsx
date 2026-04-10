@@ -1,4 +1,5 @@
 import { useSubscriptionStore } from '@entities/subscription';
+import type { ChainFilter } from '@entities/whale';
 import type { WhaleTx } from '@entities/whale-tx';
 import { useWhaleMovements } from '@features/whale-movements';
 import { Skeleton } from '@shared/ui';
@@ -90,14 +91,15 @@ function SkeletonList() {
 }
 
 type Props = {
+  chainFilter?: ChainFilter;
   onUpgrade: () => void;
 };
 
 type ListItem = { tx: WhaleTx; locked: boolean };
 
-export function WhaleMovementList({ onUpgrade }: Props) {
+export function WhaleMovementList({ chainFilter = 'ALL', onUpgrade }: Props) {
   const isPro = useSubscriptionStore(s => s.isPro);
-  const { data: movements, isLoading } = useWhaleMovements();
+  const { data: movements, isLoading } = useWhaleMovements(chainFilter);
 
   const listItems: ListItem[] = (() => {
     if (!movements) {

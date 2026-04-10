@@ -13,7 +13,7 @@ const MOCK_DTOS = [
   {
     txHash: '0xabc111',
     type: 'send' as const,
-    amountEth: 1000,
+    amountNative: 1000,
     amountUsd: 0,
     fromAddress: WHALE,
     toAddress: OTHER,
@@ -25,7 +25,7 @@ const MOCK_DTOS = [
   {
     txHash: '0xabc222',
     type: 'receive' as const,
-    amountEth: 500,
+    amountNative: 500,
     amountUsd: 0,
     fromAddress: OTHER,
     toAddress: WHALE,
@@ -76,7 +76,7 @@ describe('fetchWhaleTransfers', () => {
 
     expect(tx.txHash).toBe('0xabc111');
     expect(tx.type).toBe('send');
-    expect(tx.amountEth).toBe(1000);
+    expect(tx.amountNative).toBe(1000);
     expect(tx.fromAddress).toBe(WHALE);
     expect(tx.toAddress).toBe(OTHER);
     expect(tx.isLarge).toBe(true);

@@ -11,7 +11,7 @@ const ONE_ETH_HEX = '0xDE0B6B3A7640000';
 const ZERO_HEX = '0x0';
 
 const MOCK_DTO = {
-  ethBalance: ONE_ETH_HEX,
+  nativeBalance: ONE_ETH_HEX,
   totalValueUsd: 2450,
   tokens: [
     {
@@ -39,7 +39,7 @@ describe('fetchWhaleProfile', () => {
   it('converts ethBalance from hex string to bigint', async () => {
     const profile = await fetchWhaleProfile(ETH_ADDRESS);
 
-    expect(profile.ethBalance).toBe(BigInt(ONE_ETH_HEX));
+    expect(profile.nativeBalance).toBe(BigInt(ONE_ETH_HEX));
   });
 
   it('returns totalValueUsd from the worker response', async () => {
@@ -57,14 +57,14 @@ describe('fetchWhaleProfile', () => {
 
   it('returns 0n ethBalance and empty tokens for a zero-balance address', async () => {
     (workerGet as jest.Mock).mockResolvedValueOnce({
-      ethBalance: ZERO_HEX,
+      nativeBalance: ZERO_HEX,
       totalValueUsd: 0,
       tokens: [],
     });
 
     const profile = await fetchWhaleProfile(ETH_ADDRESS);
 
-    expect(profile.ethBalance).toBe(0n);
+    expect(profile.nativeBalance).toBe(0n);
     expect(profile.totalValueUsd).toBe(0);
     expect(profile.tokens).toHaveLength(0);
   });

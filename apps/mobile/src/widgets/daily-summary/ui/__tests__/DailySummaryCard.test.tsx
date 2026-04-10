@@ -8,7 +8,7 @@ function makeTx(overrides: Partial<WhaleTx> = {}): WhaleTx {
   return {
     txHash: '0xabc',
     type: 'send',
-    amountEth: 100,
+    amountNative: 100,
     amountUsd: 250_000,
     fromAddress: '0xFrom',
     toAddress: '0xTo',

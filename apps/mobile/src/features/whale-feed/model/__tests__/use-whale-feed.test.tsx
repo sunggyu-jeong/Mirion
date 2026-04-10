@@ -44,7 +44,7 @@ import { fetchWhaleProfile } from '@entities/whale';
 import { useWhaleFeed } from '../use-whale-feed';
 
 const MOCK_ONCHAIN_DATA: WhaleOnchainData = {
-  ethBalance: BigInt('0xDE0B6B3A7640000'),
+  nativeBalance: BigInt('0xDE0B6B3A7640000'),
   totalValueUsd: 2450,
   tokens: [],
 };

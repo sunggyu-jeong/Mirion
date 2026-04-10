@@ -1,19 +1,20 @@
 import { useAppSettingsStore } from '@entities/app-settings';
-import { CURATED_WHALES } from '@entities/whale';
+import type { ChainFilter } from '@entities/whale';
+import { fetchWhales } from '@entities/whale';
 import type { WhaleTx } from '@entities/whale-tx';
 import { fetchWhaleTransfers } from '@entities/whale-tx';
 import { useQuery } from '@tanstack/react-query';
 
-export function useWhaleMovements() {
+export function useWhaleMovements(chainFilter: ChainFilter = 'ALL') {
   const minValueEth = useAppSettingsStore(s => s.minDetectionEth);
 
   return useQuery<WhaleTx[]>({
     queryKey: ['whale-movements-global', minValueEth],
     queryFn: async () => {
-      const ethAddresses = CURATED_WHALES.filter(w => w.chain === 'ETH').map(w => w.address);
+      const whales = await fetchWhales();
 
       const results = await Promise.allSettled(
-        ethAddresses.map(addr => fetchWhaleTransfers(addr, { minValueEth })),
+        whales.map(w => fetchWhaleTransfers(w.address, { minValueEth }, w.chain)),
       );
 
       const fulfilled = results.filter(
@@ -29,7 +30,8 @@ export function useWhaleMovements() {
         unique.set(tx.txHash, tx);
       }
 
-      return [...unique.values()].sort((a, b) => b.timestampMs - a.timestampMs);
+      const all = [...unique.values()].sort((a, b) => b.timestampMs - a.timestampMs);
+      return chainFilter === 'ALL' ? all : all.filter(tx => tx.asset === chainFilter);
     },
     staleTime: 15_000,
   });

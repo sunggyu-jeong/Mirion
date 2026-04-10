@@ -24,13 +24,13 @@ export interface RawTokenBalance {
 }
 
 export interface WhaleOnchainData {
-  ethBalance: bigint;
+  nativeBalance: bigint;
   totalValueUsd: number;
   tokens: RawTokenBalance[];
 }
 
 export interface WhaleProfile extends WhaleMetadata {
-  ethBalance: bigint;
+  nativeBalance: bigint;
   totalValueUsd: number;
   recentActivity?: string;
   activityType: WhaleActivityType;
