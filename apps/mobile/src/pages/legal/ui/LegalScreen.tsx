@@ -8,12 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 function Section({ title, body }: { title: string; body: string }) {
   return (
     <View style={{ gap: 6 }}>
-      <Text style={{ fontSize: 14, fontWeight: '700', color: '#1d293d', lineHeight: 21 }}>
-        {title}
-      </Text>
-      <Text style={{ fontSize: 13, fontWeight: '400', color: '#62748e', lineHeight: 20 }}>
-        {body}
-      </Text>
+      <Text style={{ fontSize: 14, fontWeight: '700', color: '#1d293d' }}>{title}</Text>
+      <Text style={{ fontSize: 13, color: '#62748e', lineHeight: 20 }}>{body}</Text>
     </View>
   );
 }
@@ -40,22 +36,21 @@ export function LegalScreen() {
         showsVerticalScrollIndicator={false}
       >
         <ScreenTitle>이용약관 및 정보 제공 고지</ScreenTitle>
-
         <Section
           title="1. 서비스 성격 안내"
           body="WhaleTracker는 온체인 데이터를 시각화하여 제공하는 정보 제공 서비스입니다. 귀하의 자산을 직접 보관하거나 관리하지 않습니다."
         />
         <Section
           title="2. 데이터 정확성"
-          body="제공되는 온체인 데이터는 실시간 블록체인 정보를 기반으로 하지만, 네트워크 지연이나 데이터 소스의 오류로 인해 실제 정보와 차이가 있을 수 있습니다."
+          body="제공되는 온체인 데이터는 실시간 블록체인 정보를 기반으로 하지만, 실제 정보와 차이가 있을 수 있습니다."
         />
         <Section
           title="3. 투자 책임 고지"
-          body="본 서비스에서 제공하는 정보는 투자 권유가 아닙니다. 모든 투자 결정은 본인의 책임하에 이루어져야 하며, WhaleTracker는 투자 결과에 대해 책임을 지지 않습니다."
+          body="본 서비스에서 제공하는 정보는 투자 권유가 아닙니다. 모든 투자 결정은 본인의 책임하에 이루어져야 합니다."
         />
         <Section
           title="4. 개인정보 보호"
-          body="WhaleTracker는 사용자의 개인키를 요구하거나 수집하지 않습니다. 공개된 지갑 주소 정보만을 활용하여 데이터를 제공합니다."
+          body="WhaleTracker는 사용자의 개인키를 요구하거나 수집하지 않습니다. 공개된 지갑 주소 정보만을 활용합니다."
         />
       </ScrollView>
 

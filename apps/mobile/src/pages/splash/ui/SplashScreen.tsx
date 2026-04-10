@@ -3,57 +3,37 @@ import { LEGAL_ACCEPTED_KEY, ONBOARDING_SEEN_KEY, storage } from '@shared/lib/st
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import Animated, {
+  FadeIn,
   useAnimatedStyle,
   useSharedValue,
-  withDelay,
-  withSpring,
+  withRepeat,
   withTiming,
 } from 'react-native-reanimated';
 
 export function SplashScreen() {
-  const { toOnboarding, toMain, toLegal } = useAppNavigation();
-
-  const scale = useSharedValue(0.72);
-  const opacity = useSharedValue(0);
-  const subtitleOpacity = useSharedValue(0);
+  const { toMain, toOnboarding, toLegal } = useAppNavigation();
+  const logoScale = useSharedValue(1);
 
   useEffect(() => {
-    scale.value = withSpring(1, { damping: 14, stiffness: 180 });
-    opacity.value = withTiming(1, { duration: 420 });
-    subtitleOpacity.value = withDelay(260, withTiming(1, { duration: 380 }));
+    logoScale.value = withRepeat(withTiming(1.1, { duration: 1000 }), -1, true);
 
-    let timer: ReturnType<typeof setTimeout>;
+    const timer = setTimeout(() => {
+      const hasAcceptedLegal = storage.getString(LEGAL_ACCEPTED_KEY);
+      const hasSeenOnboarding = storage.getString(ONBOARDING_SEEN_KEY);
 
-    const init = () => {
-      const onboardingSeen = storage.getString(ONBOARDING_SEEN_KEY);
-      if (onboardingSeen) {
-        timer = setTimeout(toMain, 1500);
-        return;
+      if (!hasAcceptedLegal) {
+        toLegal();
+      } else if (!hasSeenOnboarding) {
+        toOnboarding();
+      } else {
+        toMain();
       }
-
-      const legalAccepted = storage.getString(LEGAL_ACCEPTED_KEY);
-      if (!legalAccepted) {
-        timer = setTimeout(toLegal, 2200);
-        return;
-      }
-
-      timer = setTimeout(toOnboarding, 2200);
-    };
-
-    init();
+    }, 1500);
 
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [logoScale, toLegal, toMain, toOnboarding]);
 
-  const logoStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
-
-  const subStyle = useAnimatedStyle(() => ({
-    opacity: subtitleOpacity.value,
-  }));
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: logoScale.value }] }));
 
   return (
     <View
@@ -62,35 +42,28 @@ export function SplashScreen() {
         backgroundColor: '#2b7fff',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 6,
       }}
     >
-      <Animated.View style={[{ alignItems: 'center', gap: 10 }, logoStyle]}>
-        <Text style={{ fontSize: 56 }}>🐋</Text>
-        <Text
+      <Animated.View
+        entering={FadeIn.duration(600)}
+        style={[animatedStyle, { alignItems: 'center', gap: 16 }]}
+      >
+        <View
           style={{
-            fontSize: 36,
-            fontWeight: '900',
-            color: 'white',
-            letterSpacing: -1.2,
+            width: 100,
+            height: 100,
+            borderRadius: 30,
+            backgroundColor: 'white',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
+          <Text style={{ fontSize: 50 }}>🐋</Text>
+        </View>
+        <Text style={{ fontSize: 28, fontWeight: '900', color: 'white', letterSpacing: -0.5 }}>
           WhaleTracker
         </Text>
       </Animated.View>
-      <Animated.Text
-        style={[
-          {
-            fontSize: 14,
-            color: 'rgba(255,255,255,0.72)',
-            letterSpacing: -0.02,
-            marginTop: 4,
-          },
-          subStyle,
-        ]}
-      >
-        고래를 따라가세요
-      </Animated.Text>
     </View>
   );
 }
