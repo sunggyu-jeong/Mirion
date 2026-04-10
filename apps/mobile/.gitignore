@@ -37,6 +37,13 @@ yarn-error.*
 instruction.*
 CLAUDE.md
 .claude
+.prebuild_hash
+react_native_prebuild/Frameworks/
+react_native_prebuild/Package.swift
+react_native_prebuild/RNPrebuild.xcworkspace/
+react_native_prebuild/archives/
+react_native_prebuild/node_modules/
+
 # Xcode personal state
 *.xcuserstate
 
