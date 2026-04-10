@@ -1,6 +1,6 @@
-import type { EthMarketDTO, PricePointDTO } from '../types';
+import type { EthMarketDTO, PricePointDTO } from "../types";
 
-const BASE = 'https://api.coingecko.com/api/v3';
+const BASE = "https://api.coingecko.com/api/v3";
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
@@ -15,9 +15,11 @@ export async function getEthPriceUsd(): Promise<number> {
   return json.ethereum.usd;
 }
 
-const PERIOD_DAYS: Record<string, number> = { '1D': 1, '1W': 7, '1M': 30 };
+const PERIOD_DAYS: Record<string, number> = { "1D": 1, "1W": 7, "1M": 30 };
 
-export async function getEthMarketChart(period: string): Promise<PricePointDTO[]> {
+export async function getEthMarketChart(
+  period: string,
+): Promise<PricePointDTO[]> {
   const days = PERIOD_DAYS[period];
   if (!days) throw new Error(`Invalid period: ${period}`);
 

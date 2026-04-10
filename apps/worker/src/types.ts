@@ -7,7 +7,7 @@ export interface Env {
 // WhaleTx with blockNumber as string (bigint cannot be JSON serialized)
 export interface WhaleTxDTO {
   txHash: string;
-  type: 'send' | 'receive' | 'swap';
+  type: "send" | "receive" | "swap";
   amountEth: number;
   amountUsd: number;
   fromAddress: string;
@@ -39,7 +39,7 @@ export interface PricePointDTO {
 // Alchemy raw types
 export interface AlchemyJsonRpcResponse<T> {
   id: number;
-  jsonrpc: '2.0';
+  jsonrpc: "2.0";
   result?: T;
   error?: { code: number; message: string };
 }

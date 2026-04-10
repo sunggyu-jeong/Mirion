@@ -1,14 +1,17 @@
-import type { Env } from '../types';
-import { withCache } from '../lib/cache';
-import { getWhaleTransfers } from '../lib/alchemy';
+import type { Env } from "../types";
+import { withCache } from "../lib/cache";
+import { getWhaleTransfers } from "../lib/alchemy";
 
-export async function handleWhaleTransfers(request: Request, env: Env): Promise<Response> {
+export async function handleWhaleTransfers(
+  request: Request,
+  env: Env,
+): Promise<Response> {
   const url = new URL(request.url);
-  const address = url.searchParams.get('address');
-  const minValueEth = Number(url.searchParams.get('minValueEth') ?? '100');
+  const address = url.searchParams.get("address");
+  const minValueEth = Number(url.searchParams.get("minValueEth") ?? "100");
 
   if (!address) {
-    return Response.json({ error: 'address required' }, { status: 400 });
+    return Response.json({ error: "address required" }, { status: 400 });
   }
 
   const cacheKey = `whale-transfers:${address.toLowerCase()}:${minValueEth}`;

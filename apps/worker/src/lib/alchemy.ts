@@ -6,16 +6,20 @@ import type {
   Env,
   WhaleTxDTO,
   WhaleProfileDTO,
-} from '../types';
+} from "../types";
 
 const WEI_PER_ETH = 1_000_000_000_000_000_000n;
 
-async function alchemyRequest<T>(method: string, params: unknown[], env: Env): Promise<T> {
+async function alchemyRequest<T>(
+  method: string,
+  params: unknown[],
+  env: Env,
+): Promise<T> {
   const url = `https://${env.ALCHEMY_NETWORK}.g.alchemy.com/v2/${env.ALCHEMY_API_KEY}`;
   const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: 1, jsonrpc: '2.0', method, params }),
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: 1, jsonrpc: "2.0", method, params }),
   });
 
   if (!res.ok) throw new Error(`Alchemy HTTP ${res.status}`);
@@ -25,8 +29,11 @@ async function alchemyRequest<T>(method: string, params: unknown[], env: Env): P
   return json.result as T;
 }
 
-function resolveType(raw: AlchemyTransferRaw, address: string): WhaleTxDTO['type'] {
-  return raw.from.toLowerCase() === address.toLowerCase() ? 'send' : 'receive';
+function resolveType(
+  raw: AlchemyTransferRaw,
+  address: string,
+): WhaleTxDTO["type"] {
+  return raw.from.toLowerCase() === address.toLowerCase() ? "send" : "receive";
 }
 
 export async function getWhaleTransfers(
@@ -34,9 +41,9 @@ export async function getWhaleTransfers(
   minValueEth: number,
   env: Env,
 ): Promise<WhaleTxDTO[]> {
-  const maxCount = '0x14';
+  const maxCount = "0x14";
   const base = {
-    category: ['external', 'internal', 'erc20'],
+    category: ["external", "internal", "erc20"],
     withMetadata: true,
     excludeZeroValue: true,
     maxCount,
@@ -44,12 +51,12 @@ export async function getWhaleTransfers(
 
   const [outgoing, incoming] = await Promise.all([
     alchemyRequest<AlchemyAssetTransfersResponse>(
-      'alchemy_getAssetTransfers',
+      "alchemy_getAssetTransfers",
       [{ ...base, fromAddress: address }],
       env,
     ),
     alchemyRequest<AlchemyAssetTransfersResponse>(
-      'alchemy_getAssetTransfers',
+      "alchemy_getAssetTransfers",
       [{ ...base, toAddress: address }],
       env,
     ),
@@ -61,18 +68,18 @@ export async function getWhaleTransfers(
   }
 
   return [...merged.values()]
-    .filter(t => (t.value ?? 0) >= minValueEth)
-    .map(raw => ({
+    .filter((t) => (t.value ?? 0) >= minValueEth)
+    .map((raw) => ({
       txHash: raw.hash,
       type: resolveType(raw, address),
       amountEth: raw.value ?? 0,
       amountUsd: 0,
       fromAddress: raw.from,
-      toAddress: raw.to ?? '',
+      toAddress: raw.to ?? "",
       timestampMs: new Date(raw.metadata.blockTimestamp).getTime(),
       blockNumber: raw.blockNum,
       isLarge: (raw.value ?? 0) >= minValueEth,
-      asset: raw.asset ?? 'ETH',
+      asset: raw.asset ?? "ETH",
     }));
 }
 
@@ -82,10 +89,10 @@ export async function getWhaleProfile(
   env: Env,
 ): Promise<WhaleProfileDTO> {
   const [balanceHex, tokenData] = await Promise.all([
-    alchemyRequest<string>('eth_getBalance', [address, 'latest'], env),
+    alchemyRequest<string>("eth_getBalance", [address, "latest"], env),
     alchemyRequest<AlchemyTokenBalancesResponse>(
-      'alchemy_getTokenBalances',
-      [address, 'erc20'],
+      "alchemy_getTokenBalances",
+      [address, "erc20"],
       env,
     ),
   ]);
@@ -97,8 +104,8 @@ export async function getWhaleProfile(
     ethBalance: balanceHex,
     totalValueUsd: ethAmount * ethPriceUsd,
     tokens: tokenData.tokenBalances
-      .filter(t => BigInt(t.tokenBalance) !== 0n)
-      .map(t => ({
+      .filter((t) => BigInt(t.tokenBalance) !== 0n)
+      .map((t) => ({
         contractAddress: t.contractAddress,
         rawBalance: t.tokenBalance,
       })),

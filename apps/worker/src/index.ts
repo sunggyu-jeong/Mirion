@@ -1,13 +1,13 @@
-import type { Env } from './types';
-import { handleEthChart } from './routes/eth-chart';
-import { handleEthMarket } from './routes/eth-market';
-import { handleWhaleProfile } from './routes/whale-profile';
-import { handleWhaleTransfers } from './routes/whale-transfers';
+import type { Env } from "./types";
+import { handleEthChart } from "./routes/eth-chart";
+import { handleEthMarket } from "./routes/eth-market";
+import { handleWhaleProfile } from "./routes/whale-profile";
+import { handleWhaleTransfers } from "./routes/whale-transfers";
 
 const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
 };
 
 function withCors(res: Response): Response {
@@ -18,12 +18,12 @@ function withCors(res: Response): Response {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    if (request.method === 'OPTIONS') {
+    if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: CORS });
     }
 
-    if (request.method !== 'GET') {
-      return new Response('Method Not Allowed', { status: 405, headers: CORS });
+    if (request.method !== "GET") {
+      return new Response("Method Not Allowed", { status: 405, headers: CORS });
     }
 
     const { pathname } = new URL(request.url);
@@ -31,16 +31,16 @@ export default {
     try {
       let res: Response;
 
-      if (pathname === '/api/whale-transfers') {
+      if (pathname === "/api/whale-transfers") {
         res = await handleWhaleTransfers(request, env);
-      } else if (pathname === '/api/whale-profile') {
+      } else if (pathname === "/api/whale-profile") {
         res = await handleWhaleProfile(request, env);
-      } else if (pathname === '/api/eth-market') {
+      } else if (pathname === "/api/eth-market") {
         res = await handleEthMarket(request, env);
-      } else if (pathname.startsWith('/api/eth-chart/')) {
+      } else if (pathname.startsWith("/api/eth-chart/")) {
         res = await handleEthChart(request, env);
       } else {
-        res = Response.json({ error: 'Not Found' }, { status: 404 });
+        res = Response.json({ error: "Not Found" }, { status: 404 });
       }
 
       return withCors(res);

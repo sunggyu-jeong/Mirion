@@ -4,7 +4,7 @@ export async function withCache<T>(
   ttlSeconds: number,
   fn: () => Promise<T>,
 ): Promise<T> {
-  const cached = await kv.get<T>(key, 'json');
+  const cached = await kv.get<T>(key, "json");
   if (cached !== null) return cached;
 
   const fresh = await fn();
