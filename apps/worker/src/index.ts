@@ -1,6 +1,7 @@
 import type { Env } from "./types";
 import { handleEthChart } from "./routes/eth-chart";
 import { handleEthMarket } from "./routes/eth-market";
+import { handleGetCexTrades, handleIngestCexTrade, handlePollCexTrades } from "./routes/cex-trades";
 import { handleRadar } from "./routes/radar";
 import { handleWhaleProfile } from "./routes/whale-profile";
 import { handleWhaleTransfers } from "./routes/whale-transfers";
@@ -27,16 +28,22 @@ export default {
       return new Response(null, { status: 204, headers: CORS });
     }
 
+    const { pathname } = new URL(request.url);
+
+    if (pathname === "/api/cex-trades" && request.method === "POST") {
+      return withCors(await handleIngestCexTrade(request, env));
+    }
+
     if (request.method !== "GET") {
       return new Response("Method Not Allowed", { status: 405, headers: CORS });
     }
 
-    const { pathname } = new URL(request.url);
-
     try {
       let res: Response;
 
-      if (pathname === "/api/radar") {
+      if (pathname === "/api/cex-trades") {
+        res = await handleGetCexTrades(env);
+      } else if (pathname === "/api/radar") {
         res = await handleRadar(request, env);
       } else if (pathname === "/api/whale-transfers") {
         res = await handleWhaleTransfers(request, env);
@@ -59,5 +66,8 @@ export default {
         { status: 500, headers: CORS },
       );
     }
+  },
+  async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+    await handlePollCexTrades(env);
   },
 } satisfies ExportedHandler<Env>;
