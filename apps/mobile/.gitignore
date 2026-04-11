@@ -49,3 +49,7 @@ react_native_prebuild/node_modules/
 
 # iOS export settings
 ios/ExportOptions.plist
+ios/fastlane/report.xml
+ios/fastlane/Preview.html
+ios/fastlane/screenshots
+ios/fastlane/test_output

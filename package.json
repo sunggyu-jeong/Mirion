@@ -9,7 +9,9 @@
     "ios": "pnpm --filter @whaletracker/mobile ios",
     "lint:mobile": "pnpm --filter @whaletracker/mobile lint",
     "worker:dev": "pnpm --filter @whaletracker/worker dev",
-    "worker:deploy": "pnpm --filter @whaletracker/worker deploy"
+    "worker:deploy": "pnpm --filter @whaletracker/worker deploy",
+    "monitor:dev": "pnpm --filter @whaletracker/whale-monitor dev",
+    "monitor:start": "pnpm --filter @whaletracker/whale-monitor start"
   },
   "keywords": [],
   "author": "sunggyu-jeong",
