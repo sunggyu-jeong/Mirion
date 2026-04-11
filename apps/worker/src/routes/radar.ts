@@ -1,6 +1,5 @@
 import type { Env, WhaleTxDTO } from "../types";
-import { withCache } from "../lib/cache";
-import { getWhaleTransfers } from "../lib/alchemy";
+import { getEthFromBlock, getWhaleTransfers } from "../lib/alchemy";
 import { getBtcTransfers } from "../lib/blockstream";
 import { getBnbTransfers } from "../lib/bscscan";
 import { getSolTransfers } from "../lib/solana";
@@ -10,21 +9,44 @@ import { getMultiCoinPrices } from "../lib/coingecko";
 import { getWhaleList } from "./whales";
 import type { WhaleEntry } from "./whales";
 
-const RECENCY_MS = 90 * 24 * 60 * 60 * 1000;
+const CHAIN_ORDER = ["ETH", "BTC", "SOL", "BNB", "XRP", "TRX"] as const;
+const CHAIN_CACHE_TTL = 5 * 60;
+const PRICE_CACHE_TTL = 2 * 60;
+const EMPTY_CACHE_TTL = 60;
 const DEFAULT_MIN_VALUE_USD = 20_000;
-const CACHE_TTL = 900; // 15분
-const FETCH_TIMEOUT_MS = 10_000; // 체인별 10초 타임아웃
+const FETCH_TIMEOUT_MS = 10_000;
+const RECENCY_MS = 90 * 24 * 60 * 60 * 1000;
+
+type Prices = {
+  eth: number; btc: number; sol: number;
+  bnb: number; xrp: number; trx: number;
+};
+
+async function getCachedPrices(env: Env): Promise<Prices> {
+  const cached = await env.CACHE.get<Prices>("coingecko:prices", "json");
+  if (cached) return cached;
+  const raw = await getMultiCoinPrices();
+  const prices: Prices = {
+    eth: raw.eth, btc: raw.btc, sol: raw.sol,
+    bnb: raw.bnb, xrp: raw.xrp ?? 0.5, trx: raw.trx ?? 0.1,
+  };
+  await env.CACHE.put("coingecko:prices", JSON.stringify(prices), {
+    expirationTtl: PRICE_CACHE_TTL,
+  });
+  return prices;
+}
 
 async function fetchTransfersForWhale(
   whale: WhaleEntry,
   minValueUsd: number,
-  prices: { eth: number; btc: number; sol: number; bnb: number; xrp: number; trx: number },
+  prices: Prices,
   env: Env,
+  fromBlock?: string,
 ): Promise<WhaleTxDTO[]> {
   switch (whale.chain) {
     case "ETH": {
       const minValueEth = minValueUsd / prices.eth;
-      return getWhaleTransfers(whale.address, minValueEth, env, prices.eth);
+      return getWhaleTransfers(whale.address, minValueEth, env, prices.eth, fromBlock);
     }
     case "BNB":
       return getBnbTransfers(whale.address, minValueUsd, prices.bnb, env.MORALIS_API_KEY);
@@ -41,6 +63,46 @@ async function fetchTransfersForWhale(
   }
 }
 
+async function fetchChain(
+  chain: string,
+  whales: WhaleEntry[],
+  minValueUsd: number,
+  prices: Prices,
+  env: Env,
+): Promise<WhaleTxDTO[]> {
+  const cutoff = Date.now() - RECENCY_MS;
+
+  let fromBlock: string | undefined;
+  if (chain === "ETH") {
+    fromBlock = await getEthFromBlock(env);
+  }
+
+  const results = await Promise.allSettled(
+    whales.map((w) =>
+      Promise.race([
+        fetchTransfersForWhale(w, minValueUsd, prices, env, fromBlock),
+        new Promise<WhaleTxDTO[]>((_, reject) =>
+          setTimeout(() => reject(new Error(`Timeout: ${w.name}`)), FETCH_TIMEOUT_MS),
+        ),
+      ]),
+    ),
+  );
+
+  const unique = new Map<string, WhaleTxDTO>();
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    if (r.status !== "fulfilled") {
+      console.error(`[radar] ${chain} ${whales[i]?.name}: ${r.reason}`);
+      continue;
+    }
+    for (const tx of r.value) {
+      if (tx.timestampMs >= cutoff) unique.set(tx.txHash, tx);
+    }
+  }
+
+  return [...unique.values()].sort((a, b) => b.timestampMs - a.timestampMs);
+}
+
 export async function handleRadar(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const chainsParam = url.searchParams.get("chains");
@@ -50,57 +112,39 @@ export async function handleRadar(request: Request, env: Env): Promise<Response>
     ? new Set(chainsParam.split(",").map((c) => c.toUpperCase()))
     : null;
 
-  const cacheKey = `radar:${requestedChains ? [...requestedChains].sort().join(",") : "ALL"}:${minValueUsd}`;
+  const chainList = requestedChains
+    ? CHAIN_ORDER.filter((c) => requestedChains.has(c))
+    : [...CHAIN_ORDER];
 
-  try {
-    const data = await withCache(env.CACHE, cacheKey, CACHE_TTL, async () => {
-      const [whales, prices] = await Promise.all([
-        getWhaleList(env),
-        getMultiCoinPrices(),
-      ]);
+  const whales = await getWhaleList(env);
 
-      const fullPrices = {
-        eth: prices.eth,
-        btc: prices.btc,
-        sol: prices.sol,
-        bnb: prices.bnb,
-        xrp: prices.xrp ?? 0.5,
-        trx: prices.trx ?? 0.1,
-      };
+  const allTxs: WhaleTxDTO[] = [];
+  let fetchedFresh = false;
+  let prices: Prices | null = null;
 
-      const filtered = requestedChains
-        ? whales.filter((w) => requestedChains.has(w.chain))
-        : whales;
+  for (const chain of chainList) {
+    const cacheKey = `radar:v2:${chain}:${minValueUsd}`;
+    const cached = await env.CACHE.get<WhaleTxDTO[]>(cacheKey, "json");
 
-      const results = await Promise.allSettled(
-        filtered.map((w) =>
-          Promise.race([
-            fetchTransfersForWhale(w, minValueUsd, fullPrices, env),
-            new Promise<WhaleTxDTO[]>((_, reject) =>
-              setTimeout(() => reject(new Error(`Timeout: ${w.chain} ${w.name}`)), FETCH_TIMEOUT_MS),
-            ),
-          ]),
-        ),
-      );
+    if (cached !== null) {
+      allTxs.push(...cached);
+      continue;
+    }
 
-      const cutoff = Date.now() - RECENCY_MS;
-      const unique = new Map<string, WhaleTxDTO>();
-      for (let i = 0; i < results.length; i++) {
-        const r = results[i];
-        if (r.status !== "fulfilled") {
-          console.error(`[radar] fetch failed for ${filtered[i]?.chain} ${filtered[i]?.name}: ${r.reason}`);
-          continue;
-        }
-        for (const tx of r.value) {
-          if (tx.timestampMs >= cutoff) unique.set(tx.txHash, tx);
-        }
-      }
+    if (fetchedFresh) continue;
 
-      return [...unique.values()].sort((a, b) => b.timestampMs - a.timestampMs);
+    if (!prices) prices = await getCachedPrices(env);
+
+    const chainWhales = whales.filter((w) => w.chain === chain);
+    const txs = await fetchChain(chain, chainWhales, minValueUsd, prices, env);
+
+    await env.CACHE.put(cacheKey, JSON.stringify(txs), {
+      expirationTtl: txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL,
     });
 
-    return Response.json(data);
-  } catch {
-    return Response.json([]);
+    allTxs.push(...txs);
+    fetchedFresh = true;
   }
+
+  return Response.json(allTxs.sort((a, b) => b.timestampMs - a.timestampMs));
 }

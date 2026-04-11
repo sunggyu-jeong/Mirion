@@ -38,19 +38,24 @@ function resolveType(
   return raw.from.toLowerCase() === address.toLowerCase() ? "send" : "receive";
 }
 
+export async function getEthFromBlock(env: Env): Promise<string> {
+  const hex = await alchemyRequest<string>("eth_blockNumber", [], env);
+  return "0x" + Math.max(0, parseInt(hex, 16) - BLOCKS_PER_DAY * LOOKBACK_DAYS).toString(16);
+}
+
 export async function getWhaleTransfers(
   address: string,
   minValueEth: number,
   env: Env,
   ethPriceUsd: number = 0,
+  fromBlockOverride?: string,
 ): Promise<WhaleTxDTO[]> {
-  const latestBlockHex = await alchemyRequest<string>(
-    "eth_blockNumber",
-    [],
-    env,
-  );
-  const latestBlock = parseInt(latestBlockHex, 16);
-  const fromBlock = "0x" + Math.max(0, latestBlock - BLOCKS_PER_DAY * LOOKBACK_DAYS).toString(16);
+  const fromBlock =
+    fromBlockOverride ??
+    (await (async () => {
+      const hex = await alchemyRequest<string>("eth_blockNumber", [], env);
+      return "0x" + Math.max(0, parseInt(hex, 16) - BLOCKS_PER_DAY * LOOKBACK_DAYS).toString(16);
+    })());
 
   const maxCount = "0x32";
   const base = {

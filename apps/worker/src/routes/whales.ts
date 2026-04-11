@@ -35,8 +35,6 @@ const DEFAULT_WHALES: WhaleEntry[] = [
   { id: "kucoin-eth",       name: "KuCoin",              address: "0x2B5634C42055806a59e9107ED44D43c426E58258", tag: "거래소",      chain: "ETH", isLocked: true },
   { id: "gate-eth",         name: "Gate.io",             address: "0x0D0707963952f2fBA59dD06f2b425ace40b492Fe", tag: "거래소",      chain: "ETH", isLocked: true },
   { id: "upbit-eth",        name: "Upbit",               address: "0x61189Da79177950A7272C88c6058b96d4bcd6be2", tag: "거래소",      chain: "ETH", isLocked: true },
-  { id: "bitfinex-eth",     name: "Bitfinex",            address: "0x742d35Cc6634C0532925a3b8D6d0D4FF7C8A2f5b", tag: "거래소",      chain: "ETH", isLocked: true },
-  { id: "wintermute",       name: "Wintermute",          address: "0x4f3a120E72C76c22ae802D129F599BFDbc31cb81", tag: "마켓메이커",  chain: "ETH", isLocked: true },
   { id: "cumberland",       name: "Cumberland DRW",      address: "0x5f65f7b609678448494De4C87521CdF6cEf1e932", tag: "마켓메이커",  chain: "ETH", isLocked: true },
   { id: "jump-crypto",      name: "Jump Crypto",         address: "0x4C6f947Ae67F572afa4ae0730947DE7C874F95Ef", tag: "헤지펀드",    chain: "ETH", isLocked: true },
 
@@ -47,16 +45,13 @@ const DEFAULT_WHALES: WhaleEntry[] = [
   { id: "bitfinex-btc",     name: "Bitfinex Cold",       address: "3D2oetdNuZUqQHPJmcMDDHYoqkyNVsFk9r",        tag: "거래소",      chain: "BTC", isLocked: true },
   { id: "binance-btc-hot",  name: "Binance Hot",         address: "1NDyJtNTjmwk5xPNhjgAMu4HDHigtobu1s",        tag: "거래소",      chain: "BTC", isLocked: true },
   { id: "coinbase-btc",     name: "Coinbase",            address: "3Cbq7aT1tY8kMxWLbitaG7yT6bPbKChq64",        tag: "거래소",      chain: "BTC", isLocked: true },
-  { id: "kraken-btc",       name: "Kraken",              address: "3FHNBLobJnbCPpqnAmJH4dMcnLKV5g6Foh",        tag: "거래소",      chain: "BTC", isLocked: true },
   { id: "huobi-btc",        name: "HTX (Huobi)",         address: "1HckjUpRGcrrRAtFaaCAUaGjsPx9oYmLaZ",        tag: "거래소",      chain: "BTC", isLocked: true },
-  { id: "okx-btc",          name: "OKX",                 address: "1Ac4fMwgY8j9onSbXEWeH6Zan8QGMSdmtA",        tag: "거래소",      chain: "BTC", isLocked: true },
   { id: "bybit-btc",        name: "Bybit",               address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", tag: "거래소",      chain: "BTC", isLocked: true },
 
   // ── SOL (12개) ────────────────────────────────────────────────────────────
   { id: "sol-foundation",   name: "Solana Foundation",   address: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM", tag: "재단",      chain: "SOL", isLocked: false },
   { id: "sol-binance",      name: "Binance SOL",         address: "5tzFkiKscXHK5ZXCGbxZVsATsG2q5kq7RhT1P4vcJRPk", tag: "거래소",    chain: "SOL", isLocked: true },
   { id: "sol-coinbase",     name: "Coinbase SOL",        address: "H8sMJSCQxfKiFTCfDR3DUMLPwcRbM61LGFJ8N4dK3WjS", tag: "거래소",    chain: "SOL", isLocked: true },
-  { id: "sol-okx",          name: "OKX SOL",             address: "6OgKHQYAFRrD7DaJ5K7nSCRqXJnCepCxkKjXHBiDGPGT", tag: "거래소",    chain: "SOL", isLocked: true },
   { id: "sol-kraken",       name: "Kraken SOL",          address: "FWznbcNXWQuHTawe9RxvQ2LdCENVDTyyzqZFQ6Hh82TA", tag: "거래소",    chain: "SOL", isLocked: true },
   { id: "sol-bybit",        name: "Bybit SOL",           address: "A77HErqtfN1hLLpvZ9pGtu19jfScNKSuLBUwg7BqNMqb", tag: "거래소",    chain: "SOL", isLocked: true },
   { id: "sol-kucoin",       name: "KuCoin SOL",          address: "BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4", tag: "거래소",    chain: "SOL", isLocked: true },
@@ -83,8 +78,6 @@ const DEFAULT_WHALES: WhaleEntry[] = [
   { id: "xrp-bitstamp",     name: "Bitstamp XRP",        address: "rrpNnNLKrartuEqfJGpqyDwPj1BBN1wr7L",        tag: "거래소",      chain: "XRP", isLocked: true },
   { id: "xrp-upbit",        name: "Upbit XRP",           address: "rwjRDBTBEna9DFPnCseKm6wDi8xFPVRNsq",        tag: "거래소",      chain: "XRP", isLocked: true },
   { id: "xrp-kraken",       name: "Kraken XRP",          address: "rPVMhWBsfF9iMXYj3aAzJVkPDTFNSyWdKy",        tag: "거래소",      chain: "XRP", isLocked: true },
-  { id: "xrp-huobi",        name: "HTX (Huobi) XRP",     address: "rKDvgGUsNPZxsgmoemfrgXPS9NM8CbCCn4",        tag: "거래소",      chain: "XRP", isLocked: true },
-  { id: "xrp-okx",          name: "OKX XRP",             address: "r94s8px6kSw1uZ1MV98dhSRQkG1bcdX3dH",        tag: "거래소",      chain: "XRP", isLocked: true },
   { id: "xrp-coinbase",     name: "Coinbase XRP",        address: "rPz2qA514PjyMJvSEzeespgqnvBeB37FtB",        tag: "거래소",      chain: "XRP", isLocked: true },
   { id: "xrp-gate",         name: "Gate.io XRP",         address: "rhub8VRN55s94qWKDv6jmDy1pUykJzF3wq",        tag: "거래소",      chain: "XRP", isLocked: true },
   { id: "xrp-bithumb",      name: "Bithumb XRP",         address: "rBgnUKAEiFhCRLPoYNPPe3JUWayRjP6Ayg",        tag: "거래소",      chain: "XRP", isLocked: true },
@@ -92,7 +85,6 @@ const DEFAULT_WHALES: WhaleEntry[] = [
   { id: "xrp-kucoin",       name: "KuCoin XRP",          address: "rBPBRBGSMPHxHUBqJkBvJSHAapAVXZB2Fq",        tag: "거래소",      chain: "XRP", isLocked: true },
   { id: "xrp-bybit",        name: "Bybit XRP",           address: "rLHzPsX6oXkzU2qL12kHCH8G8cnZv1rBJh",        tag: "거래소",      chain: "XRP", isLocked: true },
   { id: "xrp-mexc",         name: "MEXC XRP",            address: "rMQ98K56yXJbDGv49ZSmW51sLn94Xe1mu1",        tag: "거래소",      chain: "XRP", isLocked: true },
-  { id: "xrp-ripple",       name: "Ripple Labs",         address: "r3kmLJN5D28dHuH8vZNUZpMC4JPql5obRg",        tag: "프로젝트",    chain: "XRP", isLocked: true },
 
   // ── TRX (10개) ────────────────────────────────────────────────────────────
   { id: "trx-binance",      name: "Binance TRX",         address: "TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe",        tag: "거래소",      chain: "TRX", isLocked: true },

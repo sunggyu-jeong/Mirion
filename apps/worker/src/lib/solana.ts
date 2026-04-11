@@ -64,7 +64,7 @@ export async function getSolTransfers(
 
   const sigs = await rpc<SolSignature[]>("getSignaturesForAddress", [
     address,
-    { limit: 50 },
+    { limit: 3 },
   ], apiKey);
 
   const recentSigs = sigs.filter((s) => (s.blockTime ?? 0) >= minBlockTime);
