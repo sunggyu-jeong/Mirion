@@ -5,7 +5,17 @@ export interface Env {
   COINGECKO_API_KEY?: string;
   HELIUS_API_KEY?: string;
   TRONGRID_API_KEY?: string;
-  BSCSCAN_API_KEY?: string;
+  MORALIS_API_KEY?: string;
+  CEX_INGEST_SECRET?: string;
+}
+
+export interface CexTradeDTO {
+  symbol: string;
+  side: 'buy' | 'sell';
+  price: number;
+  amount: number;
+  valueUsd: number;
+  timestampMs: number;
 }
 
 // WhaleTx with blockNumber as string (bigint cannot be JSON serialized)

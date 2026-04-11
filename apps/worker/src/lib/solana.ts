@@ -1,9 +1,10 @@
 import type { WhaleTxDTO, WhaleProfileDTO } from "../types";
 
-const DEFAULT_RPC = "https://mainnet.helius-rpc.com";
+const HELIUS_RPC = "https://mainnet.helius-rpc.com";
+const FALLBACK_RPC = "https://api.mainnet-beta.solana.com";
 
 function getRpc(apiKey?: string): string {
-  return apiKey ? `${DEFAULT_RPC}/?api-key=${apiKey}` : DEFAULT_RPC;
+  return apiKey ? `${HELIUS_RPC}/?api-key=${apiKey}` : FALLBACK_RPC;
 }
 const LAMPORTS_PER_SOL = 1_000_000_000;
 
@@ -58,12 +59,12 @@ export async function getSolTransfers(
   solPriceUsd: number,
   apiKey?: string,
 ): Promise<WhaleTxDTO[]> {
-  const RECENCY_SEC = 7 * 24 * 60 * 60;
+  const RECENCY_SEC = 90 * 24 * 60 * 60;
   const minBlockTime = Math.floor(Date.now() / 1000) - RECENCY_SEC;
 
   const sigs = await rpc<SolSignature[]>("getSignaturesForAddress", [
     address,
-    { limit: 20 },
+    { limit: 50 },
   ], apiKey);
 
   const recentSigs = sigs.filter((s) => (s.blockTime ?? 0) >= minBlockTime);

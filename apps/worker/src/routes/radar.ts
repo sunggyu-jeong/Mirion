@@ -10,9 +10,9 @@ import { getMultiCoinPrices } from "../lib/coingecko";
 import { getWhaleList } from "./whales";
 import type { WhaleEntry } from "./whales";
 
-const RECENCY_MS = 7 * 24 * 60 * 60 * 1000;
+const RECENCY_MS = 90 * 24 * 60 * 60 * 1000;
 const DEFAULT_MIN_VALUE_USD = 20_000;
-const CACHE_TTL = 300; // 5분
+const CACHE_TTL = 900; // 15분
 const FETCH_TIMEOUT_MS = 10_000; // 체인별 10초 타임아웃
 
 async function fetchTransfersForWhale(
@@ -27,7 +27,7 @@ async function fetchTransfersForWhale(
       return getWhaleTransfers(whale.address, minValueEth, env, prices.eth);
     }
     case "BNB":
-      return getBnbTransfers(whale.address, minValueUsd, prices.bnb, env.BSCSCAN_API_KEY);
+      return getBnbTransfers(whale.address, minValueUsd, prices.bnb, env.MORALIS_API_KEY);
     case "BTC":
       return getBtcTransfers(whale.address, minValueUsd, prices.btc);
     case "SOL":

@@ -10,7 +10,7 @@ import type {
 
 const WEI_PER_ETH = 1_000_000_000_000_000_000n;
 const BLOCKS_PER_DAY = 7200;
-const LOOKBACK_DAYS = 30;
+const LOOKBACK_DAYS = 90;
 
 async function alchemyRequest<T>(
   method: string,
@@ -52,7 +52,7 @@ export async function getWhaleTransfers(
   const latestBlock = parseInt(latestBlockHex, 16);
   const fromBlock = "0x" + Math.max(0, latestBlock - BLOCKS_PER_DAY * LOOKBACK_DAYS).toString(16);
 
-  const maxCount = "0x14";
+  const maxCount = "0x32";
   const base = {
     category: ["external"],
     withMetadata: true,

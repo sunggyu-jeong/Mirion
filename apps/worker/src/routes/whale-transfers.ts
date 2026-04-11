@@ -21,7 +21,7 @@ async function fetchTransfers(
   if (chain === "SOL") return getSolTransfers(address, minValueUsd, prices.sol, env.HELIUS_API_KEY);
   if (chain === "XRP") return getXrpTransfers(address, minValueUsd, prices.xrp);
   if (chain === "TRX") return getTrxTransfers(address, minValueUsd, prices.trx, env.TRONGRID_API_KEY);
-  if (chain === "BNB") return getBnbTransfers(address, minValueUsd, prices.bnb, env.BSCSCAN_API_KEY);
+  if (chain === "BNB") return getBnbTransfers(address, minValueUsd, prices.bnb, env.MORALIS_API_KEY);
   return getWhaleTransfers(address, minValueEth, env, prices.eth);
 }
 
@@ -40,7 +40,7 @@ export async function handleWhaleTransfers(
 
   try {
     const cacheKey = `whale-transfers:${chain}:${address.toLowerCase()}:${minValueEth}`;
-    const data = await withCache(env.CACHE, cacheKey, 300, () =>
+    const data = await withCache(env.CACHE, cacheKey, 900, () =>
       fetchTransfers(chain, address, minValueEth, env),
     );
     return Response.json(data);
