@@ -13,6 +13,7 @@ interface WhaleTxDTO {
   blockNumber: string;
   isLarge: boolean;
   asset: string;
+  chain: string;
 }
 
 export async function fetchRadarTransactions(chains?: string[]): Promise<WhaleTx[]> {

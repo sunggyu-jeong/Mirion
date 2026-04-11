@@ -2,6 +2,7 @@ import type { Env, WhaleTxDTO } from "../types";
 import { withCache } from "../lib/cache";
 import { getWhaleTransfers } from "../lib/alchemy";
 import { getBtcTransfers } from "../lib/blockstream";
+import { getBnbTransfers } from "../lib/bscscan";
 import { getSolTransfers } from "../lib/solana";
 import { getXrpTransfers } from "../lib/xrpl";
 import { getTrxTransfers } from "../lib/trongrid";
@@ -12,6 +13,7 @@ import type { WhaleEntry } from "./whales";
 const RECENCY_MS = 7 * 24 * 60 * 60 * 1000;
 const DEFAULT_MIN_VALUE_USD = 20_000;
 const CACHE_TTL = 300; // 5분
+const FETCH_TIMEOUT_MS = 10_000; // 체인별 10초 타임아웃
 
 async function fetchTransfersForWhale(
   whale: WhaleEntry,
@@ -24,15 +26,8 @@ async function fetchTransfersForWhale(
       const minValueEth = minValueUsd / prices.eth;
       return getWhaleTransfers(whale.address, minValueEth, env, prices.eth);
     }
-    case "BNB": {
-      const minValueEth = minValueUsd / prices.bnb;
-      return getWhaleTransfers(
-        whale.address,
-        minValueEth,
-        { ...env, ALCHEMY_NETWORK: "bnb-mainnet" },
-        prices.bnb,
-      );
-    }
+    case "BNB":
+      return getBnbTransfers(whale.address, minValueUsd, prices.bnb, env.BSCSCAN_API_KEY);
     case "BTC":
       return getBtcTransfers(whale.address, minValueUsd, prices.btc);
     case "SOL":
@@ -78,13 +73,24 @@ export async function handleRadar(request: Request, env: Env): Promise<Response>
         : whales;
 
       const results = await Promise.allSettled(
-        filtered.map((w) => fetchTransfersForWhale(w, minValueUsd, fullPrices, env)),
+        filtered.map((w) =>
+          Promise.race([
+            fetchTransfersForWhale(w, minValueUsd, fullPrices, env),
+            new Promise<WhaleTxDTO[]>((_, reject) =>
+              setTimeout(() => reject(new Error(`Timeout: ${w.chain} ${w.name}`)), FETCH_TIMEOUT_MS),
+            ),
+          ]),
+        ),
       );
 
       const cutoff = Date.now() - RECENCY_MS;
       const unique = new Map<string, WhaleTxDTO>();
-      for (const r of results) {
-        if (r.status !== "fulfilled") continue;
+      for (let i = 0; i < results.length; i++) {
+        const r = results[i];
+        if (r.status !== "fulfilled") {
+          console.error(`[radar] fetch failed for ${filtered[i]?.chain} ${filtered[i]?.name}: ${r.reason}`);
+          continue;
+        }
         for (const tx of r.value) {
           if (tx.timestampMs >= cutoff) unique.set(tx.txHash, tx);
         }

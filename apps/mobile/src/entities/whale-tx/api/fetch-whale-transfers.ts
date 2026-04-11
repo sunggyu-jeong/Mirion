@@ -33,5 +33,6 @@ export async function fetchWhaleTransfers(
   return dtos.map(dto => ({
     ...dto,
     blockNumber: BigInt(dto.blockNumber),
+    chain,
   }));
 }

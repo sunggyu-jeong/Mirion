@@ -92,6 +92,7 @@ export async function getTrxTransfers(
         blockNumber: "0",
         isLarge: true,
         asset: "TRX",
+        chain: "TRX",
       };
     })
     .filter((t): t is WhaleTxDTO => t !== null);

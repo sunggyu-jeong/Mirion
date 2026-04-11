@@ -11,4 +11,5 @@ export interface WhaleTx {
   blockNumber: bigint;
   isLarge: boolean;
   asset: string;
+  chain: string;
 }

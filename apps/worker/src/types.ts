@@ -5,6 +5,7 @@ export interface Env {
   COINGECKO_API_KEY?: string;
   HELIUS_API_KEY?: string;
   TRONGRID_API_KEY?: string;
+  BSCSCAN_API_KEY?: string;
 }
 
 // WhaleTx with blockNumber as string (bigint cannot be JSON serialized)
@@ -19,6 +20,7 @@ export interface WhaleTxDTO {
   blockNumber: string;
   isLarge: boolean;
   asset: string;
+  chain: string;
 }
 
 export interface WhaleProfileDTO {

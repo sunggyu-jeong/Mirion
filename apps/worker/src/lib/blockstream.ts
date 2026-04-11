@@ -83,10 +83,11 @@ export async function getBtcTransfers(
         amountUsd,
         fromAddress,
         toAddress,
-        timestampMs: (tx.status.block_time ?? 0) * 1000,
+        timestampMs: tx.status.block_time ? tx.status.block_time * 1000 : Date.now(),
         blockNumber: "0",
         isLarge: true,
         asset: "BTC",
+        chain: "BTC",
       };
     })
     .filter((t): t is WhaleTxDTO => t !== null);

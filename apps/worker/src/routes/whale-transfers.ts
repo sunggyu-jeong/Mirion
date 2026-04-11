@@ -2,6 +2,7 @@ import type { Env } from "../types";
 import { withCache } from "../lib/cache";
 import { getWhaleTransfers } from "../lib/alchemy";
 import { getBtcTransfers } from "../lib/blockstream";
+import { getBnbTransfers } from "../lib/bscscan";
 import { getSolTransfers } from "../lib/solana";
 import { getXrpTransfers } from "../lib/xrpl";
 import { getTrxTransfers } from "../lib/trongrid";
@@ -20,7 +21,7 @@ async function fetchTransfers(
   if (chain === "SOL") return getSolTransfers(address, minValueUsd, prices.sol, env.HELIUS_API_KEY);
   if (chain === "XRP") return getXrpTransfers(address, minValueUsd, prices.xrp);
   if (chain === "TRX") return getTrxTransfers(address, minValueUsd, prices.trx, env.TRONGRID_API_KEY);
-  if (chain === "BNB") return getWhaleTransfers(address, minValueEth, { ...env, ALCHEMY_NETWORK: "bnb-mainnet" }, prices.bnb);
+  if (chain === "BNB") return getBnbTransfers(address, minValueUsd, prices.bnb, env.BSCSCAN_API_KEY);
   return getWhaleTransfers(address, minValueEth, env, prices.eth);
 }
 

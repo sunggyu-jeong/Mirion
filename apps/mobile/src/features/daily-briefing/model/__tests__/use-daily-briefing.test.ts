@@ -66,6 +66,7 @@ describe('useDailyBriefing', () => {
         blockNumber: 1n,
         isLarge: true,
         asset: 'ETH',
+        chain: 'ETH',
       },
     ];
     renderHook(() => useDailyBriefing(movements));

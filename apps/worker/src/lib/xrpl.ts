@@ -75,7 +75,7 @@ export async function getXrpTransfers(
       const amountUsd = amountXrp * xrpPriceUsd;
       if (amountUsd < minValueUsd) return null;
 
-      const timestampMs = tx.date ? (tx.date + XRP_EPOCH_OFFSET) * 1000 : 0;
+      const timestampMs = tx.date ? (tx.date + XRP_EPOCH_OFFSET) * 1000 : Date.now();
       const isOutgoing = tx.Account.toLowerCase() === address.toLowerCase();
 
       return {
@@ -89,6 +89,7 @@ export async function getXrpTransfers(
         blockNumber: "0",
         isLarge: true,
         asset: "XRP",
+        chain: "XRP",
       };
     })
     .filter((t): t is WhaleTxDTO => t !== null);

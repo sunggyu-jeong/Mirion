@@ -54,6 +54,7 @@ function makeTx(overrides: Partial<WhaleTx>): WhaleTx {
     blockNumber: 20_000_000n,
     isLarge: true,
     asset: 'ETH',
+    chain: 'ETH',
     ...overrides,
   };
 }

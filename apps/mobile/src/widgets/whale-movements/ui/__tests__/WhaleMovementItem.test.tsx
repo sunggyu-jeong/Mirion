@@ -18,6 +18,7 @@ const baseTx: WhaleTx = {
   blockNumber: 20_000_000n,
   isLarge: true,
   asset: 'ETH',
+  chain: 'ETH',
 };
 
 describe('WhaleMovementItem', () => {

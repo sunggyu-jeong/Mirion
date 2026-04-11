@@ -95,6 +95,7 @@ export async function getWhaleTransfers(
         blockNumber: raw.blockNum,
         isLarge: amountNative >= minValueEth,
         asset: raw.asset ?? "ETH",
+        chain: env.ALCHEMY_NETWORK.startsWith("bnb") ? "BNB" : "ETH",
       };
     });
 }

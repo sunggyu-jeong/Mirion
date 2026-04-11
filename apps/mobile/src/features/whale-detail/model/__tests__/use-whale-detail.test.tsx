@@ -57,6 +57,7 @@ const MOCK_TX: WhaleTx = {
   blockNumber: 20_000_000n,
   isLarge: false,
   asset: 'ETH',
+  chain: 'ETH',
 };
 
 function createWrapper() {

@@ -58,13 +58,19 @@ export async function getSolTransfers(
   solPriceUsd: number,
   apiKey?: string,
 ): Promise<WhaleTxDTO[]> {
+  const RECENCY_SEC = 7 * 24 * 60 * 60;
+  const minBlockTime = Math.floor(Date.now() / 1000) - RECENCY_SEC;
+
   const sigs = await rpc<SolSignature[]>("getSignaturesForAddress", [
     address,
     { limit: 20 },
   ], apiKey);
 
+  const recentSigs = sigs.filter((s) => (s.blockTime ?? 0) >= minBlockTime);
+  if (recentSigs.length === 0) return [];
+
   const txResults = await Promise.allSettled(
-    sigs.map((s) =>
+    recentSigs.map((s) =>
       rpc<SolTransaction>("getTransaction", [
         s.signature,
         { encoding: "json", maxSupportedTransactionVersion: 0 },
@@ -74,7 +80,7 @@ export async function getSolTransfers(
 
   const transfers: WhaleTxDTO[] = [];
 
-  for (let i = 0; i < sigs.length; i++) {
+  for (let i = 0; i < recentSigs.length; i++) {
     const result = txResults[i];
     if (result.status !== "fulfilled" || !result.value?.meta) continue;
 
@@ -83,8 +89,8 @@ export async function getSolTransfers(
     const idx = accounts.indexOf(address);
     if (idx === -1) continue;
 
-    const pre = tx.meta.preBalances[idx] ?? 0;
-    const post = tx.meta.postBalances[idx] ?? 0;
+    const pre = tx.meta!.preBalances[idx] ?? 0;
+    const post = tx.meta!.postBalances[idx] ?? 0;
     const diffLamports = post - pre;
     const amountSol = Math.abs(diffLamports) / LAMPORTS_PER_SOL;
     const amountUsd = amountSol * solPriceUsd;
@@ -98,16 +104,17 @@ export async function getSolTransfers(
     const counterAddress = accounts[counterIdx] ?? "";
 
     transfers.push({
-      txHash: sigs[i].signature,
+      txHash: recentSigs[i].signature,
       type: isOutgoing ? "send" : "receive",
       amountNative: amountSol,
       amountUsd,
       fromAddress: isOutgoing ? address : counterAddress,
       toAddress: isOutgoing ? counterAddress : address,
-      timestampMs: (sigs[i].blockTime ?? 0) * 1000,
+      timestampMs: recentSigs[i].blockTime ? recentSigs[i].blockTime! * 1000 : Date.now(),
       blockNumber: "0",
       isLarge: true,
       asset: "SOL",
+      chain: "SOL",
     });
   }
 
