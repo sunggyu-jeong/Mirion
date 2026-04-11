@@ -1,13 +1,13 @@
 import type { ChainFilter } from '@entities/whale';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { WhaleMovementList } from '@widgets/whale-movements';
+import { UnifiedActivityList } from '@widgets/unified-activity';
 import React, { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HEADER_TITLE = (
-  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-    <Text style={{ fontSize: 22, fontWeight: '800', color: '#0f172b', letterSpacing: -0.4 }}>
+  <View className="flex-row items-center justify-between">
+    <Text className="text-[22px] font-extrabold tracking-tight text-[#0f172b]">
       고래 이동 레이더
     </Text>
   </View>
@@ -21,10 +21,10 @@ export function HistoryScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: 'white' }}
+      className="flex-1 bg-white"
       edges={['top']}
     >
-      <WhaleMovementList
+      <UnifiedActivityList
         chainFilter={selectedChain}
         onChainChange={setSelectedChain}
         onUpgrade={handleUpgrade}

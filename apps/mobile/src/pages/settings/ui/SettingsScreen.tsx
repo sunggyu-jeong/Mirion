@@ -9,7 +9,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function SettingsScreen() {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView
+      edges={['top']}
+      style={{ flex: 1, backgroundColor: 'white' }}
+    >
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 48 }}
