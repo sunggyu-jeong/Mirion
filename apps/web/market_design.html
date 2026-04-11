@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; }
+        .monospace { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    </style>
+</head>
+<body class="bg-white text-[#0f172b] min-h-screen">
+
+    <!-- Mobile Screen Wrapper (to mimic Safe Area) -->
+    <div class="max-w-[430px] mx-auto min-h-screen bg-white shadow-xl relative">
+        
+        <!-- Header -->
+        <div class="pt-12 px-5 pb-4">
+            <h1 class="text-[22px] font-[800] text-[#0f172b]">마켓</h1>
+        </div>
+
+        <!-- Main Content -->
+        <div class="px-5 pb-12 space-y-4">
+            
+            <!-- Price Header Mock -->
+            <div class="space-y-1">
+                <div class="flex items-baseline space-x-2">
+                    <span class="text-[28px] font-bold tracking-tight text-[#0f172b]">$2,451.20</span>
+                    <span class="text-sm font-semibold text-green-500">+1.24%</span>
+                </div>
+                <div class="text-[13px] text-[#62748e]">Ethereum (ETH) • 실시간 가격</div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="flex gap-[10px]">
+                <div class="flex-1 bg-[#f8fafc] p-4 rounded-[18px] border border-[#f1f5f9]">
+                    <span class="text-[12px] font-medium text-[#94a3b8] block mb-1">시가총액</span>
+                    <span class="text-[15px] font-bold text-[#0f172b]">$342.1B</span>
+                </div>
+                <div class="flex-1 bg-[#f8fafc] p-4 rounded-[18px] border border-[#f1f5f9]">
+                    <span class="text-[12px] font-medium text-[#94a3b8] block mb-1">24시간 거래량</span>
+                    <span class="text-[15px] font-bold text-[#0f172b]">$12.4B</span>
+                </div>
+            </div>
+
+            <!-- Price Chart Card -->
+            <div class="bg-[#f8fafc] rounded-[18px] p-4 border border-[#f1f5f9] space-y-3.5">
+                <div class="text-[15px] font-bold text-[#0f172b]">가격 차트</div>
+                <!-- Chart Component -->
+                <div class="space-y-3.5">
+                    <!-- Segmented Control Mock -->
+                    <div class="bg-[#f1f5f9] rounded-[10px] p-1 flex">
+                        <div class="flex-1 bg-white rounded-[8px] shadow-sm py-1.5 text-center text-[13px] font-[700] text-[#0f172b]">1일</div>
+                        <div class="flex-1 py-1.5 text-center text-[13px] font-[500] text-[#64748b]">1주</div>
+                        <div class="flex-1 py-1.5 text-center text-[13px] font-[500] text-[#64748b]">1달</div>
+                    </div>
+
+                    <!-- Min/Max Price -->
+                    <div class="flex justify-between items-center px-1">
+                        <div class="flex items-center space-x-1.5">
+                            <div class="w-2 h-2 rounded-full bg-[#ef4444]"></div>
+                            <span class="text-[12px] text-[#64748b]">저점 <span class="font-[700] text-[#0f172b] ml-1">$2,410</span></span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-[12px] text-[#64748b]">고점 <span class="font-[700] text-[#0f172b] ml-1">$2,485</span></span>
+                            <div class="w-2 h-2 rounded-full bg-[#22c55e]"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Area -->
+                    <div class="h-[180px] w-full rounded-xl overflow-hidden relative bg-white">
+                        <!-- Current Price Badge -->
+                        <div class="absolute top-2 right-2 z-10 bg-[#dcfce7] rounded-lg px-2.5 py-1">
+                            <span class="text-[12px] font-[700] text-[#16a34a] tracking-tight">$2,451</span>
+                        </div>
+                        
+                        <!-- SVG Line Chart Mock -->
+                        <svg class="w-full h-full" viewBox="0 0 350 180" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#22c55e" stop-opacity="0.22" />
+                                    <stop offset="75%" stop-color="#22c55e" stop-opacity="0.04" />
+                                    <stop offset="100%" stop-color="#22c55e" stop-opacity="0" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Fill -->
+                            <path d="M0 120 C 50 110, 100 150, 150 100 C 200 50, 250 80, 300 40 L 350 30 L 350 180 L 0 180 Z" fill="url(#chartFill)" />
+                            <!-- Line -->
+                            <path d="M0 120 C 50 110, 100 150, 150 100 C 200 50, 250 80, 300 40 L 350 30" stroke="#22c55e" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                            
+                            <!-- Whale Markers -->
+                            <circle cx="150" cy="100" r="4.5" fill="#ef4444" stroke="white" stroke-width="1.5" />
+                            <circle cx="280" cy="55" r="4.5" fill="#22c55e" stroke="white" stroke-width="1.5" />
+                        </svg>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="flex space-x-4 px-1">
+                        <div class="flex items-center space-x-1.5">
+                            <div class="w-2 h-2 rounded-full bg-[#ef4444]"></div>
+                            <span class="text-[11px] text-[#64748b]">고래 전송</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <div class="w-2 h-2 rounded-full bg-[#22c55e]"></div>
+                            <span class="text-[11px] text-[#64748b]">고래 수신</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Whale Activity Card -->
+            <div class="bg-[#f8fafc] rounded-[18px] p-4 border border-[#f1f5f9]">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[15px] font-bold text-[#0f172b]">고래 이체 현황</span>
+                    <div class="flex items-center space-x-1.5">
+                        <div class="w-[7px] h-[7px] rounded-full bg-[#22c55e]"></div>
+                        <span class="text-[11px] font-medium text-[#22c55e]">실시간</span>
+                    </div>
+                </div>
+
+                <!-- Activity Rows -->
+                <div class="divide-y divide-[#f1f5f9]">
+                    
+                    <!-- Row 1: Send BTC -->
+                    <div class="py-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#fff1f2] flex items-center justify-center">
+                                <svg class="w-[18px] h-[18px] text-[#ef4444]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-1.5">
+                                        <span class="text-[14px] font-bold text-[#0f172b] tracking-tight">124.50 BTC</span>
+                                        <span class="bg-[#f7931a18] text-[#f7931a] text-[10px] font-bold px-1.5 py-0.5 rounded-[5px]">BTC</span>
+                                    </div>
+                                    <span class="text-[13px] font-semibold text-[#ef4444]">$8,012,450</span>
+                                </div>
+                                <div class="flex justify-between items-center mt-0.5">
+                                    <div class="flex items-center space-x-1 text-[11px] text-[#94a3b8] monospace">
+                                        <span>0x7a25...b49a</span>
+                                        <span class="text-[#cbd5e1]">→</span>
+                                        <span>0x1234...5678</span>
+                                    </div>
+                                    <span class="text-[11px] text-[#cbd5e1]">방금 전</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Receive ETH -->
+                    <div class="py-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#f0fdf4] flex items-center justify-center">
+                                <svg class="w-[18px] h-[18px] text-[#22c55e]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M17 7L7 17M7 17h10M7 17V7"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-1.5">
+                                        <span class="text-[14px] font-bold text-[#0f172b] tracking-tight">2,500.00 ETH</span>
+                                        <span class="bg-[#627eea18] text-[#627eea] text-[10px] font-bold px-1.5 py-0.5 rounded-[5px]">ETH</span>
+                                    </div>
+                                    <span class="text-[13px] font-semibold text-[#22c55e]">$6,125,000</span>
+                                </div>
+                                <div class="flex justify-between items-center mt-0.5">
+                                    <div class="flex items-center space-x-1 text-[11px] text-[#94a3b8] monospace">
+                                        <span>Binance</span>
+                                        <span class="text-[#cbd5e1]">→</span>
+                                        <span>0x8888...9999</span>
+                                    </div>
+                                    <span class="text-[11px] text-[#cbd5e1]">2분 전</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Swap SOL -->
+                    <div class="py-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#fff7ed] flex items-center justify-center">
+                                <svg class="w-[18px] h-[18px] text-[#f97316]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-1.5">
+                                        <span class="text-[14px] font-bold text-[#0f172b] tracking-tight">45,000.00 SOL</span>
+                                        <span class="bg-[#9945ff18] text-[#9945ff] text-[10px] font-bold px-1.5 py-0.5 rounded-[5px]">SOL</span>
+                                    </div>
+                                    <span class="text-[13px] font-semibold text-[#f97316]">$6,565,000</span>
+                                </div>
+                                <div class="flex justify-between items-center mt-0.5">
+                                    <div class="flex items-center space-x-1 text-[11px] text-[#94a3b8] monospace">
+                                        <span>Raydium</span>
+                                        <span class="text-[#cbd5e1]">→</span>
+                                        <span>USDC</span>
+                                    </div>
+                                    <span class="text-[11px] text-[#cbd5e1]">5분 전</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tab Bar Mock -->
+        <div class="absolute bottom-0 w-full h-[84px] bg-white border-t border-[#f1f5f9] flex justify-around items-start pt-3 px-6 pb-8">
+            <div class="flex flex-col items-center space-y-1 opacity-40">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span class="text-[10px] font-bold">홈</span>
+            </div>
+            <div class="flex flex-col items-center space-y-1 text-[#0f172b]">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                <span class="text-[10px] font-bold">마켓</span>
+            </div>
+            <div class="flex flex-col items-center space-y-1 opacity-40">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="text-[10px] font-bold">히스토리</span>
+            </div>
+            <div class="flex flex-col items-center space-y-1 opacity-40">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span class="text-[10px] font-bold">설정</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
