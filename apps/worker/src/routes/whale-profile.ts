@@ -3,23 +3,19 @@ import { withCache } from "../lib/cache";
 import { getWhaleProfile } from "../lib/alchemy";
 import { getBtcProfile } from "../lib/blockstream";
 import { getSolProfile } from "../lib/solana";
+import { getXrpProfile } from "../lib/xrpl";
+import { getTrxProfile } from "../lib/trongrid";
 import { getMultiCoinPrices } from "../lib/coingecko";
 
-const FALLBACK_PROFILE = { nativeBalance: "0x0", totalValueUsd: 0, tokens: [] };
+const FALLBACK_PROFILE = { nativeBalance: "0", totalValueUsd: 0, tokens: [] };
 
 async function fetchProfile(chain: string, address: string, env: Env) {
-  if (chain === "BTC") {
-    const prices = await getMultiCoinPrices();
-    return getBtcProfile(address, prices.btc);
-  }
-  if (chain === "SOL") {
-    const prices = await getMultiCoinPrices();
-    return getSolProfile(address, prices.sol, env.HELIUS_API_KEY);
-  }
   const prices = await withCache(env.CACHE, "multi-prices", 60, getMultiCoinPrices);
-  if (chain === "BNB") {
-    return getWhaleProfile(address, prices.bnb, { ...env, ALCHEMY_NETWORK: "bnb-mainnet" });
-  }
+  if (chain === "BTC") return getBtcProfile(address, prices.btc);
+  if (chain === "SOL") return getSolProfile(address, prices.sol, env.HELIUS_API_KEY);
+  if (chain === "XRP") return getXrpProfile(address, prices.xrp);
+  if (chain === "TRX") return getTrxProfile(address, prices.trx, env.TRONGRID_API_KEY);
+  if (chain === "BNB") return getWhaleProfile(address, prices.bnb, { ...env, ALCHEMY_NETWORK: "bnb-mainnet" });
   return getWhaleProfile(address, prices.eth, env);
 }
 

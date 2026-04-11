@@ -4,6 +4,7 @@ export interface Env {
   ALCHEMY_NETWORK: string;
   COINGECKO_API_KEY?: string;
   HELIUS_API_KEY?: string;
+  TRONGRID_API_KEY?: string;
 }
 
 // WhaleTx with blockNumber as string (bigint cannot be JSON serialized)

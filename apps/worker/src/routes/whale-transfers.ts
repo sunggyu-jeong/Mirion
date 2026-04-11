@@ -3,6 +3,8 @@ import { withCache } from "../lib/cache";
 import { getWhaleTransfers } from "../lib/alchemy";
 import { getBtcTransfers } from "../lib/blockstream";
 import { getSolTransfers } from "../lib/solana";
+import { getXrpTransfers } from "../lib/xrpl";
+import { getTrxTransfers } from "../lib/trongrid";
 import { getMultiCoinPrices } from "../lib/coingecko";
 
 async function fetchTransfers(
@@ -11,18 +13,14 @@ async function fetchTransfers(
   minValueEth: number,
   env: Env,
 ) {
-  if (chain === "BTC") {
-    const prices = await getMultiCoinPrices();
-    return getBtcTransfers(address, minValueEth * prices.eth, prices.btc);
-  }
-  if (chain === "SOL") {
-    const prices = await getMultiCoinPrices();
-    return getSolTransfers(address, minValueEth * prices.eth, prices.sol, env.HELIUS_API_KEY);
-  }
   const prices = await withCache(env.CACHE, "multi-prices", 60, getMultiCoinPrices);
-  if (chain === "BNB") {
-    return getWhaleTransfers(address, minValueEth, { ...env, ALCHEMY_NETWORK: "bnb-mainnet" }, prices.bnb);
-  }
+  const minValueUsd = minValueEth * prices.eth;
+
+  if (chain === "BTC") return getBtcTransfers(address, minValueUsd, prices.btc);
+  if (chain === "SOL") return getSolTransfers(address, minValueUsd, prices.sol, env.HELIUS_API_KEY);
+  if (chain === "XRP") return getXrpTransfers(address, minValueUsd, prices.xrp);
+  if (chain === "TRX") return getTrxTransfers(address, minValueUsd, prices.trx, env.TRONGRID_API_KEY);
+  if (chain === "BNB") return getWhaleTransfers(address, minValueEth, { ...env, ALCHEMY_NETWORK: "bnb-mainnet" }, prices.bnb);
   return getWhaleTransfers(address, minValueEth, env, prices.eth);
 }
 

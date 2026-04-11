@@ -59,6 +59,7 @@ export async function getWhaleTransfers(
     excludeZeroValue: true,
     maxCount,
     fromBlock,
+    order: "desc",
   };
 
   const [outgoing, incoming] = await Promise.all([

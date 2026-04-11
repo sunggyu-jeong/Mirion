@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-type ChainFilter = 'ALL' | 'ETH' | 'BTC' | 'SOL' | 'BNB';
+type ChainFilter = 'ALL' | 'ETH' | 'BTC' | 'SOL' | 'BNB' | 'XRP' | 'TRX';
 
 const CHAIN_OPTIONS: { value: ChainFilter; label: string; color: string }[] = [
   { value: 'ALL', label: '전체', color: '#2b7fff' },
@@ -10,6 +10,8 @@ const CHAIN_OPTIONS: { value: ChainFilter; label: string; color: string }[] = [
   { value: 'BTC', label: 'BTC', color: '#F7931A' },
   { value: 'SOL', label: 'SOL', color: '#9945FF' },
   { value: 'BNB', label: 'BNB', color: '#F3BA2F' },
+  { value: 'XRP', label: 'XRP', color: '#00AAE4' },
+  { value: 'TRX', label: 'TRX', color: '#EF0027' },
 ];
 
 const TOSS_PRESS = { damping: 18, stiffness: 400 } as const;

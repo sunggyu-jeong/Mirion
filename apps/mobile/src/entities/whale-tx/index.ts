@@ -1,3 +1,4 @@
+export { fetchRadarTransactions } from './api/fetch-radar-transactions';
 export type { FetchWhaleTransfersOptions } from './api/fetch-whale-transfers';
 export { fetchWhaleTransfers } from './api/fetch-whale-transfers';
 export type { MagnitudeInfo, MagnitudeLevel } from './lib/magnitude';

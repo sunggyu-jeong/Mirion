@@ -1,6 +1,7 @@
 import type { Env } from "./types";
 import { handleEthChart } from "./routes/eth-chart";
 import { handleEthMarket } from "./routes/eth-market";
+import { handleRadar } from "./routes/radar";
 import { handleWhaleProfile } from "./routes/whale-profile";
 import { handleWhaleTransfers } from "./routes/whale-transfers";
 import { handleGetWhales } from "./routes/whales";
@@ -35,7 +36,9 @@ export default {
     try {
       let res: Response;
 
-      if (pathname === "/api/whale-transfers") {
+      if (pathname === "/api/radar") {
+        res = await handleRadar(request, env);
+      } else if (pathname === "/api/whale-transfers") {
         res = await handleWhaleTransfers(request, env);
       } else if (pathname === "/api/whale-profile") {
         res = await handleWhaleProfile(request, env);

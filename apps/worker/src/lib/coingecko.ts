@@ -20,6 +20,8 @@ export interface MultiCoinPrices {
   btc: number;
   sol: number;
   bnb: number;
+  xrp: number;
+  trx: number;
 }
 
 export async function getEthPriceUsd(): Promise<number> {
@@ -31,13 +33,15 @@ export async function getEthPriceUsd(): Promise<number> {
 
 export async function getMultiCoinPrices(): Promise<MultiCoinPrices> {
   const json = await getJson<Record<string, { usd: number }>>(
-    `${BASE}/simple/price?ids=ethereum,bitcoin,solana,binancecoin&vs_currencies=usd`,
+    `${BASE}/simple/price?ids=ethereum,bitcoin,solana,binancecoin,ripple,tron&vs_currencies=usd`,
   );
   return {
     eth: json.ethereum?.usd ?? 0,
     btc: json.bitcoin?.usd ?? 0,
     sol: json.solana?.usd ?? 0,
     bnb: json.binancecoin?.usd ?? 0,
+    xrp: json.ripple?.usd ?? 0,
+    trx: json.tron?.usd ?? 0,
   };
 }
 

@@ -2,5 +2,5 @@ export { EthPriceCard, PriceHeader, PriceInfoSkeleton, StatCard } from './eth-pr
 export { HomeHeader } from './home-header';
 export { AppInfoCard, WalletAddressCard } from './wallet-info';
 export { WhaleCard } from './whale-card';
-export { WhaleDetailView, WhaleDetailHeader } from './whale-detail-view';
+export { WhaleDetailHeader, WhaleDetailView } from './whale-detail-view';
 export { WhaleMovementList } from './whale-movements';
