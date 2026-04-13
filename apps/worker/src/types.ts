@@ -7,6 +7,7 @@ export interface Env {
   TRONGRID_API_KEY?: string;
   MORALIS_API_KEY?: string;
   CEX_INGEST_SECRET?: string;
+  INGEST_SECRET?: string;
 }
 
 export interface CexTradeDTO {

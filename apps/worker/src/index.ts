@@ -6,6 +6,7 @@ import { handleRadar } from "./routes/radar";
 import { handleWhaleProfile } from "./routes/whale-profile";
 import { handleWhaleTransfers } from "./routes/whale-transfers";
 import { handleGetWhales } from "./routes/whales";
+import { handleIngestWhaleTx } from "./routes/ingest-whale-tx";
 import { setCoinGeckoApiKey } from "./lib/coingecko";
 
 const CORS = {
@@ -34,6 +35,10 @@ export default {
       return withCors(await handleIngestCexTrade(request, env));
     }
 
+    if (pathname === "/api/ingest/whale-tx" && request.method === "POST") {
+      return withCors(await handleIngestWhaleTx(request, env));
+    }
+
     if (request.method !== "GET") {
       return new Response("Method Not Allowed", { status: 405, headers: CORS });
     }
@@ -42,6 +47,9 @@ export default {
       let res: Response;
 
       if (pathname === "/api/cex-trades") {
+        res = await handleGetCexTrades(env);
+      } else if (pathname === "/api/debug/cex-poll") {
+        await handlePollCexTrades(env);
         res = await handleGetCexTrades(env);
       } else if (pathname === "/api/radar") {
         res = await handleRadar(request, env);
