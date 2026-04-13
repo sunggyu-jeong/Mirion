@@ -143,35 +143,47 @@ export async function handleRadar(request: Request, env: Env): Promise<Response>
     ? CHAIN_ORDER.filter((c) => requestedChains.has(c))
     : [...CHAIN_ORDER];
 
-  const whales = await getWhaleList(env);
+  const [whales, cacheEntries] = await Promise.all([
+    getWhaleList(env),
+    Promise.all(
+      chainList.map(async (chain) => {
+        const key = `radar:v2:${chain}:${minValueUsd}`;
+        return { chain, key, data: await env.CACHE.get<WhaleTxDTO[]>(key, "json") };
+      }),
+    ),
+  ]);
 
-  const allTxs: WhaleTxDTO[] = [];
-  let fetchedFresh = false;
-  let prices: Prices | null = null;
+  const cachedTxs: WhaleTxDTO[] = [];
+  const uncached: { chain: string; key: string }[] = [];
 
-  for (const chain of chainList) {
-    const cacheKey = `radar:v2:${chain}:${minValueUsd}`;
-    const cached = await env.CACHE.get<WhaleTxDTO[]>(cacheKey, "json");
-
-    if (cached !== null) {
-      allTxs.push(...cached);
-      continue;
+  for (const entry of cacheEntries) {
+    if (entry.data !== null) {
+      cachedTxs.push(...entry.data);
+    } else {
+      uncached.push({ chain: entry.chain, key: entry.key });
     }
-
-    if (fetchedFresh) continue;
-
-    if (!prices) prices = await getCachedPrices(env);
-
-    const chainWhales = whales.filter((w) => w.chain === chain);
-    const txs = await fetchChain(chain, chainWhales, minValueUsd, prices, env);
-
-    await env.CACHE.put(cacheKey, JSON.stringify(txs), {
-      expirationTtl: txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL,
-    });
-
-    allTxs.push(...txs);
-    fetchedFresh = true;
   }
 
-  return Response.json(allTxs.sort((a, b) => b.timestampMs - a.timestampMs));
+  if (uncached.length === 0) {
+    return Response.json(cachedTxs.sort((a, b) => b.timestampMs - a.timestampMs));
+  }
+
+  const prices = await getCachedPrices(env);
+
+  const freshTxs = (
+    await Promise.all(
+      uncached.map(async ({ chain, key }) => {
+        const chainWhales = whales.filter((w) => w.chain === chain);
+        const txs = await fetchChain(chain, chainWhales, minValueUsd, prices, env);
+        await env.CACHE.put(key, JSON.stringify(txs), {
+          expirationTtl: txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL,
+        });
+        return txs;
+      }),
+    )
+  ).flat();
+
+  return Response.json(
+    [...cachedTxs, ...freshTxs].sort((a, b) => b.timestampMs - a.timestampMs),
+  );
 }

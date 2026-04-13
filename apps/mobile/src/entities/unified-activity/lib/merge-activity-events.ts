@@ -11,9 +11,9 @@ export function mergeActivityEvents(whaleTxs: WhaleTx[], cexTrades: CexTrade[]):
     data: tx,
   }));
 
-  const cex: ActivityEvent[] = cexTrades.map(trade => ({
+  const cex: ActivityEvent[] = cexTrades.map((trade, i) => ({
     source: 'cex' as const,
-    id: `cex-${trade.symbol}-${trade.timestampMs}`,
+    id: `cex-${trade.symbol}-${trade.side}-${trade.timestampMs}-${i}`,
     timestampMs: trade.timestampMs,
     data: trade,
   }));

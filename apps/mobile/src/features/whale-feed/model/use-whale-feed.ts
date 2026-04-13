@@ -20,7 +20,7 @@ export function useWhaleFeed() {
         }),
       );
 
-      return results.map((result, i): WhaleProfile => {
+      const profiles = results.map((result, i): WhaleProfile => {
         if (result.status === 'fulfilled') {
           return result.value;
         }
@@ -31,6 +31,8 @@ export function useWhaleFeed() {
           activityType: 'transfer',
         };
       });
+
+      return profiles.sort((a, b) => (a.isLocked ? 1 : 0) - (b.isLocked ? 1 : 0));
     },
     staleTime: 30_000,
   });
