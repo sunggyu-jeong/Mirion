@@ -5,6 +5,7 @@ import { useWhaleMovements } from '@features/whale-movements';
 import { formatRelativeTime, formatUsd } from '@shared/lib/format';
 import { CexWhaleFeed } from '@widgets/cex-whale-feed';
 import { PriceHeader, PriceInfoSkeleton, StatCard } from '@widgets/eth-price';
+import { MacroStatsCard } from '@widgets/macro-stats-card';
 import { PriceChart } from '@widgets/price-chart';
 import { WhaleVsAntChart } from '@widgets/whale-vs-ant-chart';
 import { ArrowDownLeft, ArrowUpRight, RefreshCw } from 'lucide-react-native';
@@ -170,15 +171,19 @@ export function MarketScreen() {
             <WhaleVsAntChart movements={movements} />
           </Animated.View>
 
+          <Animated.View entering={FadeInDown.delay(200).duration(260).easing(EASE_OUT)}>
+            <MacroStatsCard movements={movements} />
+          </Animated.View>
+
           {recentCexTrades.length > 0 && (
-            <Animated.View entering={FadeInDown.delay(200).duration(260).easing(EASE_OUT)}>
+            <Animated.View entering={FadeInDown.delay(240).duration(260).easing(EASE_OUT)}>
               <CexWhaleFeed trades={recentCexTrades} />
             </Animated.View>
           )}
 
           {recentMovements.length > 0 && (
             <Animated.View
-              entering={FadeInDown.delay(240).duration(260).easing(EASE_OUT)}
+              entering={FadeInDown.delay(280).duration(260).easing(EASE_OUT)}
               style={{
                 backgroundColor: '#f8fafc',
                 borderRadius: 18,
