@@ -5,6 +5,7 @@ export * from './Card';
 export * from './ChainFilterBar';
 export * from './DisclaimerBox';
 export * from './ErrorStateView';
+export * from './FilterChipBar';
 export * from './GrowthChart';
 export * from './InfoCard';
 export * from './LabelRow';

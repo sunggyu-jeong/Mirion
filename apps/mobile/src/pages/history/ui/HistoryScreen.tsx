@@ -5,16 +5,18 @@ import type { WhaleTx } from '@entities/whale-tx';
 import { useUnifiedActivity } from '@features/unified-feed';
 import { formatUsd } from '@shared/lib/format';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { ChainFilterBar } from '@shared/ui';
+import { ChainFilterBar, FilterChipBar } from '@shared/ui';
+import type { ChipOption } from '@shared/ui/FilterChipBar';
 import { RadarDotLayer } from '@widgets/radar-dot-layer';
 import { RadarViewport } from '@widgets/radar-viewport';
 import { UnifiedActivityItem } from '@widgets/unified-activity';
 import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type SourceFilter = 'ALL' | 'ONCHAIN' | 'CEX';
+type AmountFilter = 'ALL' | '100K' | '500K' | '1M' | '5M';
 
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 const FREE_ONCHAIN_LIMIT = 3;
@@ -23,6 +25,28 @@ const FREE_CEX_LIMIT = 3;
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<ProcessedEvent>);
 
 type ProcessedEvent = { event: ActivityEvent; isLocked: boolean };
+
+const SOURCE_OPTIONS: ChipOption<SourceFilter>[] = [
+  { value: 'ALL', label: '전체' },
+  { value: 'ONCHAIN', label: '온체인' },
+  { value: 'CEX', label: '거래소' },
+];
+
+const AMOUNT_OPTIONS: ChipOption<AmountFilter>[] = [
+  { value: 'ALL', label: '전체' },
+  { value: '100K', label: '$100K+' },
+  { value: '500K', label: '$500K+' },
+  { value: '1M', label: '$1M+' },
+  { value: '5M', label: '$5M+' },
+];
+
+const AMOUNT_THRESHOLD: Record<AmountFilter, number> = {
+  ALL: 0,
+  '100K': 100_000,
+  '500K': 500_000,
+  '1M': 1_000_000,
+  '5M': 5_000_000,
+};
 
 function ItemSeparator() {
   return <View style={{ height: 10 }} />;
@@ -108,56 +132,12 @@ function SentimentGauge({ events }: { events: ActivityEvent[] }) {
   );
 }
 
-function SourceFilterTab({
-  value,
-  onChange,
-}: {
-  value: SourceFilter;
-  onChange: (v: SourceFilter) => void;
-}) {
-  const tabs: { label: string; value: SourceFilter }[] = [
-    { label: '전체', value: 'ALL' },
-    { label: '온체인', value: 'ONCHAIN' },
-    { label: '거래소', value: 'CEX' },
-  ];
-
-  return (
-    <View style={{ flexDirection: 'row', gap: 6 }}>
-      {tabs.map(tab => {
-        const active = value === tab.value;
-        return (
-          <Pressable
-            key={tab.value}
-            onPress={() => onChange(tab.value)}
-            style={{
-              paddingHorizontal: 14,
-              paddingVertical: 6,
-              borderRadius: 20,
-              backgroundColor: active ? '#0f172b' : '#f1f5f9',
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: '600',
-                color: active ? 'white' : '#64748b',
-                letterSpacing: -0.2,
-              }}
-            >
-              {tab.label}
-            </Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
 export function HistoryScreen() {
   const { toSettings } = useAppNavigation();
   const isPro = useSubscriptionStore(s => s.isPro);
   const [selectedChain, setSelectedChain] = useState<ChainFilter>('ALL');
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('ALL');
+  const [amountFilter, setAmountFilter] = useState<AmountFilter>('ALL');
 
   const { data: allEvents, isLoading } = useUnifiedActivity(selectedChain);
 
@@ -172,14 +152,26 @@ export function HistoryScreen() {
   );
 
   const filteredEvents = useMemo(() => {
-    if (sourceFilter === 'ALL') {
-      return allEvents;
-    }
-    if (sourceFilter === 'ONCHAIN') {
-      return allEvents.filter(e => e.source === 'onchain');
-    }
-    return allEvents.filter(e => e.source === 'cex');
-  }, [allEvents, sourceFilter]);
+    const threshold = AMOUNT_THRESHOLD[amountFilter];
+    return allEvents.filter(e => {
+      if (sourceFilter === 'ONCHAIN' && e.source !== 'onchain') {
+        return false;
+      }
+      if (sourceFilter === 'CEX' && e.source !== 'cex') {
+        return false;
+      }
+      if (threshold > 0) {
+        const usd =
+          e.source === 'onchain'
+            ? (e.data as WhaleTx).amountUsd
+            : ((e.data as { usdValue: number }).usdValue ?? 0);
+        if (usd < threshold) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [allEvents, sourceFilter, amountFilter]);
 
   const processedEvents = useMemo<ProcessedEvent[]>(() => {
     let onchainCount = 0;
@@ -280,14 +272,20 @@ export function HistoryScreen() {
             <View
               style={{
                 paddingHorizontal: 20,
-                paddingVertical: 10,
-                backgroundColor: 'white',
+                paddingBottom: 12,
                 gap: 10,
               }}
             >
-              <SourceFilterTab
+              <FilterChipBar
+                options={SOURCE_OPTIONS}
                 value={sourceFilter}
                 onChange={setSourceFilter}
+              />
+              <FilterChipBar
+                options={AMOUNT_OPTIONS}
+                value={amountFilter}
+                onChange={setAmountFilter}
+                activeColor="#0f172b"
               />
               <ChainFilterBar
                 value={selectedChain}
