@@ -6,6 +6,7 @@ import { formatRelativeTime, formatUsd } from '@shared/lib/format';
 import { CexWhaleFeed } from '@widgets/cex-whale-feed';
 import { PriceHeader, PriceInfoSkeleton, StatCard } from '@widgets/eth-price';
 import { PriceChart } from '@widgets/price-chart';
+import { WhaleVsAntChart } from '@widgets/whale-vs-ant-chart';
 import { ArrowDownLeft, ArrowUpRight, RefreshCw } from 'lucide-react-native';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
@@ -165,8 +166,12 @@ export function MarketScreen() {
             <PriceChart whaleEvents={movements} />
           </Animated.View>
 
+          <Animated.View entering={FadeInDown.delay(160).duration(260).easing(EASE_OUT)}>
+            <WhaleVsAntChart movements={movements} />
+          </Animated.View>
+
           {recentCexTrades.length > 0 && (
-            <Animated.View entering={FadeInDown.delay(180).duration(260).easing(EASE_OUT)}>
+            <Animated.View entering={FadeInDown.delay(200).duration(260).easing(EASE_OUT)}>
               <CexWhaleFeed trades={recentCexTrades} />
             </Animated.View>
           )}
