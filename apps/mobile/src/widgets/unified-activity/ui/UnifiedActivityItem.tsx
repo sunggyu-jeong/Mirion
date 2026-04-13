@@ -184,7 +184,15 @@ function OnChainItem({
   );
 }
 
-function CexItem({ trade }: { trade: CexTrade }) {
+function CexItem({
+  trade,
+  isLocked,
+  onUpgrade,
+}: {
+  trade: CexTrade;
+  isLocked: boolean;
+  onUpgrade?: () => void;
+}) {
   const isBuy = trade.side === 'buy';
   const Icon = isBuy ? TrendingUp : TrendingDown;
   const color = isBuy ? '#22c55e' : '#ef4444';
@@ -238,7 +246,7 @@ function CexItem({ trade }: { trade: CexTrade }) {
                   paddingVertical: 2,
                 }}
               >
-                <Text style={{ fontSize: 10, fontWeight: '600', color: '#0284c7' }}>CEX</Text>
+                <Text style={{ fontSize: 10, fontWeight: '600', color: '#0284c7' }}>거래소</Text>
               </View>
             </View>
             <Text style={{ fontSize: 12, color: '#94a3b8' }}>
@@ -246,13 +254,37 @@ function CexItem({ trade }: { trade: CexTrade }) {
             </Text>
           </View>
           <Text style={{ fontSize: 13, fontWeight: '500', color }}>
-            {formatUsd(trade.valueUsd)}
+            {isLocked
+              ? `••••• ${COIN_LABEL[trade.symbol] ?? trade.symbol}`
+              : formatUsd(trade.valueUsd)}
           </Text>
           <Text style={{ fontSize: 12, color: '#62748e' }}>
-            {trade.amount.toFixed(4)} @ {formatUsd(trade.price)}
+            {isLocked ? '•••••' : `${trade.amount.toFixed(4)} @ ${formatUsd(trade.price)}`}
           </Text>
         </View>
       </View>
+
+      {isLocked && (
+        <Pressable
+          onPress={onUpgrade}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            paddingVertical: 8,
+            borderRadius: 10,
+            backgroundColor: '#0f172b',
+          }}
+        >
+          <Lock
+            size={12}
+            color="white"
+            strokeWidth={2}
+          />
+          <Text style={{ fontSize: 13, fontWeight: '600', color: 'white' }}>PRO로 잠금 해제</Text>
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -265,7 +297,13 @@ interface Props {
 
 export function UnifiedActivityItem({ event, isLocked = false, onUpgrade }: Props) {
   if (event.source === 'cex') {
-    return <CexItem trade={event.data} />;
+    return (
+      <CexItem
+        trade={event.data}
+        isLocked={isLocked}
+        onUpgrade={onUpgrade}
+      />
+    );
   }
   return (
     <OnChainItem

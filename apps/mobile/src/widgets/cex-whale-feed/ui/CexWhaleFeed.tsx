@@ -19,9 +19,16 @@ function CexTradeRow({ item, isLast }: { item: CexTrade; isLast: boolean }) {
 
   return (
     <View>
-      <View className="flex-row items-center gap-3 py-3">
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 }}>
         <View
-          className={`h-10 w-10 items-center justify-center rounded-xl ${isBuy ? 'bg-green-50' : 'bg-red-50'}`}
+          style={{
+            height: 40,
+            width: 40,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 12,
+            backgroundColor: isBuy ? '#f0fdf4' : '#fef2f2',
+          }}
         >
           {isBuy ? (
             <TrendingUp
@@ -38,38 +45,47 @@ function CexTradeRow({ item, isLast }: { item: CexTrade; isLast: boolean }) {
           )}
         </View>
 
-        <View className="flex-1 gap-1">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-1.5">
-              <Text className="text-sm font-bold tracking-tight text-[#0f172b]">
+        <View style={{ flex: 1, gap: 4 }}>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text
+                style={{ fontSize: 14, fontWeight: '700', letterSpacing: -0.3, color: '#0f172b' }}
+              >
                 {COIN_LABEL[item.symbol] ?? item.symbol}
               </Text>
-              <View className={`rounded px-1.5 py-0.5 ${isBuy ? 'bg-green-100' : 'bg-red-100'}`}>
+              <View
+                style={{
+                  borderRadius: 4,
+                  paddingHorizontal: 6,
+                  paddingVertical: 2,
+                  backgroundColor: isBuy ? '#dcfce7' : '#fee2e2',
+                }}
+              >
                 <Text
-                  className={`text-[10px] font-bold ${isBuy ? 'text-green-600' : 'text-red-500'}`}
+                  style={{ fontSize: 10, fontWeight: '700', color: isBuy ? '#16a34a' : '#ef4444' }}
                 >
                   {isBuy ? '매수' : '매도'}
                 </Text>
               </View>
             </View>
-            <Text
-              className={`text-[13px] font-semibold ${isBuy ? 'text-green-600' : 'text-red-500'}`}
-            >
+            <Text style={{ fontSize: 13, fontWeight: '600', color: isBuy ? '#16a34a' : '#ef4444' }}>
               {formatUsd(item.valueUsd)}
             </Text>
           </View>
 
-          <View className="flex-row items-center gap-1">
-            <Text className="text-[11px] text-slate-400">
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Text style={{ fontSize: 11, color: '#94a3b8' }}>
               {item.amount.toFixed(4)} @ {formatUsd(item.price)}
             </Text>
-            <Text className="ml-auto text-[11px] text-slate-300">
+            <Text style={{ marginLeft: 'auto', fontSize: 11, color: '#cbd5e1' }}>
               {formatRelativeTime(item.timestampMs)}
             </Text>
           </View>
         </View>
       </View>
-      {!isLast && <View className="h-px bg-slate-100" />}
+      {!isLast && <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />}
     </View>
   );
 }
@@ -84,12 +100,27 @@ export function CexWhaleFeed({ trades }: CexWhaleFeedProps) {
   }
 
   return (
-    <View className="rounded-[18px] border border-slate-100 bg-slate-50 p-4">
-      <View className="mb-1 flex-row items-center justify-between">
-        <Text className="text-[15px] font-bold text-[#0f172b]">CEX 대량 체결</Text>
-        <View className="flex-row items-center gap-1.5">
-          <View className="h-1.5 w-1.5 rounded-full bg-green-400" />
-          <Text className="text-[11px] font-medium text-green-500">실시간</Text>
+    <View
+      style={{
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: '#f1f5f9',
+        backgroundColor: '#f8fafc',
+        padding: 16,
+      }}
+    >
+      <View
+        style={{
+          marginBottom: 4,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Text style={{ fontSize: 15, fontWeight: '700', color: '#0f172b' }}>거래소 대량 체결</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <View style={{ height: 6, width: 6, borderRadius: 3, backgroundColor: '#4ade80' }} />
+          <Text style={{ fontSize: 11, fontWeight: '500', color: '#22c55e' }}>실시간</Text>
         </View>
       </View>
 

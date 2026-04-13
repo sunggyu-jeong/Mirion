@@ -23,6 +23,7 @@ type SourceFilter = 'ALL' | 'ONCHAIN' | 'CEX';
 
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 const FREE_ONCHAIN_LIMIT = 3;
+const FREE_CEX_LIMIT = 3;
 const BUCKET_COUNT = 6;
 const BUCKET_MS = 4 * 60 * 60 * 1000;
 
@@ -82,7 +83,7 @@ function SentimentGauge({ events }: { events: ActivityEvent[] }) {
             >
               {cexCount}
             </Text>
-            <Text style={{ fontSize: 12, color: '#94a3b8' }}>CEX</Text>
+            <Text style={{ fontSize: 12, color: '#94a3b8' }}>거래소</Text>
           </View>
         </View>
       </View>
@@ -226,7 +227,7 @@ function SourceFilterTab({
   const tabs: { label: string; value: SourceFilter }[] = [
     { label: '전체', value: 'ALL' },
     { label: '온체인', value: 'ONCHAIN' },
-    { label: 'CEX', value: 'CEX' },
+    { label: '거래소', value: 'CEX' },
   ];
 
   return (
@@ -284,12 +285,14 @@ export function HistoryScreen() {
 
   const processedEvents = useMemo<ProcessedEvent[]>(() => {
     let onchainCount = 0;
+    let cexCount = 0;
     return filteredEvents.map(event => {
       if (event.source === 'onchain') {
         onchainCount++;
         return { event, isLocked: !isPro && onchainCount > FREE_ONCHAIN_LIMIT };
       }
-      return { event, isLocked: false };
+      cexCount++;
+      return { event, isLocked: !isPro && cexCount > FREE_CEX_LIMIT };
     });
   }, [filteredEvents, isPro]);
 
@@ -431,7 +434,7 @@ export function HistoryScreen() {
               감지된 활동 없음
             </Text>
             <Text style={{ fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 20 }}>
-              {'고래 이동 및 CEX 대량 체결이\n감지되면 바로 표시됩니다.'}
+              {'고래 이동 및 거래소 대량 체결이\n감지되면 바로 표시됩니다.'}
             </Text>
           </View>
         }

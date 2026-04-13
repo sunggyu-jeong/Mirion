@@ -29,7 +29,7 @@ type Props = {
 };
 
 function ItemSeparator() {
-  return <View className="h-2.5" />;
+  return <View style={{ height: 10 }} />;
 }
 
 export function UnifiedActivityList({ chainFilter, onChainChange, onUpgrade, headerTitle }: Props) {
@@ -78,7 +78,7 @@ export function UnifiedActivityList({ chainFilter, onChainChange, onUpgrade, hea
         entering={FadeInDown.delay(Math.min(index * 40, 400))
           .duration(260)
           .easing(EASE_OUT)}
-        className="px-5"
+        style={{ paddingHorizontal: 20 }}
       >
         <UnifiedActivityItem
           event={item.event}
@@ -92,11 +92,11 @@ export function UnifiedActivityList({ chainFilter, onChainChange, onUpgrade, hea
 
   if (isLoading) {
     return (
-      <View className="gap-2.5 px-5 pt-5">
+      <View style={{ gap: 10, paddingHorizontal: 20, paddingTop: 20 }}>
         {Array.from({ length: 4 }).map((_, i) => (
           <View
             key={i}
-            className="h-32 rounded-2xl bg-slate-100"
+            style={{ height: 128, borderRadius: 16, backgroundColor: '#f1f5f9' }}
           />
         ))}
       </View>
@@ -116,7 +116,9 @@ export function UnifiedActivityList({ chainFilter, onChainChange, onUpgrade, hea
       stickyHeaderIndices={[1]}
       ListHeaderComponent={
         <>
-          <View className="bg-white px-5 pt-4">{headerTitle}</View>
+          <View style={{ backgroundColor: 'white', paddingHorizontal: 20, paddingTop: 16 }}>
+            {headerTitle}
+          </View>
           <Animated.View
             style={[
               { paddingHorizontal: 20, paddingVertical: 12, backgroundColor: 'white' },
@@ -132,23 +134,31 @@ export function UnifiedActivityList({ chainFilter, onChainChange, onUpgrade, hea
       }
       ListFooterComponent={
         processedEvents.length > 0 ? (
-          <View className="flex-row items-center gap-2 p-5">
-            <View className="h-1.5 w-1.5 rounded-full bg-green-400" />
-            <Text className="text-[12px] font-medium text-green-500">실시간 감지 중</Text>
-            <Text className="text-[12px] text-slate-400">· {processedEvents.length}건 발견</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, padding: 20 }}>
+            <View style={{ height: 6, width: 6, borderRadius: 3, backgroundColor: '#4ade80' }} />
+            <Text style={{ fontSize: 12, fontWeight: '500', color: '#22c55e' }}>
+              실시간 감지 중
+            </Text>
+            <Text style={{ fontSize: 12, color: '#94a3b8' }}>
+              · {processedEvents.length}건 발견
+            </Text>
           </View>
         ) : null
       }
       ListEmptyComponent={
-        <View className="min-h-96 items-center justify-center gap-3">
-          <Text className="text-3xl">🔍</Text>
-          <Text className="text-[15px] font-semibold text-[#0f172b]">감지된 활동 없음</Text>
-          <Text className="text-center text-[13px] leading-5 text-slate-400">
-            {'고래 이동 및 CEX 대량 체결이\n감지되면 바로 표시됩니다.'}
+        <View style={{ minHeight: 384, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <Text style={{ fontSize: 30 }}>🔍</Text>
+          <Text style={{ fontSize: 15, fontWeight: '600', color: '#0f172b' }}>
+            감지된 활동 없음
           </Text>
-          <View className="mt-2 flex-row items-center gap-1.5">
-            <View className="h-1.5 w-1.5 rounded-full bg-green-400" />
-            <Text className="text-[12px] font-medium text-green-500">실시간 감지 중</Text>
+          <Text style={{ fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 20 }}>
+            {'고래 이동 및 거래소 대량 체결이\n감지되면 바로 표시됩니다.'}
+          </Text>
+          <View style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={{ height: 6, width: 6, borderRadius: 3, backgroundColor: '#4ade80' }} />
+            <Text style={{ fontSize: 12, fontWeight: '500', color: '#22c55e' }}>
+              실시간 감지 중
+            </Text>
           </View>
         </View>
       }
