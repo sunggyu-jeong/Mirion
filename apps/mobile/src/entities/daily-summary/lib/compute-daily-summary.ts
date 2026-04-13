@@ -22,7 +22,7 @@ export function computeDailySummary(txs: WhaleTx[]): DailySummary {
     return { totalCount: 0, totalEth: 0, totalUsd: 0, dominantType: 'send', avgEth: 0 };
   }
 
-  const totalEth = todayTxs.reduce((sum, tx) => sum + tx.amountEth, 0);
+  const totalEth = todayTxs.reduce((sum, tx) => sum + tx.amountNative, 0);
   const totalUsd = todayTxs.reduce((sum, tx) => sum + tx.amountUsd, 0);
 
   const typeCounts: Record<WhaleTxType, number> = { send: 0, receive: 0, swap: 0 };

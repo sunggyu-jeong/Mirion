@@ -10,7 +10,7 @@ jest.mock('react-native/Libraries/Linking/Linking', () => ({ openURL: jest.fn() 
 const baseTx: WhaleTx = {
   txHash: '0xabc123',
   type: 'send',
-  amountEth: 500,
+  amountNative: 500,
   amountUsd: 1_225_000,
   fromAddress: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
   toAddress: '0xAbCd1234567890abcdef1234567890abcdef1234',
@@ -18,6 +18,7 @@ const baseTx: WhaleTx = {
   blockNumber: 20_000_000n,
   isLarge: true,
   asset: 'ETH',
+  chain: 'ETH',
 };
 
 describe('WhaleMovementItem', () => {

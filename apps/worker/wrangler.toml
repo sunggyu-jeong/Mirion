@@ -8,6 +8,9 @@ binding = "CACHE"
 id = "a94fcf7ca1f944368edc39b1cd7395c5"
 preview_id = "0492925a31eb4ad1ae4b185d39e21e80"
 
+[triggers]
+crons = ["* * * * *"]
+
 # 시크릿은 wrangler secret put ALCHEMY_API_KEY 로 등록
 # [vars] 에는 공개 값만 넣을 것
 [vars]

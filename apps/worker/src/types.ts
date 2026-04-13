@@ -2,13 +2,27 @@ export interface Env {
   CACHE: KVNamespace;
   ALCHEMY_API_KEY: string;
   ALCHEMY_NETWORK: string;
+  COINGECKO_API_KEY?: string;
+  HELIUS_API_KEY?: string;
+  TRONGRID_API_KEY?: string;
+  MORALIS_API_KEY?: string;
+  CEX_INGEST_SECRET?: string;
+}
+
+export interface CexTradeDTO {
+  symbol: string;
+  side: 'buy' | 'sell';
+  price: number;
+  amount: number;
+  valueUsd: number;
+  timestampMs: number;
 }
 
 // WhaleTx with blockNumber as string (bigint cannot be JSON serialized)
 export interface WhaleTxDTO {
   txHash: string;
   type: "send" | "receive" | "swap";
-  amountEth: number;
+  amountNative: number;
   amountUsd: number;
   fromAddress: string;
   toAddress: string;
@@ -16,10 +30,11 @@ export interface WhaleTxDTO {
   blockNumber: string;
   isLarge: boolean;
   asset: string;
+  chain: string;
 }
 
 export interface WhaleProfileDTO {
-  ethBalance: string; // hex string e.g. "0xDE0B6B3A7640000"
+  nativeBalance: string;
   totalValueUsd: number;
   tokens: { contractAddress: string; rawBalance: string }[];
 }

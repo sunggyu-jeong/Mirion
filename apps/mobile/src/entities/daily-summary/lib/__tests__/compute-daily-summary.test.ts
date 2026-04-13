@@ -6,7 +6,7 @@ function makeTx(overrides: Partial<WhaleTx> = {}): WhaleTx {
   return {
     txHash: '0xabc',
     type: 'send',
-    amountEth: 100,
+    amountNative: 100,
     amountUsd: 250_000,
     fromAddress: '0xFrom',
     toAddress: '0xTo',
@@ -14,6 +14,7 @@ function makeTx(overrides: Partial<WhaleTx> = {}): WhaleTx {
     blockNumber: 1n,
     isLarge: true,
     asset: 'ETH',
+    chain: 'ETH',
     ...overrides,
   };
 }
@@ -41,8 +42,8 @@ describe('computeDailySummary', () => {
 
   it('sums ETH and USD correctly', () => {
     const txs = [
-      makeTx({ amountEth: 200, amountUsd: 500_000 }),
-      makeTx({ amountEth: 300, amountUsd: 750_000 }),
+      makeTx({ amountNative: 200, amountUsd: 500_000 }),
+      makeTx({ amountNative: 300, amountUsd: 750_000 }),
     ];
     const result = computeDailySummary(txs);
     expect(result.totalEth).toBe(500);
@@ -50,7 +51,7 @@ describe('computeDailySummary', () => {
   });
 
   it('computes average ETH', () => {
-    const txs = [makeTx({ amountEth: 100 }), makeTx({ amountEth: 300 })];
+    const txs = [makeTx({ amountNative: 100 }), makeTx({ amountNative: 300 })];
     const result = computeDailySummary(txs);
     expect(result.avgEth).toBe(200);
   });

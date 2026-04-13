@@ -1,11 +1,11 @@
-import type { WhaleProfile } from '@entities/whale';
+import type { WhaleMetadata } from '@entities/whale';
 import { ChevronLeft } from 'lucide-react-native';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 interface WhaleDetailHeaderProps {
   whaleId: string;
-  whale?: WhaleProfile;
+  whale?: WhaleMetadata;
   onBack: () => void;
 }
 

@@ -36,7 +36,7 @@ import { fetchWhaleTransfers } from '@entities/whale-tx';
 import { useWhaleDetail } from '../use-whale-detail';
 
 const MOCK_ONCHAIN: WhaleOnchainData = {
-  ethBalance: BigInt('0xDE0B6B3A7640000'),
+  nativeBalance: BigInt('0xDE0B6B3A7640000'),
   totalValueUsd: 100_000,
   tokens: [
     {
@@ -49,7 +49,7 @@ const MOCK_ONCHAIN: WhaleOnchainData = {
 const MOCK_TX: WhaleTx = {
   txHash: '0xabc001',
   type: 'send',
-  amountEth: 100,
+  amountNative: 100,
   amountUsd: 245_000,
   fromAddress: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
   toAddress: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
@@ -57,6 +57,7 @@ const MOCK_TX: WhaleTx = {
   blockNumber: 20_000_000n,
   isLarge: false,
   asset: 'ETH',
+  chain: 'ETH',
 };
 
 function createWrapper() {

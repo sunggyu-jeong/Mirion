@@ -3,13 +3,16 @@ import { workerGet } from '@shared/api/worker';
 import type { RawTokenBalance, WhaleOnchainData } from '../model/whale.types';
 
 interface WhaleProfileDTO {
-  ethBalance: string;
+  nativeBalance: string;
   totalValueUsd: number;
   tokens: { contractAddress: string; rawBalance: string }[];
 }
 
-export async function fetchWhaleProfile(address: string): Promise<WhaleOnchainData> {
-  const dto = await workerGet<WhaleProfileDTO>('/api/whale-profile', { address });
+export async function fetchWhaleProfile(
+  address: string,
+  chain: string = 'ETH',
+): Promise<WhaleOnchainData> {
+  const dto = await workerGet<WhaleProfileDTO>('/api/whale-profile', { address, chain });
 
   const tokens: RawTokenBalance[] = dto.tokens.map(t => ({
     contractAddress: t.contractAddress,
@@ -17,7 +20,7 @@ export async function fetchWhaleProfile(address: string): Promise<WhaleOnchainDa
   }));
 
   return {
-    ethBalance: BigInt(dto.ethBalance),
+    nativeBalance: BigInt(dto.nativeBalance),
     totalValueUsd: dto.totalValueUsd,
     tokens,
   };

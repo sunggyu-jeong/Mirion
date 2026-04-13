@@ -48,18 +48,7 @@ export function SplashScreen() {
         entering={FadeIn.duration(600)}
         style={[animatedStyle, { alignItems: 'center', gap: 16 }]}
       >
-        <View
-          style={{
-            width: 100,
-            height: 100,
-            borderRadius: 30,
-            backgroundColor: 'white',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text style={{ fontSize: 50 }}>🐋</Text>
-        </View>
+        <Text style={{ fontSize: 80 }}>🐋</Text>
         <Text style={{ fontSize: 28, fontWeight: '900', color: 'white', letterSpacing: -0.5 }}>
           WhaleTracker
         </Text>

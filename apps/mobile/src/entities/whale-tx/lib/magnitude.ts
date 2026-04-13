@@ -30,9 +30,9 @@ const THRESHOLDS: Array<{ min: number; info: MagnitudeInfo }> = [
   },
 ];
 
-export function getMagnitudeInfo(amountEth: number): MagnitudeInfo {
+export function getMagnitudeInfo(amountNative: number): MagnitudeInfo {
   for (const threshold of THRESHOLDS) {
-    if (amountEth >= threshold.min) {
+    if (amountNative >= threshold.min) {
       return threshold.info;
     }
   }
