@@ -2,11 +2,11 @@ name: iOS TestFlight / App Store Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   workflow_dispatch:
     inputs:
       lane:
-        description: 'Deploy lane (beta = TestFlight, release = App Store)'
+        description: 'beta = Dev(TestFlight), release = Prod(App Store)'
         required: true
         default: 'beta'
         type: choice
@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy iOS (${{ github.event.inputs.lane || 'beta' }})
+    name: Deploy iOS (${{ github.event.inputs.lane || (github.ref == 'refs/heads/main' && 'release' || 'beta') }})
     runs-on: macos-15
 
     steps:
@@ -78,4 +78,12 @@ jobs:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-        run: bundle exec fastlane ${{ github.event.inputs.lane || 'beta' }}
+        run: |
+          if [ -n "${{ github.event.inputs.lane }}" ]; then
+            LANE="${{ github.event.inputs.lane }}"
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            LANE="release"
+          else
+            LANE="beta"
+          fi
+          bundle exec fastlane $LANE

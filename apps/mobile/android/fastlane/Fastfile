@@ -1,30 +1,33 @@
 default_platform(:android)
 
 platform :android do
-  desc "Run Android unit tests"
+  desc "Run Android unit tests (dev flavor)"
   lane :test do
     gradle(
       task: "test",
+      flavor: "dev",
       build_type: "Debug",
       flags: "--no-daemon",
       project_dir: "./"
     )
   end
 
-  desc "Build debug APK"
+  desc "Build debug APK (dev flavor)"
   lane :build_dev do
     gradle(
       task: "assemble",
+      flavor: "dev",
       build_type: "Debug",
       flags: "--no-daemon",
       project_dir: "./"
     )
   end
 
-  desc "Build release AAB and upload to Google Play Internal Track"
+  desc "[개발] dev flavor Release AAB → Google Play Internal Track (com.lockfi.dev)"
   lane :beta do
     gradle(
       task: "bundle",
+      flavor: "dev",
       build_type: "Release",
       properties: {
         "android.injected.signing.store.file"     => ENV["KEYSTORE_PATH"],
@@ -40,6 +43,7 @@ platform :android do
       track: "internal",
       aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"],
+      package_name: "com.lockfi.dev",
       skip_upload_apk: true,
       skip_upload_metadata: true,
       skip_upload_images: true,
@@ -47,14 +51,28 @@ platform :android do
     )
   end
 
-  desc "Promote Internal Track to Production on Google Play"
+  desc "[운영] prod flavor Release AAB → Google Play Internal Track (com.lockfi)"
   lane :release do
+    gradle(
+      task: "bundle",
+      flavor: "prod",
+      build_type: "Release",
+      properties: {
+        "android.injected.signing.store.file"     => ENV["KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias"      => ENV["KEY_ALIAS"],
+        "android.injected.signing.key.password"   => ENV["KEY_PASSWORD"],
+      },
+      flags: "--no-daemon",
+      project_dir: "./"
+    )
+
     upload_to_play_store(
       track: "internal",
-      track_promote_to: "production",
+      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"],
+      package_name: "com.lockfi",
       skip_upload_apk: true,
-      skip_upload_aab: true,
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true

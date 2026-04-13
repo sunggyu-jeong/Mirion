@@ -2,7 +2,7 @@ name: Android Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build Debug APK
+    name: Build Debug APK (dev flavor)
     runs-on: ubuntu-latest
 
     steps:
@@ -76,6 +76,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-${{ github.sha }}
-          path: apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
+          name: app-dev-debug-${{ github.sha }}
+          path: apps/mobile/android/app/build/outputs/apk/dev/debug/app-dev-debug.apk
           retention-days: 7

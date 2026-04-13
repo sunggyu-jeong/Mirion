@@ -76,6 +76,7 @@ android {
     namespace "com.lockfi"
     defaultConfig {
         applicationId "com.lockfi"
+        flavorDimensions "env"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -96,6 +97,18 @@ android {
             java.srcDirs += [
                 '../../nitrogen/generated/android/kotlin'
             ]
+        }
+    }
+    productFlavors {
+        dev {
+            dimension "env"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-dev"
+            resValue "string", "app_name", "WhaleTracker Dev"
+        }
+        prod {
+            dimension "env"
+            resValue "string", "app_name", "WhaleTracker"
         }
     }
     signingConfigs {

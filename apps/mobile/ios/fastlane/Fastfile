@@ -1,5 +1,8 @@
 default_platform(:ios)
 
+DEV_BUNDLE_ID  = "org.teammoodlyWhaleTracker.dev"
+PROD_BUNDLE_ID = "org.teammoodlyWhaleTracker"
+
 platform :ios do
   desc "Run JS unit tests with coverage"
   lane :test do
@@ -21,7 +24,7 @@ platform :ios do
     )
   end
 
-  desc "Push a new beta build to TestFlight"
+  desc "[개발] Debug 빌드 → TestFlight (dev 번들 ID: #{DEV_BUNDLE_ID})"
   lane :beta do
     api_key = app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
@@ -32,24 +35,29 @@ platform :ios do
     )
 
     increment_build_number(
-      build_number: latest_testflight_build_number(api_key: api_key) + 1,
+      build_number: latest_testflight_build_number(
+        api_key: api_key,
+        app_identifier: DEV_BUNDLE_ID
+      ) + 1,
       xcodeproj: "WhaleTracker.xcodeproj"
     )
 
     build_app(
       workspace: "WhaleTracker.xcworkspace",
       scheme: "WhaleTracker",
+      configuration: "Debug",
       export_method: "app-store",
       api_key: api_key
     )
 
     upload_to_testflight(
       api_key: api_key,
+      app_identifier: DEV_BUNDLE_ID,
       skip_waiting_for_build_processing: true
     )
   end
 
-  desc "Submit a new release build to App Store"
+  desc "[운영] Release 빌드 → App Store (prod 번들 ID: #{PROD_BUNDLE_ID})"
   lane :release do
     api_key = app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
@@ -60,19 +68,24 @@ platform :ios do
     )
 
     increment_build_number(
-      build_number: latest_testflight_build_number(api_key: api_key) + 1,
+      build_number: latest_testflight_build_number(
+        api_key: api_key,
+        app_identifier: PROD_BUNDLE_ID
+      ) + 1,
       xcodeproj: "WhaleTracker.xcodeproj"
     )
 
     build_app(
       workspace: "WhaleTracker.xcworkspace",
       scheme: "WhaleTracker",
+      configuration: "Release",
       export_method: "app-store",
       api_key: api_key
     )
 
     upload_to_app_store(
       api_key: api_key,
+      app_identifier: PROD_BUNDLE_ID,
       submit_for_review: false,
       automatic_release: false,
       skip_screenshots: true,
