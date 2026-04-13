@@ -6,6 +6,7 @@ import { useUnifiedActivity } from '@features/unified-feed';
 import { formatUsd } from '@shared/lib/format';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { ChainFilterBar } from '@shared/ui';
+import { RadarViewport } from '@widgets/radar-viewport';
 import { UnifiedActivityItem } from '@widgets/unified-activity';
 import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
@@ -32,7 +33,6 @@ function SentimentGauge({ events }: { events: ActivityEvent[] }) {
   const receives = onchain.filter(e => (e.data as WhaleTx).type === 'receive').length;
   const total = sends + receives;
   const sellRatio = total > 0 ? sends / total : 0.5;
-  const buyRatio = 1 - sellRatio;
   const sellPct = Math.round(sellRatio * 100);
   const buyPct = 100 - sellPct;
 
@@ -42,7 +42,6 @@ function SentimentGauge({ events }: { events: ActivityEvent[] }) {
   return (
     <View
       style={{
-        marginHorizontal: 20,
         marginBottom: 14,
         backgroundColor: '#f8fafc',
         borderRadius: 18,
@@ -98,21 +97,9 @@ function SentimentGauge({ events }: { events: ActivityEvent[] }) {
               overflow: 'hidden',
             }}
           >
-            <View
-              style={{
-                width: `${sellPct}%`,
-                backgroundColor: '#ef4444',
-                borderRadius: 4,
-              }}
-            />
+            <View style={{ width: `${sellPct}%`, backgroundColor: '#ef4444', borderRadius: 4 }} />
             <View style={{ width: 2, backgroundColor: 'white' }} />
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: '#22c55e',
-                borderRadius: 4,
-              }}
-            />
+            <View style={{ flex: 1, backgroundColor: '#22c55e', borderRadius: 4 }} />
           </View>
         </View>
       )}
@@ -248,13 +235,13 @@ export function HistoryScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 14 }}>
+            <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 20 }}>
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  marginBottom: 16,
+                  marginBottom: 20,
                 }}
               >
                 <Text
@@ -271,7 +258,12 @@ export function HistoryScreen() {
                   </Text>
                 </View>
               </View>
-              <SentimentGauge events={allEvents} />
+
+              <RadarViewport />
+
+              <View style={{ marginTop: 20 }}>
+                <SentimentGauge events={allEvents} />
+              </View>
             </View>
 
             <View
