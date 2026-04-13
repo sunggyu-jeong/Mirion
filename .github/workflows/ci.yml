@@ -44,7 +44,15 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: pnpm --filter @lockfi/mobile lint
+        run: pnpm --filter @whaletracker/mobile lint
 
-      - name: Test
-        run: pnpm --filter @lockfi/mobile test --ci --passWithNoTests
+      - name: Test with coverage
+        run: pnpm --filter @whaletracker/mobile test --ci --coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.sha }}
+          path: apps/mobile/coverage
+          retention-days: 7

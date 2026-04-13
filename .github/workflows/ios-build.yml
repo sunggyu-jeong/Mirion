@@ -3,6 +3,8 @@ name: iOS Build
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main, develop]
   workflow_dispatch:
 
 concurrency:
@@ -42,6 +44,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          working-directory: apps/mobile
+          bundler-cache: true
+
       - name: Cache CocoaPods
         uses: actions/cache@v4
         with:
@@ -53,17 +62,9 @@ jobs:
         working-directory: apps/mobile/ios
         run: pod install --repo-update
 
-      - name: Build for simulator
+      - name: Build for simulator via Fastlane
         working-directory: apps/mobile/ios
-        run: |
-          xcodebuild \
-            -workspace WhaleTracker.xcworkspace \
-            -scheme WhaleTracker \
-            -configuration Debug \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build \
-            CODE_SIGNING_ALLOWED=NO \
-            | xcpretty
+        run: bundle exec fastlane build_dev
 
       - name: Upload build log on failure
         if: failure()

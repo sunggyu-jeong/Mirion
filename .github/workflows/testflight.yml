@@ -1,11 +1,26 @@
-name: iOS TestFlight Deployment
+name: iOS TestFlight / App Store Deploy
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      lane:
+        description: 'Deploy lane (beta = TestFlight, release = App Store)'
+        required: true
+        default: 'beta'
+        type: choice
+        options:
+          - beta
+          - release
+
+concurrency:
+  group: ios-deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
-    name: Deploy to TestFlight
+    name: Deploy iOS (${{ github.event.inputs.lane || 'beta' }})
     runs-on: macos-15
 
     steps:
@@ -39,7 +54,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3' # or current project ruby version
+          ruby-version: '3.3'
           working-directory: apps/mobile
           bundler-cache: true
 
@@ -54,20 +69,7 @@ jobs:
         working-directory: apps/mobile/ios
         run: pod install --repo-update
 
-      - name: Import Provisioning Profiles and Certificates
-        # This part requires setting up fastlane match or importing existing ones.
-        # For now, we assume certificates and profiles are handled by match or manual installation.
-        # Usually, we use `fastlane match` here.
-        # For brevity, I'll just add the secrets required.
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          GIT_AUTHORIZATION: ${{ secrets.GIT_AUTHORIZATION }}
-        run: |
-          # If using match, uncomment:
-          # cd apps/mobile/ios && bundle exec fastlane match appstore --readonly
-          echo "Certificates setup"
-
-      - name: Deploy to TestFlight
+      - name: Deploy via Fastlane
         working-directory: apps/mobile/ios
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
@@ -76,4 +78,4 @@ jobs:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-        run: bundle exec fastlane beta
+        run: bundle exec fastlane ${{ github.event.inputs.lane || 'beta' }}

@@ -1,0 +1,2 @@
+json_key_file("")  # CI 환경에서는 GOOGLE_PLAY_JSON_KEY 환경변수로 주입
+package_name("com.lockfi")

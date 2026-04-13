@@ -1,19 +1,26 @@
-name: Android Build
+name: Android Google Play Deploy
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main, develop]
   workflow_dispatch:
+    inputs:
+      lane:
+        description: 'Deploy lane (beta = Internal Track, release = Production 승격)'
+        required: true
+        default: 'beta'
+        type: choice
+        options:
+          - beta
+          - release
 
 concurrency:
-  group: android-${{ github.ref }}
+  group: android-deploy-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build Debug APK
+  deploy:
+    name: Deploy to Google Play (${{ github.event.inputs.lane || 'beta' }})
     runs-on: ubuntu-latest
 
     steps:
@@ -69,13 +76,17 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x apps/mobile/android/gradlew
 
-      - name: Build debug APK via Fastlane
-        working-directory: apps/mobile/android
-        run: bundle exec fastlane build_dev
+      - name: Decode release keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode \
+            > apps/mobile/android/app/release.keystore
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-${{ github.sha }}
-          path: apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 7
+      - name: Deploy via Fastlane
+        working-directory: apps/mobile/android
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/apps/mobile/android/app/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GOOGLE_PLAY_JSON_KEY: ${{ secrets.GOOGLE_PLAY_JSON_KEY }}
+        run: bundle exec fastlane ${{ github.event.inputs.lane || 'beta' }}
