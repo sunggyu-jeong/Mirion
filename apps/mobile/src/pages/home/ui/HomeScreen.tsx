@@ -116,6 +116,8 @@ export function HomeScreen() {
             selectedChain={selectedChain}
             onChainChange={setSelectedChain}
             movements={movements}
+            whales={whales}
+            onWhalePress={toWhaleDetail}
           />
         }
         ListEmptyComponent={

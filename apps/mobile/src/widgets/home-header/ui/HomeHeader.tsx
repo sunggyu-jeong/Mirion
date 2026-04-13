@@ -1,7 +1,8 @@
 import { useSubscriptionStore } from '@entities/subscription';
-import type { ChainFilter } from '@entities/whale';
+import type { ChainFilter, WhaleProfile } from '@entities/whale';
 import type { WhaleTx } from '@entities/whale-tx';
 import { ChainFilterBar, StreakBadge } from '@shared/ui';
+import { AquariumSection } from '@widgets/aquarium-section';
 import { BriefingCard } from '@widgets/briefing-card';
 import React from 'react';
 import { Text, View } from 'react-native';
@@ -11,6 +12,8 @@ interface HomeHeaderProps {
   selectedChain: ChainFilter;
   onChainChange: (chain: ChainFilter) => void;
   movements?: WhaleTx[];
+  whales?: WhaleProfile[];
+  onWhalePress?: (id: string) => void;
 }
 
 export function HomeHeader({
@@ -18,12 +21,21 @@ export function HomeHeader({
   selectedChain,
   onChainChange,
   movements,
+  whales,
+  onWhalePress,
 }: HomeHeaderProps) {
   const isPro = useSubscriptionStore(s => s.isPro);
 
   return (
-    <View style={{ paddingTop: 20, paddingBottom: 16, gap: 16 }}>
+    <View style={{ paddingTop: 20, paddingBottom: 16, gap: 20 }}>
       <BriefingCard movements={movements} />
+
+      {whales && whales.length > 0 && onWhalePress && (
+        <AquariumSection
+          whales={whales}
+          onWhalePress={onWhalePress}
+        />
+      )}
 
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View style={{ gap: 4 }}>
