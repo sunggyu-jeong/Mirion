@@ -33,7 +33,10 @@ describe('fetchWhaleProfile', () => {
   it('calls the worker /api/whale-profile endpoint with the address', async () => {
     await fetchWhaleProfile(ETH_ADDRESS);
 
-    expect(workerGet).toHaveBeenCalledWith('/api/whale-profile', { address: ETH_ADDRESS });
+    expect(workerGet).toHaveBeenCalledWith('/api/whale-profile', {
+      address: ETH_ADDRESS,
+      chain: 'ETH',
+    });
   });
 
   it('converts ethBalance from hex string to bigint', async () => {

@@ -29,7 +29,7 @@ describe('WhaleMovementItem', () => {
 
   it('shows formatted amounts when unlocked', () => {
     render(<WhaleMovementItem item={baseTx} />);
-    expect(screen.getByText('500 ETH')).toBeTruthy();
+    expect(screen.getByText('500.00 ETH')).toBeTruthy();
     expect(screen.getByText('$1.2M')).toBeTruthy();
   });
 
@@ -47,7 +47,7 @@ describe('WhaleMovementItem', () => {
     );
     expect(screen.getByText('••••• ETH')).toBeTruthy();
     expect(screen.getByText('•••••')).toBeTruthy();
-    expect(screen.queryByText('500 ETH')).toBeNull();
+    expect(screen.queryByText('500.00 ETH')).toBeNull();
   });
 
   it('shows PRO unlock button when locked', () => {
