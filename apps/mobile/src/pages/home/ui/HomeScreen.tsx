@@ -7,15 +7,22 @@ import { useWhaleFeed } from '@features/whale-feed';
 import { useWhaleMovements } from '@features/whale-movements';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { HomeHeader } from '@widgets/home-header';
+import { MirionHeader } from '@widgets/mirion-header';
 import { WhaleCard } from '@widgets/whale-card';
 import React, { useCallback, useMemo } from 'react';
-import { FlatList, View } from 'react-native';
-import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
+import Animated, {
+  Easing,
+  FadeInDown,
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EmptyFiltered, ErrorState, SkeletonList } from './HomeStates';
 
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
+const HEADER_HEIGHT = 52;
 
 export function HomeScreen() {
   const isPro = useSubscriptionStore(s => s.isPro);
@@ -25,6 +32,15 @@ export function HomeScreen() {
   const { data: movements } = useWhaleMovements();
   const { toWhaleDetail, toSettings } = useAppNavigation();
   const streakCount = useStreakTracker();
+  const insets = useSafeAreaInsets();
+
+  const scrollY = useSharedValue(0);
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: event => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
 
   useDailyBriefing(movements);
 
@@ -53,48 +69,54 @@ export function HomeScreen() {
     [isPro, toWhaleDetail, toSettings],
   );
 
+  const headerTopPadding = insets.top + HEADER_HEIGHT;
+
   if (isLoading) {
     return (
-      <SafeAreaView
-        edges={['top']}
-        style={{ flex: 1, backgroundColor: 'white' }}
-      >
-        <SkeletonList />
-      </SafeAreaView>
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <MirionHeader scrollY={scrollY} />
+        <View style={{ flex: 1, paddingTop: headerTopPadding }}>
+          <SkeletonList />
+        </View>
+      </View>
     );
   }
+
   if (isError) {
     return (
-      <SafeAreaView
-        edges={['top']}
-        style={{ flex: 1, backgroundColor: 'white' }}
-      >
-        <ErrorState onRetry={refetch} />
-      </SafeAreaView>
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <MirionHeader scrollY={scrollY} />
+        <View style={{ flex: 1, paddingTop: headerTopPadding }}>
+          <ErrorState onRetry={refetch} />
+        </View>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView
-      edges={['top']}
-      style={{ flex: 1, backgroundColor: 'white' }}
-    >
-      <FlatList
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <MirionHeader scrollY={scrollY} />
+      <Animated.FlatList
         data={filteredWhales}
         renderItem={renderItem}
         keyExtractor={item => item.id}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32, flexGrow: 1 }}
+        contentContainerStyle={{
+          paddingTop: headerTopPadding + 8,
+          paddingHorizontal: 20,
+          paddingBottom: 32,
+          flexGrow: 1,
+        }}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <>
-            <HomeHeader
-              streakCount={streakCount}
-              selectedChain={selectedChain}
-              onChainChange={setSelectedChain}
-              movements={movements}
-            />
-          </>
+          <HomeHeader
+            streakCount={streakCount}
+            selectedChain={selectedChain}
+            onChainChange={setSelectedChain}
+            movements={movements}
+          />
         }
         ListEmptyComponent={
           <EmptyFiltered
@@ -103,6 +125,6 @@ export function HomeScreen() {
           />
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }
