@@ -12,17 +12,16 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const RADAR_SIZE = SCREEN_WIDTH - 40;
-const CENTER = RADAR_SIZE / 2;
+export const RADAR_SIZE = SCREEN_WIDTH - 40;
+export const CENTER = RADAR_SIZE / 2;
 
 const RADAR_BG = '#060d1a';
 const RING_COLOR = '#22c55e';
+const SWEEP_DURATION = 3200;
+const RIPPLE_DURATION = 2600;
 
 const RINGS = [1, 0.75, 0.5, 0.25] as const;
-const RING_OPACITY = [0.08, 0.12, 0.18, 0.28] as const;
-
-const SWEEP_DURATION = 3000;
-const RIPPLE_DURATION = 2400;
+const RING_OPACITY = [0.07, 0.11, 0.17, 0.26] as const;
 
 function Ring({ ratio, opacity }: { ratio: number; opacity: number }) {
   const size = RADAR_SIZE * ratio;
@@ -35,8 +34,8 @@ function Ring({ ratio, opacity }: { ratio: number; opacity: number }) {
         borderRadius: size / 2,
         borderWidth: 1,
         borderColor: `rgba(34,197,94,${opacity})`,
-        alignSelf: 'center',
         top: CENTER - size / 2,
+        left: CENTER - size / 2,
       }}
     />
   );
@@ -50,7 +49,7 @@ function CrossLines() {
           position: 'absolute',
           width: RADAR_SIZE,
           height: 1,
-          backgroundColor: 'rgba(34,197,94,0.12)',
+          backgroundColor: 'rgba(34,197,94,0.10)',
           top: CENTER - 0.5,
           left: 0,
         }}
@@ -60,7 +59,7 @@ function CrossLines() {
           position: 'absolute',
           width: 1,
           height: RADAR_SIZE,
-          backgroundColor: 'rgba(34,197,94,0.12)',
+          backgroundColor: 'rgba(34,197,94,0.10)',
           left: CENTER - 0.5,
           top: 0,
         }}
@@ -70,7 +69,7 @@ function CrossLines() {
           position: 'absolute',
           width: RADAR_SIZE * 1.42,
           height: 1,
-          backgroundColor: 'rgba(34,197,94,0.07)',
+          backgroundColor: 'rgba(34,197,94,0.05)',
           top: CENTER - 0.5,
           left: -(RADAR_SIZE * 0.21),
           transform: [{ rotateZ: '45deg' }],
@@ -81,13 +80,57 @@ function CrossLines() {
           position: 'absolute',
           width: RADAR_SIZE * 1.42,
           height: 1,
-          backgroundColor: 'rgba(34,197,94,0.07)',
+          backgroundColor: 'rgba(34,197,94,0.05)',
           top: CENTER - 0.5,
           left: -(RADAR_SIZE * 0.21),
           transform: [{ rotateZ: '-45deg' }],
         }}
       />
     </>
+  );
+}
+
+const TRAIL_CONFIGS = [
+  { offset: -54, opacity: 0.04 },
+  { offset: -40, opacity: 0.09 },
+  { offset: -26, opacity: 0.2 },
+  { offset: -13, opacity: 0.38 },
+  { offset: 0, opacity: 1.0 },
+] as const;
+
+function SweepLayer({
+  rotation,
+  angleOffset,
+  opacity,
+}: {
+  rotation: Animated.SharedValue<number>;
+  angleOffset: number;
+  opacity: number;
+}) {
+  const style = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value + angleOffset}deg` }],
+    opacity,
+  }));
+
+  return (
+    <Animated.View
+      style={[
+        { position: 'absolute', width: RADAR_SIZE, height: RADAR_SIZE, top: 0, left: 0 },
+        style,
+      ]}
+    >
+      <View
+        style={{
+          position: 'absolute',
+          top: CENTER - 1,
+          left: CENTER,
+          width: CENTER - 4,
+          height: 2,
+          backgroundColor: RING_COLOR,
+          borderRadius: 1,
+        }}
+      />
+    </Animated.View>
   );
 }
 
@@ -102,42 +145,16 @@ function SweepArm() {
     );
   }, [rotation]);
 
-  const armStyle = useAnimatedStyle(() => ({
-    transform: [{ rotateZ: `${rotation.value}deg` }],
-  }));
-
-  const trail1Style = useAnimatedStyle(() => ({
-    transform: [{ rotateZ: `${rotation.value - 18}deg` }],
-    opacity: 0.3,
-  }));
-
-  const trail2Style = useAnimatedStyle(() => ({
-    transform: [{ rotateZ: `${rotation.value - 36}deg` }],
-    opacity: 0.15,
-  }));
-
-  const trail3Style = useAnimatedStyle(() => ({
-    transform: [{ rotateZ: `${rotation.value - 54}deg` }],
-    opacity: 0.07,
-  }));
-
-  const armBase = {
-    position: 'absolute' as const,
-    width: CENTER,
-    height: 2,
-    top: CENTER - 1,
-    left: CENTER,
-    backgroundColor: RING_COLOR,
-    borderRadius: 1,
-    transformOrigin: 'left center' as const,
-  };
-
   return (
     <>
-      <Animated.View style={[armBase, trail3Style]} />
-      <Animated.View style={[armBase, trail2Style]} />
-      <Animated.View style={[armBase, trail1Style]} />
-      <Animated.View style={[armBase, armStyle]} />
+      {TRAIL_CONFIGS.map(({ offset, opacity }) => (
+        <SweepLayer
+          key={offset}
+          rotation={rotation}
+          angleOffset={offset}
+          opacity={opacity}
+        />
+      ))}
     </>
   );
 }
@@ -149,10 +166,7 @@ function RipplePulse({ delayMs }: { delayMs: number }) {
     progress.value = withDelay(
       delayMs,
       withRepeat(
-        withSequence(
-          withTiming(0, { duration: 0 }),
-          withTiming(1, { duration: RIPPLE_DURATION, easing: Easing.out(Easing.quad) }),
-        ),
+        withTiming(1, { duration: RIPPLE_DURATION, easing: Easing.out(Easing.cubic) }),
         -1,
         false,
       ),
@@ -160,14 +174,14 @@ function RipplePulse({ delayMs }: { delayMs: number }) {
   }, [delayMs, progress]);
 
   const rippleStyle = useAnimatedStyle(() => {
-    const size = interpolate(progress.value, [0, 1], [12, RADAR_SIZE * 0.85]);
-    const opacity = interpolate(progress.value, [0, 0.2, 1], [0, 0.45, 0]);
+    const size = interpolate(progress.value, [0, 1], [8, RADAR_SIZE * 0.9]);
+    const opacity = interpolate(progress.value, [0, 0.08, 0.65, 1], [0, 0.55, 0.12, 0]);
     return {
-      position: 'absolute',
+      position: 'absolute' as const,
       width: size,
       height: size,
       borderRadius: size / 2,
-      borderWidth: 1.5,
+      borderWidth: 1.2,
       borderColor: RING_COLOR,
       top: CENTER - size / 2,
       left: CENTER - size / 2,
@@ -179,23 +193,45 @@ function RipplePulse({ delayMs }: { delayMs: number }) {
 }
 
 function CenterDot() {
+  const pulse = useSharedValue(0.6);
+
+  useEffect(() => {
+    pulse.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 900, easing: Easing.out(Easing.ease) }),
+        withTiming(0.6, { duration: 900, easing: Easing.in(Easing.ease) }),
+      ),
+      -1,
+      false,
+    );
+  }, [pulse]);
+
+  const glowStyle = useAnimatedStyle(() => ({
+    shadowOpacity: interpolate(pulse.value, [0.6, 1], [0.6, 1]),
+    shadowRadius: interpolate(pulse.value, [0.6, 1], [6, 14]),
+    transform: [{ scale: interpolate(pulse.value, [0.6, 1], [1, 1.15]) }],
+  }));
+
   return (
-    <View
-      style={{
-        position: 'absolute',
-        top: CENTER - 5,
-        left: CENTER - 5,
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        backgroundColor: RING_COLOR,
-        shadowColor: RING_COLOR,
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.9,
-        shadowRadius: 8,
-        elevation: 4,
-        zIndex: 10,
-      }}
+    <Animated.View
+      style={[
+        {
+          position: 'absolute',
+          top: CENTER - 5,
+          left: CENTER - 5,
+          width: 10,
+          height: 10,
+          borderRadius: 5,
+          backgroundColor: RING_COLOR,
+          shadowColor: RING_COLOR,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.8,
+          shadowRadius: 8,
+          elevation: 4,
+          zIndex: 20,
+        },
+        glowStyle,
+      ]}
     />
   );
 }
@@ -212,9 +248,9 @@ export function RadarViewport({ children }: { children?: React.ReactNode }) {
         overflow: 'hidden',
         shadowColor: RING_COLOR,
         shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.08,
-        shadowRadius: 24,
-        elevation: 6,
+        shadowOpacity: 0.1,
+        shadowRadius: 28,
+        elevation: 8,
       }}
     >
       {RINGS.map((ratio, i) => (
@@ -228,8 +264,8 @@ export function RadarViewport({ children }: { children?: React.ReactNode }) {
       <CrossLines />
 
       <RipplePulse delayMs={0} />
-      <RipplePulse delayMs={800} />
-      <RipplePulse delayMs={1600} />
+      <RipplePulse delayMs={867} />
+      <RipplePulse delayMs={1734} />
 
       <SweepArm />
       <CenterDot />
@@ -238,5 +274,3 @@ export function RadarViewport({ children }: { children?: React.ReactNode }) {
     </View>
   );
 }
-
-export { CENTER, RADAR_SIZE };
