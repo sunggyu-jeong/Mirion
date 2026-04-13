@@ -69,6 +69,7 @@ async function fetchChain(
   minValueUsd: number,
   prices: Prices,
   env: Env,
+  errors?: string[],
 ): Promise<WhaleTxDTO[]> {
   const cutoff = Date.now() - RECENCY_MS;
 
@@ -92,7 +93,9 @@ async function fetchChain(
   for (let i = 0; i < results.length; i++) {
     const r = results[i];
     if (r.status !== "fulfilled") {
-      console.error(`[radar] ${chain} ${whales[i]?.name}: ${r.reason}`);
+      const msg = `[radar] ${chain} ${whales[i]?.name}: ${r.reason}`;
+      console.error(msg);
+      errors?.push(msg);
       continue;
     }
     for (const tx of r.value) {
@@ -101,6 +104,30 @@ async function fetchChain(
   }
 
   return [...unique.values()].sort((a, b) => b.timestampMs - a.timestampMs);
+}
+
+export async function handleRadarDebug(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const chainsParam = url.searchParams.get("chains") ?? "ETH";
+  const minValueUsd = Number(url.searchParams.get("min_value_usd") ?? DEFAULT_MIN_VALUE_USD);
+  const chain = chainsParam.toUpperCase();
+
+  const whales = await getWhaleList(env);
+  const chainWhales = whales.filter((w) => w.chain === chain);
+  const prices = await getCachedPrices(env);
+  const errors: string[] = [];
+
+  const txs = await fetchChain(chain, chainWhales, minValueUsd, prices, env, errors);
+
+  return Response.json({
+    chain,
+    whaleCount: chainWhales.length,
+    txCount: txs.length,
+    minValueUsd,
+    prices,
+    errors,
+    sample: txs.slice(0, 3),
+  });
 }
 
 export async function handleRadar(request: Request, env: Env): Promise<Response> {

@@ -2,7 +2,7 @@ import type { Env } from "./types";
 import { handleEthChart } from "./routes/eth-chart";
 import { handleEthMarket } from "./routes/eth-market";
 import { handleGetCexTrades, handleIngestCexTrade, handlePollCexTrades } from "./routes/cex-trades";
-import { handleRadar } from "./routes/radar";
+import { handleRadar, handleRadarDebug } from "./routes/radar";
 import { handleWhaleProfile } from "./routes/whale-profile";
 import { handleWhaleTransfers } from "./routes/whale-transfers";
 import { handleGetWhales } from "./routes/whales";
@@ -46,7 +46,9 @@ export default {
     try {
       let res: Response;
 
-      if (pathname === "/api/cex-trades") {
+      if (pathname === "/api/debug/radar") {
+        res = await handleRadarDebug(request, env);
+      } else if (pathname === "/api/cex-trades") {
         res = await handleGetCexTrades(env);
       } else if (pathname === "/api/debug/cex-poll") {
         await handlePollCexTrades(env);
