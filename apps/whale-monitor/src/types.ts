@@ -15,3 +15,33 @@ export interface PairThreshold {
 }
 
 export type WhaleTradeHandler = (trade: WhaleTrade) => void;
+
+export interface WhaleEntry {
+  id: string;
+  name: string;
+  address: string;
+  chain: 'ETH' | 'BTC' | 'SOL' | 'BNB' | 'XRP' | 'TRX';
+}
+
+export interface WhaleTxDTO {
+  txHash: string;
+  type: 'send' | 'receive' | 'swap';
+  amountNative: number;
+  amountUsd: number;
+  fromAddress: string;
+  toAddress: string;
+  timestampMs: number;
+  blockNumber: string;
+  isLarge: boolean;
+  asset: string;
+  chain: string;
+}
+
+export interface Prices {
+  eth: number;
+  btc: number;
+  sol: number;
+  bnb: number;
+  xrp: number;
+  trx: number;
+}

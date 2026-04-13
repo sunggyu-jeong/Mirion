@@ -12,3 +12,14 @@ export const PAIR_THRESHOLDS: PairThreshold[] = [
 
 export const RECONNECT_DELAY_MS = 5_000;
 export const RATE_LIMIT_DELAY_MS = 10_000;
+
+export const MIN_VALUE_USD = 20_000;
+
+export const CHAIN_POLL_INTERVALS_MS: Record<string, number> = {
+  ETH: 10 * 60 * 1000,
+  BTC: 15 * 60 * 1000,
+  SOL: 10 * 60 * 1000,
+  BNB: 15 * 60 * 1000,
+  XRP: 15 * 60 * 1000,
+  TRX: 15 * 60 * 1000,
+};

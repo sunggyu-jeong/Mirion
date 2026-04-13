@@ -190,6 +190,19 @@ importers:
         specifier: ^8.32.1
         version: 8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)
 
+  apps/whale-monitor:
+    dependencies:
+      ccxt:
+        specifier: ^4.4.0
+        version: 4.5.48(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+    devDependencies:
+      tsx:
+        specifier: ^4.19.2
+        version: 4.21.0
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
   apps/worker:
     devDependencies:
       '@cloudflare/workers-types':
@@ -2361,6 +2374,10 @@ packages:
 
   caniuse-lite@1.0.30001762:
     resolution: {integrity: sha512-PxZwGNvH7Ak8WX5iXzoK1KPZttBXNPuaOvI2ZYU7NrlM+d9Ov+TUvlLOBNGzVXAntMSMMlJPd+jY6ovrVjSmUw==}
+
+  ccxt@4.5.48:
+    resolution: {integrity: sha512-2a+nE+uCo6zW3jbXvWbyRLG9Q7VFrnRvxF7rm5sjRXUZpGuPjOIXQ3mz7ZPGvl2VTiIRwmL9RsQaKfh+FmUgxA==}
+    engines: {node: '>=15.0.0'}
 
   chalk@4.1.2:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
@@ -4674,6 +4691,11 @@ packages:
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  tsx@4.21.0:
+    resolution: {integrity: sha512-5C1sg4USs1lfG0GFb2RLXsdpXqBSEhAaA/0kPL01wxzpMqLILNxIxIOKiILz+cdg/pLnOUxFYOR5yhHU666wbw==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -7639,6 +7661,13 @@ snapshots:
 
   caniuse-lite@1.0.30001762: {}
 
+  ccxt@4.5.48(bufferutil@4.1.0)(utf-8-validate@5.0.10):
+    dependencies:
+      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   chalk@4.1.2:
     dependencies:
       ansi-styles: 4.3.0
@@ -10529,6 +10558,13 @@ snapshots:
       strip-bom: 3.0.0
 
   tslib@2.8.1: {}
+
+  tsx@4.21.0:
+    dependencies:
+      esbuild: 0.27.3
+      get-tsconfig: 4.13.6
+    optionalDependencies:
+      fsevents: 2.3.3
 
   type-check@0.4.0:
     dependencies:
