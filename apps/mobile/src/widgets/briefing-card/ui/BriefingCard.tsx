@@ -53,6 +53,7 @@ function scoreLabel(score: number): string {
 }
 
 function scoreColor(score: number): string {
+  'worklet';
   if (score >= 70) {
     return '#22c55e';
   }
