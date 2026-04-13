@@ -6,6 +6,7 @@ import { useUnifiedActivity } from '@features/unified-feed';
 import { formatUsd } from '@shared/lib/format';
 import { useAppNavigation } from '@shared/lib/navigation';
 import { ChainFilterBar } from '@shared/ui';
+import { RadarDotLayer } from '@widgets/radar-dot-layer';
 import { RadarViewport } from '@widgets/radar-viewport';
 import { UnifiedActivityItem } from '@widgets/unified-activity';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -162,6 +163,14 @@ export function HistoryScreen() {
 
   const handleUpgrade = useCallback(() => toSettings(), [toSettings]);
 
+  const onchainTxs = useMemo<WhaleTx[]>(
+    () =>
+      allEvents
+        .filter((e): e is Extract<ActivityEvent, { source: 'onchain' }> => e.source === 'onchain')
+        .map(e => e.data),
+    [allEvents],
+  );
+
   const filteredEvents = useMemo(() => {
     if (sourceFilter === 'ALL') {
       return allEvents;
@@ -259,7 +268,9 @@ export function HistoryScreen() {
                 </View>
               </View>
 
-              <RadarViewport />
+              <RadarViewport>
+                <RadarDotLayer txs={onchainTxs} />
+              </RadarViewport>
 
               <View style={{ marginTop: 20 }}>
                 <SentimentGauge events={allEvents} />
