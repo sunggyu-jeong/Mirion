@@ -6,11 +6,6 @@
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 
-// SecureKeyManager (Nitrogen Nitro Module)
-#include <NitroModules/HybridObjectRegistry.hpp>
-#include "SecureKeyManagerOnLoad.hpp"
-#include "JHybridSecureKeyManagerSpec.hpp"
-
 namespace facebook::react {
 
 void registerComponents(
@@ -52,25 +47,5 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     facebook::react::DefaultComponentsRegistry::
         registerComponentDescriptorsFromEntryPoint =
             &facebook::react::registerComponents;
-
-    // Register SecureKeyManager (Nitrogen)
-    margelo::nitro::lockfi::securekeymanager::registerAllNatives();
-
-    margelo::nitro::HybridObjectRegistry::registerHybridObjectConstructor(
-        "SecureKeyManager",
-        []() -> std::shared_ptr<margelo::nitro::HybridObject> {
-          using namespace margelo::nitro::lockfi::securekeymanager;
-          static auto cls = facebook::jni::make_global(
-              facebook::jni::findClassStatic(
-                  "com/lockfi/securekeymanager/HybridSecureKeyManager"));
-          static auto ctor =
-              cls->getConstructor<JHybridSecureKeyManagerSpec::JavaPart::
-                                      javaobject()>();
-          auto rawObj = cls->newObject(ctor);
-          auto javaPart =
-              facebook::jni::static_ref_cast<
-                  JHybridSecureKeyManagerSpec::JavaPart>(std::move(rawObj));
-          return std::make_shared<JHybridSecureKeyManagerSpec>(javaPart);
-        });
   });
 }

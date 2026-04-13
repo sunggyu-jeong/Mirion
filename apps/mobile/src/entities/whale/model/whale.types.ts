@@ -1,5 +1,5 @@
 export type WhaleActivityType = 'buy' | 'sell' | 'transfer';
-export type Chain = 'ETH' | 'BTC' | 'SOL' | 'BNB';
+export type Chain = 'ETH' | 'BTC' | 'SOL' | 'BNB' | 'XRP' | 'TRX';
 export type ChainFilter = 'ALL' | Chain;
 
 export const CHAIN_CONFIG: Record<Chain, { label: string; color: string }> = {
@@ -7,6 +7,8 @@ export const CHAIN_CONFIG: Record<Chain, { label: string; color: string }> = {
   BTC: { label: 'BTC', color: '#F7931A' },
   SOL: { label: 'SOL', color: '#9945FF' },
   BNB: { label: 'BNB', color: '#F3BA2F' },
+  XRP: { label: 'XRP', color: '#00AAE4' },
+  TRX: { label: 'TRX', color: '#EF0027' },
 };
 
 export interface WhaleMetadata {
@@ -24,13 +26,13 @@ export interface RawTokenBalance {
 }
 
 export interface WhaleOnchainData {
-  ethBalance: bigint;
+  nativeBalance: bigint;
   totalValueUsd: number;
   tokens: RawTokenBalance[];
 }
 
 export interface WhaleProfile extends WhaleMetadata {
-  ethBalance: bigint;
+  nativeBalance: bigint;
   totalValueUsd: number;
   recentActivity?: string;
   activityType: WhaleActivityType;

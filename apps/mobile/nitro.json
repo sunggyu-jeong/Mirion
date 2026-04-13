@@ -1,11 +1,11 @@
 {
-  "cxxNamespace": ["lockfi", "securekeymanager"],
+  "cxxNamespace": ["lockfi"],
   "ios": {
-    "iosModuleName": "LockFi"
+    "iosModuleName": "WhaleTracker"
   },
   "android": {
-    "androidNamespace": ["com", "lockfi", "securekeymanager"],
-    "androidCxxLibName": "SecureKeyManager"
+    "androidNamespace": ["com", "lockfi"],
+    "androidCxxLibName": "WhaleTracker"
   },
   "autolinking": {}
 }

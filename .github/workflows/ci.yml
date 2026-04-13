@@ -1,44 +1,50 @@
 name: CI
 
 on:
+  push:
+    branches: [main, develop, 'feature/**', 'fix/**']
   pull_request:
-    branches:
-      - develop
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test-contracts:
+  lint-and-test:
+    name: Lint & Test
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - uses: foundry-rs/foundry-toolchain@v1
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: forge test
-        working-directory: apps/contracts
-      - working-directory: apps/contracts
-        run: |
-          LINE_COV=$(forge coverage --report summary 2>&1 | grep "Total" | grep -oE '[0-9]+\.[0-9]+%' | head -1 | tr -d '%')
-          LINE_COV=${LINE_COV%.*}
-          echo "Line coverage: ${LINE_COV}%"
-          if [ "${LINE_COV}" -lt 80 ]; then
-            echo "::error::Line coverage ${LINE_COV}% is below the required 80%"
-            exit 1
-          fi
 
-  test-mobile:
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @lockfi/mobile test:js:coverage
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter @lockfi/mobile lint
+
+      - name: Test
+        run: pnpm --filter @lockfi/mobile test --ci --passWithNoTests

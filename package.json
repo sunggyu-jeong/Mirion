@@ -1,13 +1,17 @@
 {
-  "name": "lockfi",
+  "name": "whaletracker",
   "version": "1.0.0",
   "private": true,
   "description": "",
   "scripts": {
-    "mobile": "pnpm --filter @lockfi/mobile start",
-    "android": "pnpm --filter @lockfi/mobile android",
-    "ios": "pnpm --filter @lockfi/mobile ios",
-    "lint:mobile": "pnpm --filter @lockfi/mobile lint"
+    "mobile": "pnpm --filter @whaletracker/mobile start",
+    "android": "pnpm --filter @whaletracker/mobile android",
+    "ios": "pnpm --filter @whaletracker/mobile ios",
+    "lint:mobile": "pnpm --filter @whaletracker/mobile lint",
+    "worker:dev": "pnpm --filter @whaletracker/worker dev",
+    "worker:deploy": "pnpm --filter @whaletracker/worker deploy",
+    "monitor:dev": "pnpm --filter @whaletracker/whale-monitor dev",
+    "monitor:start": "pnpm --filter @whaletracker/whale-monitor start"
   },
   "keywords": [],
   "author": "sunggyu-jeong",

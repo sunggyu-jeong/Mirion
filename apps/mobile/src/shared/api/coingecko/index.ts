@@ -1,16 +1,28 @@
-interface CoinGeckoPriceResponse {
-  ethereum: { usd: number };
+import { workerGet } from '@shared/api/worker';
+
+export interface PricePoint {
+  timestampMs: number;
+  price: number;
+}
+
+export type PriceChartPeriod = '1D' | '1W' | '1M';
+
+export interface EthMarketData {
+  priceUsd: number;
+  change24h: number;
+  marketCapUsd: number;
+  volume24hUsd: number;
 }
 
 export async function fetchEthPriceUsd(): Promise<number> {
-  const response = await fetch(
-    'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd',
-  );
+  const data = await workerGet<EthMarketData>('/api/eth-market');
+  return data.priceUsd;
+}
 
-  if (!response.ok) {
-    throw new Error(`CoinGecko HTTP ${response.status}`);
-  }
+export async function fetchEthMarketChart(period: PriceChartPeriod): Promise<PricePoint[]> {
+  return workerGet<PricePoint[]>(`/api/eth-chart/${period}`);
+}
 
-  const json = (await response.json()) as CoinGeckoPriceResponse;
-  return json.ethereum.usd;
+export async function fetchEthMarketData(): Promise<EthMarketData> {
+  return workerGet<EthMarketData>('/api/eth-market');
 }

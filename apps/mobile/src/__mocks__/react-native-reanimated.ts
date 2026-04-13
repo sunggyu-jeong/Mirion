@@ -57,6 +57,14 @@ const useScrollViewOffset = () => ({ value: 0 });
 const scrollTo = () => {};
 const runOnJS = (fn: (...args: unknown[]) => void) => fn;
 const runOnUI = (fn: (...args: unknown[]) => void) => fn;
+const useDerivedValue = <T>(fn: () => T) => ({ value: fn() });
+const useAnimatedProps = (fn: () => object) => fn();
+const useAnimatedReaction = (prepare: () => unknown, react: (value: unknown) => void) => {
+  // Runs after every render to simulate worklet reaction firing on shared value changes
+  React.useEffect(() => {
+    react(prepare());
+  });
+};
 
 export {
   Animated,
@@ -73,8 +81,11 @@ export {
   runOnUI,
   scrollTo,
   SlideInRight,
+  useAnimatedProps,
+  useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
+  useDerivedValue,
   useScrollViewOffset,
   useSharedValue,
   withDelay,

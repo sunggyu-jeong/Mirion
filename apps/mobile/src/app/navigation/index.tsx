@@ -2,6 +2,7 @@ import { ErrorScreen } from '@pages/error';
 import { HistoryScreen } from '@pages/history';
 import { HomeScreen } from '@pages/home';
 import { LegalScreen } from '@pages/legal';
+import { MarketScreen } from '@pages/market';
 import { OnboardingScreen } from '@pages/onboarding';
 import { SettingsScreen } from '@pages/settings';
 import { SplashScreen } from '@pages/splash';
@@ -18,6 +19,7 @@ const MainTab = createBottomTabNavigator({
   screens: {
     Home: HomeScreen,
     History: HistoryScreen,
+    Market: MarketScreen,
     Settings: SettingsScreen,
   },
 });

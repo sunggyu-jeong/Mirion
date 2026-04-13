@@ -1,6 +1,7 @@
 import type { WhaleProfile } from '@entities/whale';
 import { CHAIN_CONFIG } from '@entities/whale';
 import { formatUsd } from '@shared/lib/format';
+import { RollupText } from '@shared/ui/RollupText';
 import { ArrowRight, Lock, TrendingDown, TrendingUp } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -158,16 +159,29 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
             >
               총 자산
             </Text>
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: '700',
-                color: isLocked ? '#94a3b8' : '#0f172b',
-                letterSpacing: -0.03,
-              }}
-            >
-              {isLocked ? '****' : formatUsd(whale.totalValueUsd)}
-            </Text>
+            {isLocked ? (
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: '700',
+                  color: '#94a3b8',
+                  letterSpacing: -0.03,
+                }}
+              >
+                ****
+              </Text>
+            ) : (
+              <RollupText
+                value={whale.totalValueUsd}
+                formatter={formatUsd}
+                style={{
+                  fontSize: 18,
+                  fontWeight: '700',
+                  color: '#0f172b',
+                  letterSpacing: -0.03,
+                }}
+              />
+            )}
           </View>
 
           <View

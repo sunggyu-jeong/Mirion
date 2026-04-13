@@ -1,52 +1,45 @@
 import { useAppSettingsStore } from '@entities/app-settings';
 import { useSubscriptionStore } from '@entities/subscription';
 import type { WhaleProfile } from '@entities/whale';
+import { useCexTrades } from '@features/cex-trades';
+import { useDailyBriefing } from '@features/daily-briefing';
+import { useStreakTracker } from '@features/streak-tracker';
 import { useWhaleFeed } from '@features/whale-feed';
+import { useWhaleMovements } from '@features/whale-movements';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { ChainFilterBar, Skeleton } from '@shared/ui';
+import { CexWhaleFeed } from '@widgets/cex-whale-feed';
+import { HomeHeader } from '@widgets/home-header';
 import { WhaleCard } from '@widgets/whale-card';
 import React, { useCallback, useMemo } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import Animated, { Easing, FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { EmptyFiltered, ErrorState, SkeletonList } from './HomeStates';
+
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
-
-function ItemSeparator() {
-  return <View style={{ height: 12 }} />;
-}
-
-function SkeletonList() {
-  return (
-    <View style={{ gap: 12, paddingHorizontal: 20 }}>
-      {Array.from({ length: 3 }).map((_, i) => (
-        <Skeleton
-          key={i}
-          width="100%"
-          height={148}
-          borderRadius={20}
-        />
-      ))}
-    </View>
-  );
-}
+const CEX_PREVIEW_COUNT = 5;
 
 export function HomeScreen() {
   const isPro = useSubscriptionStore(s => s.isPro);
   const selectedChain = useAppSettingsStore(s => s.selectedChain);
   const setSelectedChain = useAppSettingsStore(s => s.setSelectedChain);
-  const { data: whales, isLoading } = useWhaleFeed();
+  const { data: whales, isLoading, isError, refetch } = useWhaleFeed();
+  const { data: movements } = useWhaleMovements();
+  const { data: cexTrades } = useCexTrades();
   const { toWhaleDetail, toSettings } = useAppNavigation();
+  const streakCount = useStreakTracker();
+
+  useDailyBriefing(movements);
 
   const filteredWhales = useMemo(() => {
     if (!whales) {
       return [];
     }
-    if (selectedChain === 'ALL') {
-      return whales;
-    }
-    return whales.filter(w => w.chain === selectedChain);
+    return selectedChain === 'ALL' ? whales : whales.filter(w => w.chain === selectedChain);
   }, [whales, selectedChain]);
+
+  const recentCexTrades = useMemo(() => cexTrades?.slice(0, CEX_PREVIEW_COUNT) ?? [], [cexTrades]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: WhaleProfile; index: number }) => (
@@ -66,54 +59,61 @@ export function HomeScreen() {
     [isPro, toWhaleDetail, toSettings],
   );
 
-  const keyExtractor = useCallback((item: WhaleProfile) => item.id, []);
+  if (isLoading) {
+    return (
+      <SafeAreaView
+        edges={['top']}
+        style={{ flex: 1, backgroundColor: 'white' }}
+      >
+        <SkeletonList />
+      </SafeAreaView>
+    );
+  }
+  if (isError) {
+    return (
+      <SafeAreaView
+        edges={['top']}
+        style={{ flex: 1, backgroundColor: 'white' }}
+      >
+        <ErrorState onRetry={refetch} />
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      {isLoading ? (
-        <SkeletonList />
-      ) : (
-        <FlatList
-          data={filteredWhales}
-          renderItem={renderItem}
-          keyExtractor={keyExtractor}
-          ItemSeparatorComponent={ItemSeparator}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
-          showsVerticalScrollIndicator={false}
-          ListHeaderComponent={
-            <View style={{ paddingTop: 20, paddingBottom: 16, gap: 12 }}>
-              <View style={{ gap: 4 }}>
-                <Text
-                  style={{
-                    fontSize: 22,
-                    fontWeight: '800',
-                    color: '#0f172b',
-                    letterSpacing: -0.04,
-                  }}
-                >
-                  고래 목록
-                </Text>
-                {!isPro && (
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      fontWeight: '400',
-                      color: '#94a3b8',
-                      letterSpacing: -0.01,
-                    }}
-                  >
-                    무료 플랜 · 3개 고래 제공 중
-                  </Text>
-                )}
+    <SafeAreaView
+      edges={['top']}
+      style={{ flex: 1, backgroundColor: 'white' }}
+    >
+      <FlatList
+        data={filteredWhales}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32, flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <>
+            <HomeHeader
+              streakCount={streakCount}
+              selectedChain={selectedChain}
+              onChainChange={setSelectedChain}
+              movements={movements}
+            />
+            {recentCexTrades.length > 0 && (
+              <View style={{ marginBottom: 16 }}>
+                <CexWhaleFeed trades={recentCexTrades} />
               </View>
-              <ChainFilterBar
-                value={selectedChain}
-                onChange={setSelectedChain}
-              />
-            </View>
-          }
-        />
-      )}
+            )}
+          </>
+        }
+        ListEmptyComponent={
+          <EmptyFiltered
+            chain={selectedChain}
+            onReset={() => setSelectedChain('ALL')}
+          />
+        }
+      />
     </SafeAreaView>
   );
 }

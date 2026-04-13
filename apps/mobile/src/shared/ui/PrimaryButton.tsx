@@ -20,8 +20,8 @@ export function PrimaryButton({
   height = 52,
   variant = 'primary',
 }: PrimaryButtonProps) {
-  const bg = variant === 'primary' ? 'bg-[#2b7fff]' : 'bg-[#f1f5f9]';
-  const textColor = variant === 'primary' ? 'text-[#f8fafc]' : 'text-[#1d293d]';
+  const backgroundColor = variant === 'primary' ? '#2b7fff' : '#f1f5f9';
+  const textColor = variant === 'primary' ? '#f8fafc' : '#1d293d';
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -30,7 +30,7 @@ export function PrimaryButton({
 
   return (
     <Pressable
-      className="w-full"
+      style={{ width: '100%' }}
       onPress={onPress}
       onPressIn={() => {
         scale.value = withTiming(0.97, { duration: 80 });
@@ -40,10 +40,19 @@ export function PrimaryButton({
       }}
     >
       <Animated.View
-        className={`${bg} rounded-lg w-full items-center justify-center`}
-        style={[animatedStyle, { height }]}
+        style={[
+          animatedStyle,
+          {
+            height,
+            backgroundColor,
+            borderRadius: 8,
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+        ]}
       >
-        <Text className={`text-[16px] ${textColor}`}>{label}</Text>
+        <Text style={{ fontSize: 16, color: textColor }}>{label}</Text>
       </Animated.View>
     </Pressable>
   );

@@ -1,4 +1,5 @@
 export { fetchWhaleProfile } from './api/fetch-whale-profile';
+export { fetchWhales } from './api/fetch-whales';
 export { CURATED_WHALES } from './model/curated-whales';
 export type {
   Chain,

@@ -2,8 +2,6 @@ import type { RawTokenBalance } from '@entities/whale';
 import { CURATED_WHALES, fetchWhaleProfile } from '@entities/whale';
 import type { WhaleTx } from '@entities/whale-tx';
 import { fetchWhaleTransfers } from '@entities/whale-tx';
-import { alchemyClient } from '@shared/api/alchemy';
-import { fetchEthPriceUsd } from '@shared/api/coingecko';
 import { useQuery } from '@tanstack/react-query';
 
 export interface WhaleDetailData {
@@ -25,11 +23,9 @@ export function useWhaleDetail(whaleId: string) {
         return { totalValueUsd: 0, tokens: [], transactions: [] };
       }
 
-      const ethPriceUsd = await fetchEthPriceUsd();
-
       const [onchain, transfers] = await Promise.all([
-        fetchWhaleProfile(meta.address, alchemyClient, ethPriceUsd),
-        fetchWhaleTransfers(meta.address, { minValueEth: 0, pageSize: 20 }, alchemyClient),
+        fetchWhaleProfile(meta.address),
+        fetchWhaleTransfers(meta.address, { minValueEth: 0 }),
       ]);
 
       return {

@@ -6,9 +6,6 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
-import com.lockfi.securekeymanager.HybridSecureKeyManager
-import com.margelo.nitro.com.lockfi.securekeymanager.SecureKeyManagerOnLoad
-
 class MainApplication : Application(), ReactApplication {
 
   override val reactHost: ReactHost by lazy {
@@ -24,7 +21,6 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
-    HybridSecureKeyManager.initialize(this)
     loadReactNative(this)
   }
 }

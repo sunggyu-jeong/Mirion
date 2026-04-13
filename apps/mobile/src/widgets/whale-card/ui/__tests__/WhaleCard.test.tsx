@@ -10,7 +10,7 @@ const baseWhale: WhaleProfile = {
   address: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
   tag: 'ETH 창시자',
   chain: 'ETH',
-  ethBalance: 345_678_000_000_000_000_000_000n,
+  nativeBalance: 345_678_000_000_000_000_000_000n,
   totalValueUsd: 847_000_000,
   recentActivity: '3시간 전 · 100 ETH 전송',
   activityType: 'transfer',

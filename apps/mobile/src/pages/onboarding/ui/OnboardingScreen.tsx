@@ -1,125 +1,111 @@
 import { useAppNavigation } from '@shared/lib/navigation';
 import { ONBOARDING_SEEN_KEY, storage } from '@shared/lib/storage';
-import { PrimaryButton } from '@shared/ui';
-import React, { useCallback } from 'react';
-import { Text, View } from 'react-native';
-import Animated, { Easing, FadeInDown, FadeInUp } from 'react-native-reanimated';
+import React, { useCallback, useRef, useState } from 'react';
+import { FlatList, Pressable, Text, View, type ViewToken } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
-
-const FEATURES = [
-  { title: '실시간 고래 추적', desc: '세계 최대 규모 투자자들의 매수·매도 포착' },
-  { title: '포트폴리오 분석', desc: '고래의 자산 구성과 비중을 한눈에 파악' },
-  { title: '즉시 알림 (PRO)', desc: '대규모 이체 발생 시 실시간 푸시 수신' },
-];
+import { OnboardingDots } from './OnboardingDots';
+import { type Slide, SlideItem, SLIDES } from './OnboardingSlides';
 
 export function OnboardingScreen() {
   const { toMain } = useAppNavigation();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const flatListRef = useRef<FlatList<Slide>>(null);
+  const buttonScale = useSharedValue(1);
 
-  const handleStart = useCallback(() => {
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems[0]?.index !== null && viewableItems[0]?.index !== undefined) {
+        setActiveIndex(viewableItems[0].index);
+      }
+    },
+    [],
+  );
+
+  const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+
+  const completeOnboarding = useCallback(() => {
     storage.set(ONBOARDING_SEEN_KEY, 'true');
     toMain();
   }, [toMain]);
 
-  return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 px-6 justify-center">
-        <Animated.View
-          entering={FadeInUp.delay(0).duration(320).easing(EASE_OUT)}
-          style={{ alignItems: 'center', marginBottom: 48 }}
-        >
-          <Text
-            style={{
-              fontSize: 28,
-              fontWeight: '800',
-              color: '#0f172b',
-              letterSpacing: -0.56,
-              textAlign: 'center',
-              lineHeight: 36,
-            }}
-          >
-            {'고래의 움직임을\n먼저 알아채세요'}
-          </Text>
-          <View style={{ height: 12 }} />
-          <Text
-            style={{
-              fontSize: 15,
-              fontWeight: '400',
-              color: '#62748e',
-              textAlign: 'center',
-              lineHeight: 22,
-              letterSpacing: -0.02,
-            }}
-          >
-            {'대형 투자자들이 무엇을 사고 파는지\n실시간으로 모니터링합니다'}
-          </Text>
-        </Animated.View>
+  const handleNext = useCallback(() => {
+    if (activeIndex < SLIDES.length - 1) {
+      flatListRef.current?.scrollToIndex({ index: activeIndex + 1, animated: true });
+    } else {
+      completeOnboarding();
+    }
+  }, [activeIndex, completeOnboarding]);
 
-        <View style={{ gap: 14 }}>
-          {FEATURES.map((f, i) => (
-            <Animated.View
-              key={f.title}
-              entering={FadeInDown.delay(120 + i * 80)
-                .duration(260)
-                .easing(EASE_OUT)}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 14,
-                backgroundColor: '#f8fafc',
-                borderRadius: 16,
-                padding: 16,
-              }}
-            >
-              <View style={{ flex: 1, gap: 3 }}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: '700',
-                    color: '#0f172b',
-                    letterSpacing: -0.02,
-                  }}
-                >
-                  {f.title}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 13,
-                    fontWeight: '400',
-                    color: '#62748e',
-                    letterSpacing: -0.01,
-                  }}
-                >
-                  {f.desc}
-                </Text>
-              </View>
-            </Animated.View>
-          ))}
-        </View>
+  const isLast = activeIndex === SLIDES.length - 1;
+  const accent = SLIDES[activeIndex]?.accentColor ?? '#2b7fff';
+  const btnStyle = useAnimatedStyle(() => ({ transform: [{ scale: buttonScale.value }] }));
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <View
+        style={{
+          height: 48,
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+          paddingHorizontal: 20,
+        }}
+      >
+        {!isLast && (
+          <Pressable
+            onPress={completeOnboarding}
+            hitSlop={12}
+          >
+            <Text style={{ fontSize: 14, fontWeight: '500', color: '#94a3b8' }}>건너뛰기</Text>
+          </Pressable>
+        )}
       </View>
 
-      <Animated.View
-        entering={FadeInUp.delay(400).duration(260).easing(EASE_OUT)}
-        style={{ paddingHorizontal: 20, paddingBottom: 24, gap: 12 }}
-      >
-        <PrimaryButton
-          label="무료로 시작하기"
-          onPress={handleStart}
-          height={52}
-        />
-        <Text
-          style={{
-            fontSize: 12,
-            fontWeight: '400',
-            color: '#94a3b8',
-            textAlign: 'center',
-            letterSpacing: -0.01,
-          }}
-        >
-          무료 플랜은 3개 고래 · 최근 3건 내역 제공
-        </Text>
-      </Animated.View>
+      <FlatList
+        ref={flatListRef}
+        data={SLIDES}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => <SlideItem item={item} />}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        bounces={false}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+        style={{ flex: 1 }}
+      />
+
+      <View style={{ paddingHorizontal: 24, paddingBottom: 28, gap: 28 }}>
+        <OnboardingDots activeIndex={activeIndex} />
+        <Animated.View style={btnStyle}>
+          <Pressable
+            onPressIn={() => {
+              buttonScale.value = withSpring(0.96);
+            }}
+            onPressOut={() => {
+              buttonScale.value = withSpring(1);
+            }}
+            onPress={handleNext}
+            style={{
+              height: 54,
+              borderRadius: 16,
+              backgroundColor: accent,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ fontSize: 16, fontWeight: '700', color: 'white' }}>
+              {isLast ? '무료로 시작하기 🚀' : '다음'}
+            </Text>
+          </Pressable>
+        </Animated.View>
+        {isLast && (
+          <Text style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center', marginTop: -16 }}>
+            무료 플랜 · 언제든 PRO 업그레이드 가능
+          </Text>
+        )}
+      </View>
     </SafeAreaView>
   );
 }

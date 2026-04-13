@@ -36,7 +36,7 @@ export function ToastView() {
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [visible]);
+  }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],

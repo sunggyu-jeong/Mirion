@@ -2,7 +2,7 @@ import React from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
 import { Text } from 'react-native';
 
-import { typography } from './typography';
+import { typography } from './typography-styles';
 
 type Props = {
   children: React.ReactNode;

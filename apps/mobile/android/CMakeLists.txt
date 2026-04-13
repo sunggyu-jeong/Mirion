@@ -12,6 +12,3 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #   - Pick up our OnLoad.cpp (in this directory) + generated autolinking sources
 #   - Link React Native, fbjni, JSI, and all autolinked 3rd party libraries
 include(${REACT_ANDROID_DIR}/cmake-utils/ReactNative-application.cmake)
-
-# Add SecureKeyManager C++ sources and link Nitro dependencies
-include(${CMAKE_SOURCE_DIR}/../nitrogen/generated/android/SecureKeyManager+autolinking.cmake)
