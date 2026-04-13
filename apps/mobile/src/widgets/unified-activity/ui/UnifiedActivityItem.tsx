@@ -3,6 +3,7 @@ import type { ActivityEvent } from '@entities/unified-activity';
 import type { WhaleTx } from '@entities/whale-tx';
 import { getMagnitudeInfo } from '@entities/whale-tx';
 import { formatRelativeTime, formatUsd } from '@shared/lib/format';
+import { useAppNavigation } from '@shared/lib/navigation';
 import {
   ArrowDownLeft,
   ArrowRight,
@@ -13,22 +14,13 @@ import {
   TrendingUp,
 } from 'lucide-react-native';
 import React, { useCallback } from 'react';
-import { Linking, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 const ONCHAIN_TYPE_CONFIG = {
   send: { label: '대규모 전송', Icon: ArrowUpRight, color: '#fb2c36', bg: '#fff1f2' },
   receive: { label: '대규모 수신', Icon: ArrowDownLeft, color: '#22c55e', bg: '#f0fdf4' },
   swap: { label: '대규모 스왑', Icon: RefreshCw, color: '#f97316', bg: '#fff7ed' },
 } as const;
-
-const EXPLORER: Record<string, string> = {
-  ETH: 'https://etherscan.io/tx/',
-  BTC: 'https://blockstream.info/tx/',
-  SOL: 'https://solscan.io/tx/',
-  BNB: 'https://bscscan.com/tx/',
-  XRP: 'https://xrpscan.com/tx/',
-  TRX: 'https://tronscan.org/#/transaction/',
-};
 
 const COIN_LABEL: Record<string, string> = {
   'BTC/USDT': 'BTC',
@@ -56,11 +48,11 @@ function OnChainItem({
   const config = ONCHAIN_TYPE_CONFIG[tx.type];
   const { Icon } = config;
   const magnitude = getMagnitudeInfo(tx.amountNative);
+  const { toTxDetail } = useAppNavigation();
 
   const handleViewDetail = useCallback(() => {
-    const base = EXPLORER[tx.chain] ?? EXPLORER.ETH;
-    Linking.openURL(`${base}${tx.txHash}`);
-  }, [tx.txHash, tx.chain]);
+    toTxDetail({ ...tx, blockNumber: tx.blockNumber.toString() });
+  }, [tx, toTxDetail]);
 
   return (
     <View style={{ backgroundColor: '#f8fafc', borderRadius: 16, padding: 16, gap: 12 }}>

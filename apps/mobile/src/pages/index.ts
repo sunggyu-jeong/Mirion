@@ -6,4 +6,6 @@ export { MarketScreen } from './market';
 export { OnboardingScreen } from './onboarding';
 export { SettingsScreen } from './settings';
 export { SplashScreen } from './splash';
+export type { TxDetailParams } from './tx-detail';
+export { TxDetailScreen } from './tx-detail';
 export { WhaleDetailScreen } from './whale-detail';

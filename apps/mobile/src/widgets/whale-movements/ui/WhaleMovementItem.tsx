@@ -2,9 +2,10 @@ import type { WhaleTx } from '@entities/whale-tx';
 import { getMagnitudeInfo } from '@entities/whale-tx';
 import { formatRelativeTime, formatUsd } from '@shared/lib/format';
 import { haptic } from '@shared/lib/haptic';
+import { useAppNavigation } from '@shared/lib/navigation';
 import { ArrowDownLeft, ArrowRight, ArrowUpRight, Lock, RefreshCw } from 'lucide-react-native';
 import React, { useCallback, useEffect } from 'react';
-import { Linking, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import Animated, {
   Easing,
   interpolateColor,
@@ -41,6 +42,7 @@ export function WhaleMovementItem({ item, isNew = false, isLocked = false, onUpg
   const config = TX_TYPE_CONFIG[item.type];
   const { Icon } = config;
   const magnitude = getMagnitudeInfo(item.amountNative);
+  const { toTxDetail } = useAppNavigation();
 
   useEffect(() => {
     if (!isNew) {
@@ -60,14 +62,8 @@ export function WhaleMovementItem({ item, isNew = false, isLocked = false, onUpg
   }));
 
   const handleViewDetail = useCallback(() => {
-    const explorers: Record<string, string> = {
-      ETH: `https://etherscan.io/tx/${item.txHash}`,
-      BTC: `https://blockstream.info/tx/${item.txHash}`,
-      SOL: `https://solscan.io/tx/${item.txHash}`,
-      BNB: `https://bscscan.com/tx/${item.txHash}`,
-    };
-    Linking.openURL(explorers[item.asset] ?? explorers.ETH);
-  }, [item.txHash, item.asset]);
+    toTxDetail({ ...item, blockNumber: item.blockNumber.toString() });
+  }, [item, toTxDetail]);
 
   return (
     <Animated.View

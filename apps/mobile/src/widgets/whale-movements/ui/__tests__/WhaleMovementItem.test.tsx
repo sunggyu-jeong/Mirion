@@ -6,6 +6,9 @@ import { WhaleMovementItem } from '../WhaleMovementItem';
 
 jest.mock('@shared/lib/haptic', () => ({ haptic: { impact: jest.fn() } }));
 jest.mock('react-native/Libraries/Linking/Linking', () => ({ openURL: jest.fn() }));
+jest.mock('@shared/lib/navigation', () => ({
+  useAppNavigation: () => ({ toTxDetail: jest.fn() }),
+}));
 
 const baseTx: WhaleTx = {
   txHash: '0xabc123',

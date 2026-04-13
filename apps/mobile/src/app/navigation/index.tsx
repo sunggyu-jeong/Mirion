@@ -6,6 +6,8 @@ import { MarketScreen } from '@pages/market';
 import { OnboardingScreen } from '@pages/onboarding';
 import { SettingsScreen } from '@pages/settings';
 import { SplashScreen } from '@pages/splash';
+import type { TxDetailParams } from '@pages/tx-detail';
+import { TxDetailScreen } from '@pages/tx-detail';
 import { WhaleDetailScreen } from '@pages/whale-detail';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
@@ -39,12 +41,17 @@ const RootStack = createNativeStackNavigator({
       screen: WhaleDetailScreen,
       options: { animation: 'slide_from_right' },
     },
+    TxDetail: {
+      screen: TxDetailScreen,
+      options: { animation: 'slide_from_right' },
+    },
     Error: { screen: ErrorScreen, options: { animation: 'fade' } },
   },
 });
 
 export type RootStackParamList = StaticParamList<typeof RootStack> & {
   WhaleDetail: { whaleId: string };
+  TxDetail: TxDetailParams;
   Error: { errorType: 'network' | 'transaction' | 'balance' };
 };
 
