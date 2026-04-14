@@ -4,6 +4,7 @@ import { HomeScreen } from '@pages/home';
 import { LegalScreen } from '@pages/legal';
 import { MarketScreen } from '@pages/market';
 import { OnboardingScreen } from '@pages/onboarding';
+import { RadarFeedScreen } from '@pages/radar-feed';
 import { SettingsScreen } from '@pages/settings';
 import { SplashScreen } from '@pages/splash';
 import type { TxDetailParams } from '@pages/tx-detail';
@@ -44,6 +45,10 @@ const RootStack = createNativeStackNavigator({
     TxDetail: {
       screen: TxDetailScreen,
       options: { animation: 'slide_from_right' },
+    },
+    RadarFeed: {
+      screen: RadarFeedScreen,
+      options: { animation: 'slide_from_bottom' },
     },
     Error: { screen: ErrorScreen, options: { animation: 'fade' } },
   },

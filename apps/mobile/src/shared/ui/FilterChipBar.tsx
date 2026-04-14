@@ -11,7 +11,9 @@ import Animated, {
 
 const TOSS_BLUE = '#3182F6';
 const INACTIVE_BG = '#f1f5f9';
+const INACTIVE_BG_DARK = 'rgba(255,255,255,0.08)';
 const INACTIVE_TEXT = '#62748e';
+const INACTIVE_TEXT_DARK = 'rgba(255,255,255,0.40)';
 const PRESS_SPRING = { damping: 18, stiffness: 400 } as const;
 const COLOR_TIMING = { duration: 200, easing: Easing.bezier(0.22, 1, 0.36, 1) } as const;
 
@@ -25,12 +27,17 @@ function Chip<T extends string>({
   isActive,
   activeColor,
   onPress,
+  dark = false,
 }: {
   option: ChipOption<T>;
   isActive: boolean;
   activeColor: string;
   onPress: (v: T) => void;
+  dark?: boolean;
 }) {
+  const inactiveBg = dark ? INACTIVE_BG_DARK : INACTIVE_BG;
+  const inactiveText = dark ? INACTIVE_TEXT_DARK : INACTIVE_TEXT;
+
   const progress = useSharedValue(isActive ? 1 : 0);
   const scale = useSharedValue(1);
 
@@ -39,12 +46,12 @@ function Chip<T extends string>({
   }, [isActive, progress]);
 
   const bgStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(progress.value, [0, 1], [INACTIVE_BG, activeColor]),
+    backgroundColor: interpolateColor(progress.value, [0, 1], [inactiveBg, activeColor]),
     transform: [{ scale: scale.value }],
   }));
 
   const textStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(progress.value, [0, 1], [INACTIVE_TEXT, '#ffffff']),
+    color: interpolateColor(progress.value, [0, 1], [inactiveText, '#ffffff']),
   }));
 
   const handlePress = useCallback(() => onPress(option.value), [onPress, option.value]);
@@ -84,6 +91,7 @@ interface FilterChipBarProps<T extends string> {
   value: T;
   onChange: (v: T) => void;
   activeColor?: string;
+  dark?: boolean;
 }
 
 export function FilterChipBar<T extends string>({
@@ -91,6 +99,7 @@ export function FilterChipBar<T extends string>({
   value,
   onChange,
   activeColor = TOSS_BLUE,
+  dark = false,
 }: FilterChipBarProps<T>) {
   return (
     <FlatList
@@ -106,6 +115,7 @@ export function FilterChipBar<T extends string>({
           isActive={value === item.value}
           activeColor={activeColor}
           onPress={onChange}
+          dark={dark}
         />
       )}
     />

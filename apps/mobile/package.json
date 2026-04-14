@@ -5,9 +5,9 @@
   "scripts": {
     "android": "react-native run-android",
     "preios": "node scripts/ensure-prebuild.js",
-    "ios": "react-native run-ios",
-    "ios:sim": "react-native run-ios --simulator \"iPhone 16 Pro\"",
-    "ios:device": "react-native run-ios --udid 00008140-000660862647801C",
+    "ios": "react-native run-ios --scheme Mirion",
+    "ios:sim": "react-native run-ios --scheme Mirion --simulator \"iPhone 16 Pro\"",
+    "ios:device": "react-native run-ios --scheme Mirion --udid 00008140-000660862647801C",
     "lint": "eslint .",
     "start": "react-native start",
     "start:reset": "react-native start --reset-cache",

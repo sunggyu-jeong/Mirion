@@ -9,6 +9,7 @@ type AppParamList = {
   Main: { screen: 'Settings' } | undefined;
   WhaleDetail: { whaleId: string };
   TxDetail: TxDetailParams;
+  RadarFeed: undefined;
   Error: { errorType: 'network' | 'transaction' | 'balance' };
 };
 
@@ -21,6 +22,7 @@ export function useAppNavigation() {
     toMain: () => navigation.reset({ index: 0, routes: [{ name: 'Main' }] }),
     toWhaleDetail: (whaleId: string) => navigation.navigate('WhaleDetail', { whaleId }),
     toTxDetail: (params: TxDetailParams) => navigation.navigate('TxDetail', params),
+    toRadarFeed: () => navigation.navigate('RadarFeed'),
     toSettings: () => navigation.navigate('Main', { screen: 'Settings' }),
     toError: (params: AppParamList['Error']) => navigation.navigate('Error', params),
     goBack: () => navigation.goBack(),

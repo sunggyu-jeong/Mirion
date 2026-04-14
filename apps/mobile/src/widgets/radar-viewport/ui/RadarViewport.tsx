@@ -15,8 +15,8 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 export const RADAR_SIZE = SCREEN_WIDTH - 40;
 export const CENTER = RADAR_SIZE / 2;
 
-const RADAR_BG = '#060d1a';
-const RING_COLOR = '#22c55e';
+const RADAR_BG = '#020B18';
+const RING_COLOR = '#06B6D4';
 const SWEEP_DURATION = 3200;
 const RIPPLE_DURATION = 2600;
 
@@ -33,7 +33,7 @@ function Ring({ ratio, opacity }: { ratio: number; opacity: number }) {
         height: size,
         borderRadius: size / 2,
         borderWidth: 1,
-        borderColor: `rgba(34,197,94,${opacity})`,
+        borderColor: `rgba(6,182,212,${opacity})`,
         top: CENTER - size / 2,
         left: CENTER - size / 2,
       }}
@@ -49,7 +49,7 @@ function CrossLines() {
           position: 'absolute',
           width: RADAR_SIZE,
           height: 1,
-          backgroundColor: 'rgba(34,197,94,0.10)',
+          backgroundColor: 'rgba(6,182,212,0.10)',
           top: CENTER - 0.5,
           left: 0,
         }}
@@ -59,7 +59,7 @@ function CrossLines() {
           position: 'absolute',
           width: 1,
           height: RADAR_SIZE,
-          backgroundColor: 'rgba(34,197,94,0.10)',
+          backgroundColor: 'rgba(6,182,212,0.10)',
           left: CENTER - 0.5,
           top: 0,
         }}
@@ -69,7 +69,7 @@ function CrossLines() {
           position: 'absolute',
           width: RADAR_SIZE * 1.42,
           height: 1,
-          backgroundColor: 'rgba(34,197,94,0.05)',
+          backgroundColor: 'rgba(6,182,212,0.05)',
           top: CENTER - 0.5,
           left: -(RADAR_SIZE * 0.21),
           transform: [{ rotateZ: '45deg' }],
@@ -80,7 +80,7 @@ function CrossLines() {
           position: 'absolute',
           width: RADAR_SIZE * 1.42,
           height: 1,
-          backgroundColor: 'rgba(34,197,94,0.05)',
+          backgroundColor: 'rgba(6,182,212,0.05)',
           top: CENTER - 0.5,
           left: -(RADAR_SIZE * 0.21),
           transform: [{ rotateZ: '-45deg' }],

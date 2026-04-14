@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 type ChainFilter = 'ALL' | 'ETH' | 'BTC' | 'SOL' | 'BNB' | 'XRP' | 'TRX';
 
 const CHAIN_OPTIONS: { value: ChainFilter; label: string; color: string }[] = [
-  { value: 'ALL', label: '전체', color: '#2b7fff' },
+  { value: 'ALL', label: '전체', color: '#06B6D4' },
   { value: 'ETH', label: 'ETH', color: '#627EEA' },
   { value: 'BTC', label: 'BTC', color: '#F7931A' },
   { value: 'SOL', label: 'SOL', color: '#9945FF' },
@@ -20,13 +20,18 @@ function ChainPill({
   option,
   isActive,
   onPress,
+  dark = false,
 }: {
   option: (typeof CHAIN_OPTIONS)[number];
   isActive: boolean;
   onPress: (value: ChainFilter) => void;
+  dark?: boolean;
 }) {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  const inactiveBg = dark ? 'rgba(255,255,255,0.08)' : '#f1f5f9';
+  const inactiveText = dark ? 'rgba(255,255,255,0.40)' : '#62748e';
 
   return (
     <Pressable
@@ -47,7 +52,7 @@ function ChainPill({
             paddingHorizontal: 14,
             paddingVertical: 7,
             borderRadius: 20,
-            backgroundColor: isActive ? option.color : '#f1f5f9',
+            backgroundColor: isActive ? option.color : inactiveBg,
           },
           animatedStyle,
         ]}
@@ -66,7 +71,7 @@ function ChainPill({
           style={{
             fontSize: 13,
             fontWeight: '600',
-            color: isActive ? 'white' : '#62748e',
+            color: isActive ? 'white' : inactiveText,
             letterSpacing: -0.01,
           }}
         >
@@ -80,9 +85,10 @@ function ChainPill({
 type Props = {
   value: ChainFilter;
   onChange: (chain: ChainFilter) => void;
+  dark?: boolean;
 };
 
-export function ChainFilterBar({ value, onChange }: Props) {
+export function ChainFilterBar({ value, onChange, dark = false }: Props) {
   return (
     <ScrollView
       horizontal
@@ -95,6 +101,7 @@ export function ChainFilterBar({ value, onChange }: Props) {
           option={option}
           isActive={value === option.value}
           onPress={onChange}
+          dark={dark}
         />
       ))}
     </ScrollView>

@@ -1,9 +1,10 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Home, List, Settings, TrendingUp } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { Home, Radar, Settings, TrendingUp } from 'lucide-react-native';
+import React, { useEffect } from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, {
   Easing,
+  interpolate,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
@@ -12,11 +13,19 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const ACTIVE_COLOR = '#2b7fff';
-const INACTIVE_COLOR = '#94a3b8';
+const ACTIVE_COLOR = '#06B6D4';
+const INACTIVE_COLOR = 'rgba(255,255,255,0.30)';
 
-const TOSS_SPRING = { damping: 20, stiffness: 300, mass: 0.8 } as const;
-const TOSS_PRESS_SPRING = { damping: 15, stiffness: 400 } as const;
+const PILL_SPRING = { damping: 22, stiffness: 260, mass: 0.9 } as const;
+const PRESS_SPRING = { damping: 15, stiffness: 400 } as const;
+const TEXT_TIMING = { duration: 160, easing: Easing.bezier(0.22, 1, 0.36, 1) } as const;
+
+const LABEL_MAX_WIDTH: Record<string, number> = {
+  Home: 18,
+  History: 46,
+  Market: 28,
+  Settings: 28,
+};
 
 type TabConfig = {
   name: string;
@@ -26,7 +35,7 @@ type TabConfig = {
 
 const TAB_CONFIG: Record<string, Omit<TabConfig, 'name'>> = {
   Home: { label: '홈', Icon: Home },
-  History: { label: '레이더', Icon: List },
+  History: { label: '레이더', Icon: Radar },
   Market: { label: '마켓', Icon: TrendingUp },
   Settings: { label: '설정', Icon: Settings },
 };
@@ -40,51 +49,76 @@ function TabItem({
   isActive: boolean;
   onPress: () => void;
 }) {
-  const scale = useSharedValue(1);
   const progress = useSharedValue(isActive ? 1 : 0);
+  const scale = useSharedValue(1);
 
   useEffect(() => {
-    progress.value = withTiming(isActive ? 1 : 0, {
-      duration: 180,
-      easing: Easing.bezier(0.22, 1, 0.36, 1),
-    });
+    progress.value = withSpring(isActive ? 1 : 0, PILL_SPRING);
   }, [isActive, progress]);
 
-  const containerStyle = useAnimatedStyle(() => ({
+  const pillStyle = useAnimatedStyle(() => ({
+    paddingHorizontal: interpolate(progress.value, [0, 1], [10, 14]),
+    backgroundColor: interpolateColor(
+      progress.value,
+      [0, 1],
+      ['rgba(6,182,212,0)', 'rgba(6,182,212,0.15)'],
+    ),
+    borderColor: interpolateColor(
+      progress.value,
+      [0, 1],
+      ['rgba(6,182,212,0)', 'rgba(6,182,212,0.40)'],
+    ),
     transform: [{ scale: scale.value }],
   }));
 
-  const textStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(progress.value, [0, 1], [INACTIVE_COLOR, ACTIVE_COLOR]),
+  const textContainerStyle = useAnimatedStyle(() => ({
+    width: interpolate(progress.value, [0, 1], [0, LABEL_MAX_WIDTH[config.name] ?? 32]),
+    opacity: withTiming(isActive ? 1 : 0, TEXT_TIMING),
   }));
 
   const { Icon } = config;
 
   return (
     <Pressable
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 8 }}
+      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
       onPressIn={() => {
-        scale.value = withSpring(0.88, TOSS_PRESS_SPRING);
+        scale.value = withSpring(0.88, PRESS_SPRING);
       }}
       onPressOut={() => {
-        scale.value = withSpring(1, TOSS_PRESS_SPRING);
+        scale.value = withSpring(1, PRESS_SPRING);
       }}
       onPress={onPress}
     >
-      <Animated.View style={[{ alignItems: 'center', gap: 3 }, containerStyle]}>
+      <Animated.View
+        style={[
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 5,
+            paddingVertical: 8,
+            borderRadius: 22,
+            borderWidth: 1,
+          },
+          pillStyle,
+        ]}
+      >
         <Icon
-          size={22}
+          size={20}
           color={isActive ? ACTIVE_COLOR : INACTIVE_COLOR}
-          strokeWidth={isActive ? 2.5 : 1.8}
+          strokeWidth={isActive ? 2.2 : 1.8}
         />
-        <Animated.Text
-          style={[
-            { fontSize: 10, letterSpacing: 0.1, fontWeight: isActive ? '600' : '400' },
-            textStyle,
-          ]}
-        >
-          {config.label}
-        </Animated.Text>
+        <Animated.View style={[{ overflow: 'hidden' }, textContainerStyle]}>
+          <Animated.Text
+            style={{
+              fontSize: 13,
+              fontWeight: '600',
+              color: ACTIVE_COLOR,
+              letterSpacing: -0.2,
+            }}
+          >
+            {config.label}
+          </Animated.Text>
+        </Animated.View>
       </Animated.View>
     </Pressable>
   );
@@ -92,50 +126,17 @@ function TabItem({
 
 export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const [barWidth, setBarWidth] = useState(0);
-
-  const slotWidth = barWidth > 0 ? barWidth / state.routes.length : 0;
-  const indicatorX = useSharedValue(0);
-
-  useEffect(() => {
-    if (barWidth === 0) {
-      return;
-    }
-    indicatorX.value = withSpring(state.index * slotWidth + slotWidth / 2 - 16, TOSS_SPRING);
-  }, [state.index, barWidth, slotWidth, indicatorX]);
-
-  const indicatorStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: indicatorX.value }],
-  }));
 
   return (
     <View
       style={{
-        backgroundColor: 'white',
-        borderTopWidth: 0.5,
-        borderTopColor: '#e8edf2',
+        backgroundColor: '#020B18',
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(6,182,212,0.18)',
         paddingBottom: insets.bottom,
       }}
-      onLayout={e => setBarWidth(e.nativeEvent.layout.width)}
     >
-      {barWidth > 0 && (
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: 32,
-              height: 2.5,
-              borderRadius: 2,
-              backgroundColor: ACTIVE_COLOR,
-            },
-            indicatorStyle,
-          ]}
-        />
-      )}
-
-      <View style={{ flexDirection: 'row', height: 56 }}>
+      <View style={{ flexDirection: 'row', height: 54 }}>
         {state.routes.map((route, i) => {
           const cfg = TAB_CONFIG[route.name];
           if (!cfg) {
