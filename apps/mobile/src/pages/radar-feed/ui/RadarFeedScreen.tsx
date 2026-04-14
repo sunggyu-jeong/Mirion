@@ -44,7 +44,37 @@ const AMOUNT_THRESHOLD: Record<AmountFilter, number> = {
 };
 
 function ItemSeparator() {
-  return <View style={{ height: 10 }} />;
+  return <View style={{ height: 16 }} />;
+}
+
+function LiveSummaryHeader({ events }: { events: ActivityEvent[] }) {
+  const summary = useMemo(() => {
+    if (events.length === 0) return '감지된 활동이 없어요';
+    
+    const ethTxs = events.filter(e => 
+      e.source === 'onchain' && (e.data as WhaleTx).asset === 'ETH'
+    ).length;
+    const btcTxs = events.filter(e => 
+      e.source === 'onchain' && (e.data as WhaleTx).asset === 'BTC'
+    ).length;
+    const cexBuys = events.filter(e => 
+      e.source === 'cex' && (e.data as { side: string }).side === 'buy'
+    ).length;
+
+    if (ethTxs > btcTxs && ethTxs > 2) return '지금 이더리움 고래들이 아주 바빠요 🐋';
+    if (btcTxs > ethTxs && btcTxs > 2) return '비트코인에서 큰 움직임이 포착됐어요 💰';
+    if (cexBuys > 5) return '거래소에서 매수세가 강하게 들어오고 있어요 🚀';
+    
+    return '시장에 새로운 큰 움직임들이 올라오고 있어요';
+  }, [events]);
+
+  return (
+    <View style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 24 }}>
+      <Text style={{ fontSize: 24, fontWeight: '800', color: 'white', lineHeight: 34, letterSpacing: -0.8 }}>
+        {summary}
+      </Text>
+    </View>
+  );
 }
 
 export function RadarFeedScreen() {
@@ -61,20 +91,13 @@ export function RadarFeedScreen() {
   const filteredEvents = useMemo(() => {
     const threshold = AMOUNT_THRESHOLD[amountFilter];
     return allEvents.filter(e => {
-      if (sourceFilter === 'ONCHAIN' && e.source !== 'onchain') {
-        return false;
-      }
-      if (sourceFilter === 'CEX' && e.source !== 'cex') {
-        return false;
-      }
+      if (sourceFilter === 'ONCHAIN' && e.source !== 'onchain') return false;
+      if (sourceFilter === 'CEX' && e.source !== 'cex') return false;
       if (threshold > 0) {
-        const usd =
-          e.source === 'onchain'
-            ? (e.data as WhaleTx).amountUsd
-            : ((e.data as { usdValue: number }).usdValue ?? 0);
-        if (usd < threshold) {
-          return false;
-        }
+        const usd = e.source === 'onchain' 
+          ? (e.data as WhaleTx).amountUsd 
+          : ((e.data as { valueUsd: number }).valueUsd ?? 0);
+        if (usd < threshold) return false;
       }
       return true;
     });
@@ -96,8 +119,8 @@ export function RadarFeedScreen() {
   const renderItem = useCallback(
     ({ item, index }: { item: ProcessedEvent; index: number }) => (
       <Animated.View
-        entering={FadeInDown.delay(Math.min(index * 40, 400))
-          .duration(260)
+        entering={FadeInDown.delay(Math.min(index * 50, 400))
+          .duration(300)
           .easing(EASE_OUT)}
         style={{ paddingHorizontal: 20 }}
       >
@@ -121,37 +144,24 @@ export function RadarFeedScreen() {
           flexDirection: 'row',
           alignItems: 'center',
           paddingHorizontal: 16,
-          paddingTop: 14,
-          paddingBottom: 12,
-          gap: 8,
+          paddingTop: 10,
+          paddingBottom: 10,
         }}
       >
         <Pressable
           onPress={goBack}
           style={{
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: 'rgba(255,255,255,0.07)',
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: 'rgba(255,255,255,0.06)',
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          hitSlop={8}
+          hitSlop={10}
         >
-          <ChevronLeft
-            size={20}
-            color="rgba(255,255,255,0.7)"
-            strokeWidth={2}
-          />
+          <ChevronLeft size={22} color="white" strokeWidth={2.5} />
         </Pressable>
-        <Text style={{ fontSize: 18, fontWeight: '800', color: 'white', letterSpacing: -0.4 }}>
-          감지 피드
-        </Text>
-        <View style={{ flex: 1 }} />
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-          <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#06B6D4' }} />
-          <Text style={{ fontSize: 12, fontWeight: '600', color: '#06B6D4' }}>실시간</Text>
-        </View>
       </View>
 
       <FlatList
@@ -160,70 +170,39 @@ export function RadarFeedScreen() {
         keyExtractor={item => item.event.id}
         renderItem={renderItem}
         ItemSeparatorComponent={ItemSeparator}
-        contentContainerStyle={{ paddingBottom: 32 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
-        initialNumToRender={10}
-        maxToRenderPerBatch={10}
         ListHeaderComponent={
-          <View style={{ paddingHorizontal: 20, paddingBottom: 12, gap: 10 }}>
-            <FilterChipBar
-              options={SOURCE_OPTIONS}
-              value={sourceFilter}
-              onChange={setSourceFilter}
-              activeColor="#06B6D4"
-              dark
-            />
-            <FilterChipBar
-              options={AMOUNT_OPTIONS}
-              value={amountFilter}
-              onChange={setAmountFilter}
-              activeColor="#0c3d5c"
-              dark
-            />
-            <ChainFilterBar
-              value={selectedChain}
-              onChange={setSelectedChain}
-              dark
-            />
-            <View
-              style={{
-                height: 1,
-                backgroundColor: 'rgba(6,182,212,0.12)',
-                marginTop: 2,
-              }}
-            />
+          <View>
+            <LiveSummaryHeader events={allEvents} />
+            <View style={{ paddingHorizontal: 20, gap: 12, marginBottom: 24 }}>
+              <FilterChipBar
+                options={SOURCE_OPTIONS}
+                value={sourceFilter}
+                onChange={setSourceFilter}
+                activeColor="#06B6D4"
+                dark
+              />
+              <ChainFilterBar
+                value={selectedChain}
+                onChange={setSelectedChain}
+                dark
+              />
+            </View>
           </View>
         }
         ListEmptyComponent={
-          <View style={{ minHeight: 240, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-            <Text style={{ fontSize: 32 }}>🔍</Text>
-            <Text style={{ fontSize: 15, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>
-              감지된 활동 없음
-            </Text>
-            <Text
-              style={{
-                fontSize: 13,
-                color: 'rgba(255,255,255,0.35)',
-                textAlign: 'center',
-                lineHeight: 20,
-              }}
-            >
-              {'고래 이동 및 거래소 대량 체결이\n감지되면 바로 표시됩니다.'}
-            </Text>
-          </View>
-        }
-        ListFooterComponent={
-          processedEvents.length > 0 ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: 20 }}>
-              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#06B6D4' }} />
-              <Text style={{ fontSize: 12, fontWeight: '500', color: '#06B6D4' }}>
-                실시간 감지 중
+          <View style={{ minHeight: 300, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+            <Text style={{ fontSize: 48 }}>🔭</Text>
+            <View style={{ alignItems: 'center', gap: 6 }}>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: 'white' }}>
+                아직 조용하네요
               </Text>
-              <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
-                · {processedEvents.length}건 발견
+              <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', textAlign: 'center', lineHeight: 22 }}>
+                {'고래들이 움직이기 시작하면\n여기에 가장 먼저 알려드릴게요.'}
               </Text>
             </View>
-          ) : null
+          </View>
         }
       />
     </SafeAreaView>
