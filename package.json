@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "mirion",
   "version": "1.0.0",
   "private": true,
@@ -29,4 +29,3 @@
     "react-native-url-polyfill": "^3.0.0"
   }
 }
-

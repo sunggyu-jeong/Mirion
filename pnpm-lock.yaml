@@ -171,6 +171,9 @@ importers:
       globals:
         specifier: ^16.0.0
         version: 16.5.0
+      hermes-engine:
+        specifier: ^0.11.0
+        version: 0.11.0
       jest:
         specifier: ^29.6.3
         version: 29.7.0(@types/node@25.5.2)(ts-node@10.9.2(@types/node@25.5.2)(typescript@5.9.3))
@@ -3216,6 +3219,10 @@ packages:
 
   hermes-compiler@250829098.0.9:
     resolution: {integrity: sha512-hZ5O7PDz1vQ99TS7HD3FJ9zVynfU1y+VWId6U1Pldvd8hmAYrNec/XLPYJKD3dLOW6NXak6aAQAuMuSo3ji0tQ==}
+
+  hermes-engine@0.11.0:
+    resolution: {integrity: sha512-7aMUlZja2IyLYAcZ69NBnwJAR5ZOYlSllj0oMpx08a8HzxHOys0eKCzfphrf6D0vX1JGO1QQvVsQKe6TkYherw==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   hermes-estree@0.25.1:
     resolution: {integrity: sha512-0wUoCcLp+5Ev5pDW2OriHC2MJCbwLwuRx+gAqMTOkGKJJiBCLjtrvy4PWUGn6MIVefecRpzoOZ/UV6iGdOr+Cw==}
@@ -8622,6 +8629,8 @@ snapshots:
       function-bind: 1.1.2
 
   hermes-compiler@250829098.0.9: {}
+
+  hermes-engine@0.11.0: {}
 
   hermes-estree@0.25.1: {}
 
