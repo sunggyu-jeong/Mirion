@@ -1,5 +1,5 @@
-{
-  "name": "@whaletracker/whale-monitor",
+﻿{
+  "name": "@mirion/whale-monitor",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -17,3 +17,4 @@
     "typescript": "^5.8.3"
   }
 }
+

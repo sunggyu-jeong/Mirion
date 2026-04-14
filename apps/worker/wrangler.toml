@@ -1,4 +1,4 @@
-name = "whaletracker-api"
+﻿name = "mirion-api"
 main = "src/index.ts"
 compatibility_date = "2025-04-09"
 
@@ -15,3 +15,4 @@ crons = ["* * * * *"]
 # [vars] 에는 공개 값만 넣을 것
 [vars]
 ALCHEMY_NETWORK = "eth-mainnet"
+

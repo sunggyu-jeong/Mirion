@@ -1,4 +1,4 @@
-apply plugin: "com.android.application"
+﻿apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
@@ -73,9 +73,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.lockfi"
+    namespace "com.mirion"
     defaultConfig {
-        applicationId "com.lockfi"
+        applicationId "com.mirion"
         flavorDimensions "env"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -104,11 +104,11 @@ android {
             dimension "env"
             applicationIdSuffix ".dev"
             versionNameSuffix "-dev"
-            resValue "string", "app_name", "WhaleTracker Dev"
+            resValue "string", "app_name", "Mirion Dev"
         }
         prod {
             dimension "env"
-            resValue "string", "app_name", "WhaleTracker"
+            resValue "string", "app_name", "Mirion"
         }
     }
     signingConfigs {
@@ -147,3 +147,4 @@ dependencies {
         implementation jscFlavor
     }
 }
+

@@ -1,11 +1,12 @@
-{
-  "cxxNamespace": ["lockfi"],
+﻿{
+  "cxxNamespace": ["mirion"],
   "ios": {
-    "iosModuleName": "WhaleTracker"
+    "iosModuleName": "Mirion"
   },
   "android": {
-    "androidNamespace": ["com", "lockfi"],
-    "androidCxxLibName": "WhaleTracker"
+    "androidNamespace": ["com", "mirion"],
+    "androidCxxLibName": "Mirion"
   },
   "autolinking": {}
 }
+

@@ -1,4 +1,4 @@
-import { useAppNavigation } from '@shared/lib/navigation';
+﻿import { useAppNavigation } from '@shared/lib/navigation';
 import { LEGAL_ACCEPTED_KEY, storage } from '@shared/lib/storage';
 import { PrimaryButton, ScreenTitle } from '@shared/ui';
 import React, { useState } from 'react';
@@ -38,7 +38,7 @@ export function LegalScreen() {
         <ScreenTitle>이용약관 및 정보 제공 고지</ScreenTitle>
         <Section
           title="1. 서비스 성격 안내"
-          body="WhaleTracker는 온체인 데이터를 시각화하여 제공하는 정보 제공 서비스입니다. 귀하의 자산을 직접 보관하거나 관리하지 않습니다."
+          body="Mirion는 온체인 데이터를 시각화하여 제공하는 정보 제공 서비스입니다. 귀하의 자산을 직접 보관하거나 관리하지 않습니다."
         />
         <Section
           title="2. 데이터 정확성"
@@ -50,7 +50,7 @@ export function LegalScreen() {
         />
         <Section
           title="4. 개인정보 보호"
-          body="WhaleTracker는 사용자의 개인키를 요구하거나 수집하지 않습니다. 공개된 지갑 주소 정보만을 활용합니다."
+          body="Mirion는 사용자의 개인키를 요구하거나 수집하지 않습니다. 공개된 지갑 주소 정보만을 활용합니다."
         />
       </ScrollView>
 
@@ -88,3 +88,4 @@ export function LegalScreen() {
     </SafeAreaView>
   );
 }
+

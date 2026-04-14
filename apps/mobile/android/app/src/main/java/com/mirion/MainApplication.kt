@@ -1,4 +1,4 @@
-package com.lockfi
+﻿package com.mirion
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -24,3 +24,4 @@ class MainApplication : Application(), ReactApplication {
     loadReactNative(this)
   }
 }
+

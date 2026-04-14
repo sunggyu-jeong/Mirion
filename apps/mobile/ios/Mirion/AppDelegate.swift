@@ -1,4 +1,4 @@
-import UIKit
+﻿import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window = UIWindow(frame: UIScreen.main.bounds)
 
     factory.startReactNative(
-      withModuleName: "WhaleTracker",
+      withModuleName: "Mirion",
       in: window,
       launchOptions: launchOptions
     )
@@ -54,3 +54,4 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
 #endif
   }
 }
+

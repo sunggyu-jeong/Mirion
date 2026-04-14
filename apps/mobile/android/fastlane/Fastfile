@@ -1,4 +1,4 @@
-default_platform(:android)
+﻿default_platform(:android)
 
 platform :android do
   desc "Run Android unit tests (dev flavor)"
@@ -23,7 +23,7 @@ platform :android do
     )
   end
 
-  desc "[개발] dev flavor Release AAB → Google Play Internal Track (com.lockfi.dev)"
+  desc "[개발] dev flavor Release AAB → Google Play Internal Track (com.mirion.dev)"
   lane :beta do
     gradle(
       task: "bundle",
@@ -43,7 +43,7 @@ platform :android do
       track: "internal",
       aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"],
-      package_name: "com.lockfi.dev",
+      package_name: "com.mirion.dev",
       skip_upload_apk: true,
       skip_upload_metadata: true,
       skip_upload_images: true,
@@ -51,7 +51,7 @@ platform :android do
     )
   end
 
-  desc "[운영] prod flavor Release AAB → Google Play Internal Track (com.lockfi)"
+  desc "[운영] prod flavor Release AAB → Google Play Internal Track (com.mirion)"
   lane :release do
     gradle(
       task: "bundle",
@@ -71,7 +71,7 @@ platform :android do
       track: "internal",
       aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
       json_key_data: ENV["GOOGLE_PLAY_JSON_KEY"],
-      package_name: "com.lockfi",
+      package_name: "com.mirion",
       skip_upload_apk: true,
       skip_upload_metadata: true,
       skip_upload_images: true,
@@ -79,3 +79,4 @@ platform :android do
     )
   end
 end
+

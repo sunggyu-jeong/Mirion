@@ -1,4 +1,4 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
+﻿# Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
     "react-native/scripts/react_native_pods.rb",
@@ -6,7 +6,7 @@ require Pod::Executable.execute_command('node', ['-p',
   )', __dir__]).strip
 
 platform :ios, min_ios_version_supported
-project 'WhaleTracker'
+project 'Mirion'
 prepare_react_native_project!
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -15,7 +15,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'WhaleTracker' do
+target 'Mirion' do
   config = use_native_modules!
 
   pod 'RNWorklets', :path => '../../../node_modules/react-native-worklets'
@@ -40,3 +40,4 @@ target 'WhaleTracker' do
     end
   end
 end
+

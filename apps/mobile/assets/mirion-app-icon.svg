@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0080FF"/>
+      <stop offset="100%" stop-color="#00C8E8"/>
+    </linearGradient>
+    <linearGradient id="whaleBody" x1="0" y1="370" x2="0" y2="665"
+                    gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#DCF0FF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+
+  <!-- Whale body + tail -->
+  <path fill="url(#whaleBody)" d="
+    M 768 515
+    C 768 432, 652 370, 502 370
+    C 358 370, 252 422, 236 478
+    L 162 430
+    L 240 515
+    L 162 600
+    L 236 552
+    C 252 608, 358 665, 502 665
+    C 652 665, 768 598, 768 515
+    Z
+  "/>
+
+  <!-- Dorsal fin -->
+  <path fill="white" d="
+    M 502 372
+    C 508 344, 521 312, 536 320
+    C 550 328, 546 360, 538 372
+    Z
+  "/>
+
+  <!-- Water spout -->
+  <path d="M 698 408 C 704 376, 700 350, 707 332"
+    fill="none" stroke="white" stroke-width="9"
+    stroke-linecap="round"/>
+  <path d="M 724 400 C 734 366, 732 340, 739 320"
+    fill="none" stroke="white" stroke-width="7"
+    stroke-linecap="round" opacity="0.60"/>
+
+  <!-- Eye -->
+  <circle cx="658" cy="496" r="30" fill="#0A1E4C"/>
+  <circle cx="666" cy="488" r="11" fill="white"/>
+
+  <!-- Smile -->
+  <path d="M 636 532 Q 655 548, 676 532"
+    fill="none" stroke="#90C8E0" stroke-width="6"
+    stroke-linecap="round"/>
+</svg>

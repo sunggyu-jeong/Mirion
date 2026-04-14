@@ -1,4 +1,4 @@
-import { Card, SectionTitle, SettingRow } from '@shared/ui';
+﻿import { Card, SectionTitle, SettingRow } from '@shared/ui';
 import { ChevronRight, ExternalLink, Mail, RefreshCw, Shield, Star } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { Linking, Text } from 'react-native';
@@ -6,7 +6,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 
 export function AppInfoSection() {
   const openUrl = useCallback((url: string) => Linking.openURL(url), []);
-  const openMail = useCallback(() => Linking.openURL('mailto:support@whaletracker.app'), []);
+  const openMail = useCallback(() => Linking.openURL('mailto:support@mirion.app'), []);
 
   return (
     <Animated.View
@@ -56,7 +56,7 @@ export function AppInfoSection() {
             />
           }
           label="개인정보 처리방침"
-          onPress={() => openUrl('https://whaletracker.app/privacy')}
+          onPress={() => openUrl('https://mirion.app/privacy')}
           right={
             <ChevronRight
               size={16}
@@ -74,7 +74,7 @@ export function AppInfoSection() {
             />
           }
           label="이용약관"
-          onPress={() => openUrl('https://whaletracker.app/terms')}
+          onPress={() => openUrl('https://mirion.app/terms')}
           right={
             <ChevronRight
               size={16}
@@ -115,7 +115,7 @@ export function AppInfoSection() {
             />
           }
           label="문의하기"
-          sub="support@whaletracker.app"
+          sub="support@mirion.app"
           onPress={openMail}
           right={
             <ChevronRight
@@ -130,3 +130,4 @@ export function AppInfoSection() {
     </Animated.View>
   );
 }
+

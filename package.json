@@ -1,17 +1,17 @@
-{
-  "name": "whaletracker",
+﻿{
+  "name": "mirion",
   "version": "1.0.0",
   "private": true,
   "description": "",
   "scripts": {
-    "mobile": "pnpm --filter @whaletracker/mobile start",
-    "android": "pnpm --filter @whaletracker/mobile android",
-    "ios": "pnpm --filter @whaletracker/mobile ios",
-    "lint:mobile": "pnpm --filter @whaletracker/mobile lint",
-    "worker:dev": "pnpm --filter @whaletracker/worker dev",
-    "worker:deploy": "pnpm --filter @whaletracker/worker deploy",
-    "monitor:dev": "pnpm --filter @whaletracker/whale-monitor dev",
-    "monitor:start": "pnpm --filter @whaletracker/whale-monitor start"
+    "mobile": "pnpm --filter @mirion/mobile start",
+    "android": "pnpm --filter @mirion/mobile android",
+    "ios": "pnpm --filter @mirion/mobile ios",
+    "lint:mobile": "pnpm --filter @mirion/mobile lint",
+    "worker:dev": "pnpm --filter @mirion/worker dev",
+    "worker:deploy": "pnpm --filter @mirion/worker deploy",
+    "monitor:dev": "pnpm --filter @mirion/whale-monitor dev",
+    "monitor:start": "pnpm --filter @mirion/whale-monitor start"
   },
   "keywords": [],
   "author": "sunggyu-jeong",
@@ -29,3 +29,4 @@
     "react-native-url-polyfill": "^3.0.0"
   }
 }
+

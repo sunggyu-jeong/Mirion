@@ -1,21 +1,21 @@
-default_platform(:ios)
+﻿default_platform(:ios)
 
-DEV_BUNDLE_ID  = "org.teammoodlyWhaleTracker.dev"
-PROD_BUNDLE_ID = "org.teammoodlyWhaleTracker"
+DEV_BUNDLE_ID  = "org.teammoodlyMirion.dev"
+PROD_BUNDLE_ID = "org.teammoodlyMirion"
 
 platform :ios do
   desc "Run JS unit tests with coverage"
   lane :test do
     Dir.chdir("../../..") do
-      sh("pnpm --filter @whaletracker/mobile test --ci --coverage")
+      sh("pnpm --filter @mirion/mobile test --ci --coverage")
     end
   end
 
   desc "Build for simulator (no code signing)"
   lane :build_dev do
     xcodebuild(
-      workspace: "WhaleTracker.xcworkspace",
-      scheme: "WhaleTracker",
+      workspace: "Mirion.xcworkspace",
+      scheme: "Mirion",
       configuration: "Debug",
       destination: "generic/platform=iOS Simulator",
       derived_data_path: "build",
@@ -39,12 +39,12 @@ platform :ios do
         api_key: api_key,
         app_identifier: DEV_BUNDLE_ID
       ) + 1,
-      xcodeproj: "WhaleTracker.xcodeproj"
+      xcodeproj: "Mirion.xcodeproj"
     )
 
     build_app(
-      workspace: "WhaleTracker.xcworkspace",
-      scheme: "WhaleTracker",
+      workspace: "Mirion.xcworkspace",
+      scheme: "Mirion",
       configuration: "Debug",
       export_method: "app-store",
       api_key: api_key
@@ -72,12 +72,12 @@ platform :ios do
         api_key: api_key,
         app_identifier: PROD_BUNDLE_ID
       ) + 1,
-      xcodeproj: "WhaleTracker.xcodeproj"
+      xcodeproj: "Mirion.xcodeproj"
     )
 
     build_app(
-      workspace: "WhaleTracker.xcworkspace",
-      scheme: "WhaleTracker",
+      workspace: "Mirion.xcworkspace",
+      scheme: "Mirion",
       configuration: "Release",
       export_method: "app-store",
       api_key: api_key
@@ -93,3 +93,4 @@ platform :ios do
     )
   end
 end
+

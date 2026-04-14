@@ -1,4 +1,4 @@
-package com.lockfi
+﻿package com.mirion
 
 import android.os.Bundle
 import com.facebook.react.ReactActivity
@@ -13,8 +13,9 @@ class MainActivity : ReactActivity() {
     super.onCreate(savedInstanceState)
   }
 
-  override fun getMainComponentName(): String = "WhaleTracker"
+  override fun getMainComponentName(): String = "Mirion"
 
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 }
+

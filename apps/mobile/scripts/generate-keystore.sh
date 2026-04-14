@@ -1,8 +1,9 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -euo pipefail
 
-KEYSTORE_PATH="android/app/release.keystore"
-KEY_ALIAS="lockfi"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+KEYSTORE_PATH="$SCRIPT_DIR/../android/app/release.keystore"
+KEY_ALIAS="mirion"
 
 if [ -f "$KEYSTORE_PATH" ]; then
   echo "release.keystore already exists. Skipping."
@@ -20,7 +21,7 @@ keytool -genkey -v \
   -validity 10000 \
   -storepass "$STORE_PASS" \
   -keypass "$KEY_PASS" \
-  -dname "CN=LockFi, OU=Mobile, O=LockFi, L=Seoul, S=Seoul, C=KR"
+  -dname "CN=Mirion, OU=Mobile, O=Mirion, L=Seoul, S=Seoul, C=KR"
 
 echo ""
 echo "Keystore created: $KEYSTORE_PATH"
@@ -33,3 +34,4 @@ echo "  ANDROID_KEYSTORE_BASE64  = (clipboard)"
 echo "  ANDROID_KEYSTORE_PASSWORD = <store password you entered>"
 echo "  ANDROID_KEY_ALIAS         = $KEY_ALIAS"
 echo "  ANDROID_KEY_PASSWORD      = <key password you entered>"
+
