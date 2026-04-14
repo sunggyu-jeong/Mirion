@@ -10,7 +10,7 @@ import { getMultiCoinPrices } from "../lib/coingecko";
 const FALLBACK_PROFILE = { nativeBalance: "0", totalValueUsd: 0, tokens: [] };
 
 async function fetchProfile(chain: string, address: string, env: Env) {
-  const prices = await withCache(env.CACHE, "multi-prices", 60, getMultiCoinPrices);
+  const prices = await withCache("prices:multi", 10 * 60, getMultiCoinPrices);
   if (chain === "BTC") return getBtcProfile(address, prices.btc);
   if (chain === "SOL") return getSolProfile(address, prices.sol, env.HELIUS_API_KEY);
   if (chain === "XRP") return getXrpProfile(address, prices.xrp);
@@ -33,7 +33,7 @@ export async function handleWhaleProfile(
 
   try {
     const cacheKey = `whale-profile:${chain}:${address.toLowerCase()}`;
-    const data = await withCache(env.CACHE, cacheKey, 300, () =>
+    const data = await withCache(cacheKey, 300, () =>
       fetchProfile(chain, address, env),
     );
     return Response.json(data);

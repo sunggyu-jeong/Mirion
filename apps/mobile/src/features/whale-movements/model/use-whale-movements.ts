@@ -7,7 +7,7 @@ export function useWhaleMovements(chainFilter: ChainFilter = 'ALL') {
   return useQuery<WhaleTx[], Error, WhaleTx[]>({
     queryKey: ['radar', chainFilter],
     queryFn: () => fetchRadarTransactions(chainFilter === 'ALL' ? undefined : [chainFilter]),
-    staleTime: 60_000,
-    refetchInterval: 60_000,
+    staleTime: 30_000,
+    refetchInterval: 30_000,
   });
 }

@@ -6,12 +6,13 @@ import { getSolTransfers } from "../lib/solana";
 import { getXrpTransfers } from "../lib/xrpl";
 import { getTrxTransfers } from "../lib/trongrid";
 import { getMultiCoinPrices } from "../lib/coingecko";
+import { cacheGet, cachePut, withCache } from "../lib/cache";
 import { getWhaleList } from "./whales";
 import type { WhaleEntry } from "./whales";
 
 const CHAIN_ORDER = ["ETH", "BTC", "SOL", "BNB", "XRP", "TRX"] as const;
-const CHAIN_CACHE_TTL = 5 * 60;
-const PRICE_CACHE_TTL = 2 * 60;
+const CHAIN_CACHE_TTL = 15 * 60;
+const PRICE_CACHE_TTL = 10 * 60;
 const EMPTY_CACHE_TTL = 60;
 const DEFAULT_MIN_VALUE_USD = 20_000;
 const FETCH_TIMEOUT_MS = 10_000;
@@ -22,18 +23,12 @@ type Prices = {
   bnb: number; xrp: number; trx: number;
 };
 
-async function getCachedPrices(env: Env): Promise<Prices> {
-  const cached = await env.CACHE.get<Prices>("coingecko:prices", "json");
-  if (cached) return cached;
-  const raw = await getMultiCoinPrices();
-  const prices: Prices = {
+async function getCachedPrices(_env: Env): Promise<Prices> {
+  const raw = await withCache("prices:multi", PRICE_CACHE_TTL, getMultiCoinPrices);
+  return {
     eth: raw.eth, btc: raw.btc, sol: raw.sol,
     bnb: raw.bnb, xrp: raw.xrp ?? 0.5, trx: raw.trx ?? 0.1,
   };
-  await env.CACHE.put("coingecko:prices", JSON.stringify(prices), {
-    expirationTtl: PRICE_CACHE_TTL,
-  });
-  return prices;
 }
 
 async function fetchTransfersForWhale(
@@ -148,7 +143,7 @@ export async function handleRadar(request: Request, env: Env): Promise<Response>
     Promise.all(
       chainList.map(async (chain) => {
         const key = `radar:v2:${chain}:${minValueUsd}`;
-        return { chain, key, data: await env.CACHE.get<WhaleTxDTO[]>(key, "json") };
+        return { chain, key, data: await cacheGet<WhaleTxDTO[]>(key) };
       }),
     ),
   ]);
@@ -175,9 +170,7 @@ export async function handleRadar(request: Request, env: Env): Promise<Response>
       uncached.map(async ({ chain, key }) => {
         const chainWhales = whales.filter((w) => w.chain === chain);
         const txs = await fetchChain(chain, chainWhales, minValueUsd, prices, env);
-        await env.CACHE.put(key, JSON.stringify(txs), {
-          expirationTtl: txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL,
-        });
+        await cachePut(key, txs, txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL);
         return txs;
       }),
     )

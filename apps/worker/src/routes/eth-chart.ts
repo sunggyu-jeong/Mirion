@@ -4,7 +4,7 @@ import { getEthMarketChart } from "../lib/coingecko";
 
 export async function handleEthChart(
   request: Request,
-  env: Env,
+  _env: Env,
 ): Promise<Response> {
   const period = new URL(request.url).pathname.split("/").pop() ?? "";
   if (!["1D", "1W", "1M"].includes(period)) {
@@ -14,7 +14,7 @@ export async function handleEthChart(
     );
   }
 
-  const data = await withCache(env.CACHE, `eth-chart:${period}`, 300, () =>
+  const data = await withCache(`eth-chart:${period}`, 300, () =>
     getEthMarketChart(period),
   );
   return Response.json(data);
