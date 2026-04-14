@@ -35,9 +35,14 @@ coverage/
 .env.test.local
 .env*.local
 
-# apps/mobile/android/
-# apps/mobile/ios/
+# Nitro Modules (Auto-generated)
+apps/mobile/nitrogen/generated/
 
+# React Native Prebuild
+apps/mobile/react_native_prebuild/.xcode.env.local
+apps/mobile/react_native_prebuild/build/
+
+# Android
 apps/mobile/android/.gradle/
 apps/mobile/android/app/build/
 apps/mobile/android/app/.cxx/
@@ -56,7 +61,9 @@ GoogleService-Info.json
 
 .turbo/
 
-instruction.txt
+# AI Assistant Rules (Keep for team sharing)
+# .claude
+# CLAUDE.md
 
-.claude
-CLAUDE.md
+# Project specific
+instruction.txt
