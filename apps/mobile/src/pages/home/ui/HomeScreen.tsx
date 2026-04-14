@@ -74,7 +74,10 @@ export function HomeScreen() {
   if (isLoading) {
     return (
       <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <MirionHeader scrollY={scrollY} />
+        <MirionHeader
+          scrollY={scrollY}
+          streakCount={streakCount}
+        />
         <View style={{ flex: 1, paddingTop: headerTopPadding }}>
           <SkeletonList />
         </View>
@@ -85,7 +88,10 @@ export function HomeScreen() {
   if (isError) {
     return (
       <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <MirionHeader scrollY={scrollY} />
+        <MirionHeader
+          scrollY={scrollY}
+          streakCount={streakCount}
+        />
         <View style={{ flex: 1, paddingTop: headerTopPadding }}>
           <ErrorState onRetry={refetch} />
         </View>
@@ -95,7 +101,10 @@ export function HomeScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
-      <MirionHeader scrollY={scrollY} />
+      <MirionHeader
+        scrollY={scrollY}
+        streakCount={streakCount}
+      />
       <Animated.FlatList
         data={filteredWhales}
         renderItem={renderItem}
@@ -112,12 +121,10 @@ export function HomeScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <HomeHeader
-            streakCount={streakCount}
             selectedChain={selectedChain}
             onChainChange={setSelectedChain}
             movements={movements}
-            whales={whales}
-            onWhalePress={toWhaleDetail}
+            onUpgrade={toSettings}
           />
         }
         ListEmptyComponent={

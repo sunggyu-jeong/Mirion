@@ -19,15 +19,10 @@ function StatCell({ label, value, unit, accent, delay }: StatCellProps) {
       entering={FadeInDown.delay(delay).springify().stiffness(400).damping(30)}
       style={{
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#eef2f7',
         borderRadius: 16,
         padding: 14,
         gap: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.04,
-        shadowRadius: 12,
-        elevation: 2,
       }}
     >
       <View

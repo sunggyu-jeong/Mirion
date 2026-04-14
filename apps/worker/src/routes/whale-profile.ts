@@ -33,7 +33,7 @@ export async function handleWhaleProfile(
 
   try {
     const cacheKey = `whale-profile:${chain}:${address.toLowerCase()}`;
-    const data = await withCache(cacheKey, 300, () =>
+    const data = await withCache(cacheKey, 3600, () =>
       fetchProfile(chain, address, env),
     );
     return Response.json(data);

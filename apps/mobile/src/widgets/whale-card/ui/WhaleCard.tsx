@@ -59,6 +59,8 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
             borderRadius: 20,
             padding: 18,
             gap: 14,
+            borderWidth: 1,
+            borderColor: '#f1f5f9',
             opacity: isLocked ? 0.72 : 1,
           },
           animatedStyle,

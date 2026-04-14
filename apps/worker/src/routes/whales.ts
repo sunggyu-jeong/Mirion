@@ -101,14 +101,8 @@ const DEFAULT_WHALES: WhaleEntry[] = [
 
 export async function handleGetWhales(
   _request: Request,
-  env: Env,
+  _env: Env,
 ): Promise<Response> {
-  const cached = await env.CACHE.get<WhaleEntry[]>(KV_KEY, "json");
-  if (cached) return Response.json(cached);
-
-  await env.CACHE.put(KV_KEY, JSON.stringify(DEFAULT_WHALES), {
-    expirationTtl: 86400,
-  });
   return Response.json(DEFAULT_WHALES);
 }
 

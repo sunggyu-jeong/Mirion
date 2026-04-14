@@ -65,40 +65,34 @@ function SentimentGauge({ events }: { events: ActivityEvent[] }) {
   const cexCount = events.filter(e => e.source === 'cex').length;
 
   return (
-    <View
-      style={{
-        marginBottom: 14,
-        backgroundColor: '#f8fafc',
-        borderRadius: 18,
-        padding: 16,
-        gap: 12,
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-      }}
-    >
+    <View style={{ marginTop: 20, gap: 12 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View style={{ gap: 2 }}>
-          <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '500' }}>온체인 이동량</Text>
-          <Text style={{ fontSize: 18, fontWeight: '800', color: '#0f172b', letterSpacing: -0.5 }}>
+        <View style={{ gap: 3 }}>
+          <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
+            온체인 이동량
+          </Text>
+          <Text style={{ fontSize: 20, fontWeight: '800', color: 'white', letterSpacing: -0.5 }}>
             {formatUsd(totalUsd)}
           </Text>
         </View>
-        <View style={{ alignItems: 'flex-end', gap: 2 }}>
-          <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '500' }}>감지 건수</Text>
+        <View style={{ alignItems: 'flex-end', gap: 3 }}>
+          <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
+            감지 건수
+          </Text>
           <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 3 }}>
-            <Text
-              style={{ fontSize: 18, fontWeight: '800', color: '#0f172b', letterSpacing: -0.5 }}
-            >
+            <Text style={{ fontSize: 20, fontWeight: '800', color: 'white', letterSpacing: -0.5 }}>
               {onchain.length}
             </Text>
-            <Text style={{ fontSize: 12, color: '#94a3b8' }}>온체인</Text>
-            <Text style={{ fontSize: 14, fontWeight: '700', color: '#94a3b8' }}>+</Text>
+            <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>온체인</Text>
+            <Text style={{ fontSize: 13, fontWeight: '700', color: 'rgba(255,255,255,0.25)' }}>
+              +
+            </Text>
             <Text
-              style={{ fontSize: 18, fontWeight: '800', color: '#0284c7', letterSpacing: -0.5 }}
+              style={{ fontSize: 20, fontWeight: '800', color: '#38bdf8', letterSpacing: -0.5 }}
             >
               {cexCount}
             </Text>
-            <Text style={{ fontSize: 12, color: '#94a3b8' }}>거래소</Text>
+            <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>거래소</Text>
           </View>
         </View>
       </View>
@@ -106,7 +100,7 @@ function SentimentGauge({ events }: { events: ActivityEvent[] }) {
       {total > 0 && (
         <View style={{ gap: 6 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ fontSize: 11, fontWeight: '600', color: '#ef4444' }}>
+            <Text style={{ fontSize: 11, fontWeight: '600', color: '#fb2c36' }}>
               매도 압력 {sellPct}%
             </Text>
             <Text style={{ fontSize: 11, fontWeight: '600', color: '#22c55e' }}>
@@ -115,16 +109,16 @@ function SentimentGauge({ events }: { events: ActivityEvent[] }) {
           </View>
           <View
             style={{
-              height: 7,
-              borderRadius: 4,
-              backgroundColor: '#f1f5f9',
+              height: 6,
+              borderRadius: 3,
+              backgroundColor: 'rgba(255,255,255,0.08)',
               flexDirection: 'row',
               overflow: 'hidden',
             }}
           >
-            <View style={{ width: `${sellPct}%`, backgroundColor: '#ef4444', borderRadius: 4 }} />
-            <View style={{ width: 2, backgroundColor: 'white' }} />
-            <View style={{ flex: 1, backgroundColor: '#22c55e', borderRadius: 4 }} />
+            <View style={{ width: `${sellPct}%`, backgroundColor: '#fb2c36', borderRadius: 3 }} />
+            <View style={{ width: 2, backgroundColor: 'rgba(255,255,255,0.15)' }} />
+            <View style={{ flex: 1, backgroundColor: '#22c55e', borderRadius: 3 }} />
           </View>
         </View>
       )}
@@ -207,14 +201,14 @@ export function HistoryScreen() {
   if (isLoading) {
     return (
       <SafeAreaView
-        style={{ flex: 1, backgroundColor: 'white' }}
+        style={{ flex: 1, backgroundColor: '#060d1a' }}
         edges={['top']}
       >
         <View style={{ gap: 10, padding: 20 }}>
           {Array.from({ length: 4 }).map((_, i) => (
             <View
               key={i}
-              style={{ height: 128, borderRadius: 16, backgroundColor: '#f1f5f9' }}
+              style={{ height: 128, borderRadius: 16, backgroundColor: 'rgba(34,197,94,0.06)' }}
             />
           ))}
         </View>
@@ -224,58 +218,55 @@ export function HistoryScreen() {
 
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: 'white' }}
+      style={{ flex: 1, backgroundColor: '#060d1a' }}
       edges={['top']}
     >
-      <AnimatedFlatList
-        data={processedEvents}
-        keyExtractor={item => item.event.id}
-        renderItem={renderItem}
-        ItemSeparatorComponent={ItemSeparator}
-        contentContainerStyle={{ paddingBottom: 32 }}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={
-          <>
-            <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 20 }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 20,
-                }}
-              >
-                <Text
-                  style={{ fontSize: 22, fontWeight: '800', color: '#0f172b', letterSpacing: -0.5 }}
-                >
-                  고래 이동 레이더
-                </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-                  <View
-                    style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#22c55e' }}
-                  />
-                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#22c55e' }}>
-                    실시간 감지 중
-                  </Text>
-                </View>
-              </View>
+      <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 16,
+          }}
+        >
+          <Text style={{ fontSize: 22, fontWeight: '800', color: 'white', letterSpacing: -0.5 }}>
+            고래 이동 레이더
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+            <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#22c55e' }} />
+            <Text style={{ fontSize: 12, fontWeight: '600', color: '#22c55e' }}>
+              실시간 감지 중
+            </Text>
+          </View>
+        </View>
 
-              <RadarViewport>
-                <RadarDotLayer txs={onchainTxs} />
-              </RadarViewport>
+        <RadarViewport>
+          <RadarDotLayer txs={onchainTxs} />
+        </RadarViewport>
 
-              <View style={{ marginTop: 20 }}>
-                <SentimentGauge events={allEvents} />
-              </View>
-            </View>
+        <SentimentGauge events={allEvents} />
+      </View>
 
-            <View
-              style={{
-                paddingHorizontal: 20,
-                paddingBottom: 12,
-                gap: 10,
-              }}
-            >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: 'white',
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
+          overflow: 'hidden',
+          marginTop: 24,
+        }}
+      >
+        <AnimatedFlatList
+          data={processedEvents}
+          keyExtractor={item => item.event.id}
+          renderItem={renderItem}
+          ItemSeparatorComponent={ItemSeparator}
+          contentContainerStyle={{ paddingBottom: 32 }}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12, gap: 10 }}>
               <FilterChipBar
                 options={SOURCE_OPTIONS}
                 value={sourceFilter}
@@ -292,33 +283,37 @@ export function HistoryScreen() {
                 onChange={setSelectedChain}
               />
             </View>
-          </>
-        }
-        ListFooterComponent={
-          processedEvents.length > 0 ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: 20 }}>
-              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#22c55e' }} />
-              <Text style={{ fontSize: 12, fontWeight: '500', color: '#22c55e' }}>
-                실시간 감지 중
+          }
+          ListFooterComponent={
+            processedEvents.length > 0 ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, padding: 20 }}>
+                <View
+                  style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#22c55e' }}
+                />
+                <Text style={{ fontSize: 12, fontWeight: '500', color: '#22c55e' }}>
+                  실시간 감지 중
+                </Text>
+                <Text style={{ fontSize: 12, color: '#94a3b8' }}>
+                  · {processedEvents.length}건 발견
+                </Text>
+              </View>
+            ) : null
+          }
+          ListEmptyComponent={
+            <View
+              style={{ minHeight: 280, alignItems: 'center', justifyContent: 'center', gap: 12 }}
+            >
+              <Text style={{ fontSize: 32 }}>🔍</Text>
+              <Text style={{ fontSize: 15, fontWeight: '600', color: '#0f172b' }}>
+                감지된 활동 없음
               </Text>
-              <Text style={{ fontSize: 12, color: '#94a3b8' }}>
-                · {processedEvents.length}건 발견
+              <Text style={{ fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 20 }}>
+                {'고래 이동 및 거래소 대량 체결이\n감지되면 바로 표시됩니다.'}
               </Text>
             </View>
-          ) : null
-        }
-        ListEmptyComponent={
-          <View style={{ minHeight: 320, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-            <Text style={{ fontSize: 32 }}>🔍</Text>
-            <Text style={{ fontSize: 15, fontWeight: '600', color: '#0f172b' }}>
-              감지된 활동 없음
-            </Text>
-            <Text style={{ fontSize: 13, color: '#94a3b8', textAlign: 'center', lineHeight: 20 }}>
-              {'고래 이동 및 거래소 대량 체결이\n감지되면 바로 표시됩니다.'}
-            </Text>
-          </View>
-        }
-      />
+          }
+        />
+      </View>
     </SafeAreaView>
   );
 }

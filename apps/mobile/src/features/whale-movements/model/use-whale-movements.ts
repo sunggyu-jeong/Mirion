@@ -5,8 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 
 export function useWhaleMovements(chainFilter: ChainFilter = 'ALL') {
   return useQuery<WhaleTx[], Error, WhaleTx[]>({
-    queryKey: ['radar', chainFilter],
-    queryFn: () => fetchRadarTransactions(chainFilter === 'ALL' ? undefined : [chainFilter]),
+    queryKey: ['radar'],
+    queryFn: () => fetchRadarTransactions(),
+    select: data => (chainFilter === 'ALL' ? data : data.filter(tx => tx.chain === chainFilter)),
     staleTime: 30_000,
     refetchInterval: 30_000,
   });

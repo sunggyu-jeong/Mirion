@@ -115,15 +115,12 @@ export function WhaleVsAntChart({ movements }: WhaleVsAntChartProps) {
     <Animated.View
       entering={FadeInDown.delay(60).springify().stiffness(400).damping(30)}
       style={{
-        backgroundColor: 'white',
+        backgroundColor: '#f8fafc',
         borderRadius: 20,
         padding: 20,
         gap: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.04,
-        shadowRadius: 20,
-        elevation: 3,
+        borderWidth: 1,
+        borderColor: '#f1f5f9',
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>

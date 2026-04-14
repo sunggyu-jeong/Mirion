@@ -100,11 +100,6 @@ export function StreakCard({ count }: StreakCardProps) {
         borderRadius: 20,
         padding: 18,
         gap: 14,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.04,
-        shadowRadius: 16,
-        elevation: 2,
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
