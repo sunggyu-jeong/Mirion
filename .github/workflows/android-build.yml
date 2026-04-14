@@ -67,6 +67,15 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x apps/mobile/android/gradlew
 
+      - name: Generate debug keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore apps/mobile/android/app/debug.keystore \
+            -alias androiddebugkey \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass android -keypass android \
+            -dname "CN=Android Debug,O=Android,C=US"
+
       - name: Build debug APK via Fastlane
         working-directory: apps/mobile/android
         run: bundle exec fastlane build_dev
