@@ -19,10 +19,12 @@ function StatCell({ label, value, unit, accent, delay }: StatCellProps) {
       entering={FadeInDown.delay(delay).springify().stiffness(400).damping(30)}
       style={{
         flex: 1,
-        backgroundColor: '#eef2f7',
+        backgroundColor: 'rgba(255,255,255,0.05)',
         borderRadius: 16,
         padding: 14,
         gap: 8,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.07)',
       }}
     >
       <View
@@ -40,14 +42,23 @@ function StatCell({ label, value, unit, accent, delay }: StatCellProps) {
             value={value}
             fontSize={17}
             fontWeight="800"
-            color="#0f172b"
+            color="white"
             letterSpacing={-0.4}
           />
           {unit ? (
-            <Text style={{ fontSize: 11, fontWeight: '600', color: '#94a3b8' }}>{unit}</Text>
+            <Text style={{ fontSize: 11, fontWeight: '600', color: 'rgba(255,255,255,0.45)' }}>
+              {unit}
+            </Text>
           ) : null}
         </View>
-        <Text style={{ fontSize: 11, fontWeight: '500', color: '#94a3b8', letterSpacing: -0.1 }}>
+        <Text
+          style={{
+            fontSize: 11,
+            fontWeight: '500',
+            color: 'rgba(255,255,255,0.45)',
+            letterSpacing: -0.1,
+          }}
+        >
           {label}
         </Text>
       </View>
@@ -104,17 +115,21 @@ export function MacroStatsCard({ movements }: MacroStatsCardProps) {
   return (
     <View
       style={{
-        backgroundColor: '#f8fafc',
+        backgroundColor: 'rgba(255,255,255,0.04)',
         borderRadius: 20,
         padding: 16,
         gap: 10,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.08)',
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Text style={{ fontSize: 15, fontWeight: '700', color: '#0f172b', letterSpacing: -0.3 }}>
+        <Text style={{ fontSize: 15, fontWeight: '700', color: 'white', letterSpacing: -0.3 }}>
           매크로 지표
         </Text>
-        <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '500' }}>온체인 기반</Text>
+        <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: '500' }}>
+          온체인 기반
+        </Text>
       </View>
 
       <View style={{ flexDirection: 'row', gap: 10 }}>
