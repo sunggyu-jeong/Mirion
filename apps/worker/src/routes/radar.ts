@@ -101,6 +101,24 @@ async function fetchChain(
   return [...unique.values()].sort((a, b) => b.timestampMs - a.timestampMs);
 }
 
+export async function warmRadarCache(env: Env): Promise<void> {
+  const whales = await getWhaleList(env);
+  const prices = await getCachedPrices(env);
+
+  await Promise.allSettled(
+    CHAIN_ORDER.map(async (chain) => {
+      const key = `radar:v2:${chain}:${DEFAULT_MIN_VALUE_USD}`;
+      const chainWhales = whales.filter((w) => w.chain === chain);
+      try {
+        const txs = await fetchChain(chain, chainWhales, DEFAULT_MIN_VALUE_USD, prices, env);
+        await kvPut(env.CACHE, key, txs, txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL);
+      } catch (e) {
+        console.error(`[warm] ${chain} failed:`, e);
+      }
+    }),
+  );
+}
+
 export async function handleRadarDebug(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const chainsParam = url.searchParams.get("chains") ?? "ETH";
