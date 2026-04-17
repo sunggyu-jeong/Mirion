@@ -3,37 +3,31 @@ import type { ActivityEvent } from '@entities/unified-activity';
 import type { WhaleTx } from '@entities/whale-tx';
 import { formatRelativeTime } from '@shared/lib/format';
 import { useAppNavigation } from '@shared/lib/navigation';
-import {
-  ArrowDownLeft,
-  ArrowRight,
-  ArrowUpRight,
-  Lock,
-  RefreshCw,
-} from 'lucide-react-native';
+import { ArrowDownLeft, ArrowRight, ArrowUpRight, Lock, RefreshCw } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 const ONCHAIN_TYPE_CONFIG = {
-  send: { 
-    action: '보냈어요', 
-    Icon: ArrowUpRight, 
-    color: '#F43F5E', 
+  send: {
+    action: '보냈어요',
+    Icon: ArrowUpRight,
+    color: '#F43F5E',
     bg: 'rgba(244,63,94,0.12)',
-    glow: 'rgba(244,63,94,0.3)' 
+    glow: 'rgba(244,63,94,0.3)',
   },
-  receive: { 
-    action: '받았어요', 
-    Icon: ArrowDownLeft, 
-    color: '#22D3EE', 
+  receive: {
+    action: '받았어요',
+    Icon: ArrowDownLeft,
+    color: '#22D3EE',
     bg: 'rgba(34,211,238,0.12)',
-    glow: 'rgba(34,211,238,0.3)'
+    glow: 'rgba(34,211,238,0.3)',
   },
-  swap: { 
-    action: '바꿨어요', 
-    Icon: RefreshCw, 
-    color: '#A78BFA', 
+  swap: {
+    action: '바꿨어요',
+    Icon: RefreshCw,
+    color: '#A78BFA',
     bg: 'rgba(167,139,250,0.12)',
-    glow: 'rgba(167,139,250,0.3)'
+    glow: 'rgba(167,139,250,0.3)',
   },
 } as const;
 
@@ -45,11 +39,11 @@ const COIN_NAME: Record<string, string> = {
   'XRP/USDT': '리플',
   'PEPE/USDT': '페페',
   'WIF/USDT': 'WIF',
-  'BTC': '비트코인',
-  'ETH': '이더리움',
-  'SOL': '솔라나',
-  'USDT': '테더',
-  'USDC': 'USDC',
+  BTC: '비트코인',
+  ETH: '이더리움',
+  SOL: '솔라나',
+  USDT: '테더',
+  USDC: 'USDC',
 };
 
 function formatAmountKo(usd: number): string {
@@ -57,10 +51,10 @@ function formatAmountKo(usd: number): string {
     return `${(usd / 1_000_000_000).toFixed(1)}B달러 (약 ${(usd * 0.0014).toFixed(0)}조원)`;
   }
   if (usd >= 1_000_000) {
-    return `${(usd / 1_000_000).toFixed(1)}M달러 (약 ${(usd * 1350 / 100_000_000).toFixed(1)}억원)`;
+    return `${(usd / 1_000_000).toFixed(1)}M달러 (약 ${((usd * 1350) / 100_000_000).toFixed(1)}억원)`;
   }
   if (usd >= 1_000) {
-    return `${(usd / 1_000).toFixed(0)}K달러 (약 ${(usd * 1350 / 10_000).toFixed(0)}만원)`;
+    return `${(usd / 1_000).toFixed(0)}K달러 (약 ${((usd * 1350) / 10_000).toFixed(0)}만원)`;
   }
   return `$${usd.toLocaleString()}`;
 }
@@ -85,14 +79,14 @@ function OnChainItem({
   const assetName = COIN_NAME[tx.asset] ?? tx.asset;
 
   return (
-    <View 
-      style={{ 
-        backgroundColor: 'rgba(255,255,255,0.04)', 
-        borderRadius: 24, 
-        padding: 20, 
+    <View
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.04)',
+        borderRadius: 24,
+        padding: 20,
         gap: 16,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.06)'
+        borderColor: 'rgba(255,255,255,0.06)',
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -118,11 +112,20 @@ function OnChainItem({
         </View>
 
         <View style={{ flex: 1, gap: 2 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+          >
             <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
               {formatRelativeTime(tx.timestampMs)}
             </Text>
-            <View style={{ backgroundColor: 'rgba(34,211,238,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+            <View
+              style={{
+                backgroundColor: 'rgba(34,211,238,0.1)',
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                borderRadius: 4,
+              }}
+            >
               <Text style={{ fontSize: 10, color: '#22D3EE', fontWeight: '700' }}>온체인</Text>
             </View>
           </View>
@@ -146,11 +149,26 @@ function OnChainItem({
             padding: 12,
           }}
         >
-          <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>이동 경로</Text>
+          <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
+            이동 경로
+          </Text>
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-             <Text style={{ fontSize: 12, color: 'white', fontWeight: '600' }} numberOfLines={1}>지갑</Text>
-             <ArrowRight size={10} color="rgba(255,255,255,0.2)" />
-             <Text style={{ fontSize: 12, color: 'white', fontWeight: '600' }} numberOfLines={1}>거래소</Text>
+            <Text
+              style={{ fontSize: 12, color: 'white', fontWeight: '600' }}
+              numberOfLines={1}
+            >
+              지갑
+            </Text>
+            <ArrowRight
+              size={10}
+              color="rgba(255,255,255,0.2)"
+            />
+            <Text
+              style={{ fontSize: 12, color: 'white', fontWeight: '600' }}
+              numberOfLines={1}
+            >
+              거래소
+            </Text>
           </View>
         </View>
       )}
@@ -168,7 +186,11 @@ function OnChainItem({
             backgroundColor: '#06B6D4',
           }}
         >
-          <Lock size={14} color="white" strokeWidth={2.5} />
+          <Lock
+            size={14}
+            color="white"
+            strokeWidth={2.5}
+          />
           <Text style={{ fontSize: 15, fontWeight: '700', color: 'white' }}>금액 확인하기</Text>
         </Pressable>
       ) : (
@@ -184,7 +206,9 @@ function OnChainItem({
             backgroundColor: 'rgba(255,255,255,0.05)',
           }}
         >
-          <Text style={{ fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>상세 정보</Text>
+          <Text style={{ fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>
+            상세 정보
+          </Text>
         </Pressable>
       )}
     </View>
@@ -206,14 +230,14 @@ function CexItem({
   const coinName = COIN_NAME[trade.symbol.split('/')[0]] ?? trade.symbol.split('/')[0];
 
   return (
-    <View 
-      style={{ 
-        backgroundColor: 'rgba(255,255,255,0.04)', 
-        borderRadius: 24, 
-        padding: 20, 
+    <View
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.04)',
+        borderRadius: 24,
+        padding: 20,
         gap: 16,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.06)'
+        borderColor: 'rgba(255,255,255,0.06)',
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
@@ -231,11 +255,20 @@ function CexItem({
         </View>
 
         <View style={{ flex: 1, gap: 2 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+          >
             <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
               {formatRelativeTime(trade.timestampMs)}
             </Text>
-            <View style={{ backgroundColor: 'rgba(167,139,250,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+            <View
+              style={{
+                backgroundColor: 'rgba(167,139,250,0.1)',
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                borderRadius: 4,
+              }}
+            >
               <Text style={{ fontSize: 10, color: '#A78BFA', fontWeight: '700' }}>거래소</Text>
             </View>
           </View>
@@ -261,36 +294,15 @@ function CexItem({
             backgroundColor: '#06B6D4',
           }}
         >
-          <Lock size={14} color="white" strokeWidth={2.5} />
+          <Lock
+            size={14}
+            color="white"
+            strokeWidth={2.5}
+          />
           <Text style={{ fontSize: 15, fontWeight: '700', color: 'white' }}>얼마인지 확인하기</Text>
         </Pressable>
       )}
     </View>
-  );
-}
-
-interface Props {
-  event: ActivityEvent;
-  isLocked?: boolean;
-  onUpgrade?: () => void;
-}
-
-export function UnifiedActivityItem({ event, isLocked = false, onUpgrade }: Props) {
-  if (event.source === 'cex') {
-    return (
-      <CexItem
-        trade={event.data}
-        isLocked={isLocked}
-        onUpgrade={onUpgrade}
-      />
-    );
-  }
-  return (
-    <OnChainItem
-      tx={event.data}
-      isLocked={isLocked}
-      onUpgrade={onUpgrade}
-    />
   );
 }
 
