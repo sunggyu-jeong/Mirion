@@ -1,1 +1,5 @@
-export { default } from '@storybook/react-native/src/preview/StorybookUIRoot';
+import { view } from './storybook.requires';
+
+const StorybookUIRoot = view.getStorybookUI();
+
+export default StorybookUIRoot;
