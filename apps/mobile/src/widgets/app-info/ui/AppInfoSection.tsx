@@ -19,26 +19,28 @@ export function AppInfoSection() {
           icon={
             <RefreshCw
               size={15}
-              color="#62748e"
+              color="rgba(255,255,255,0.45)"
               strokeWidth={2}
             />
           }
           label="버전"
           right={
-            <Text style={{ fontSize: 13, fontWeight: '400', color: '#94a3b8' }}>1.0.0 (41)</Text>
+            <Text style={{ fontSize: 13, fontWeight: '400', color: 'rgba(255,255,255,0.45)' }}>
+              1.0.0 (41)
+            </Text>
           }
         />
         <SettingRow
           icon={
             <ExternalLink
               size={15}
-              color="#62748e"
+              color="rgba(255,255,255,0.45)"
               strokeWidth={2}
             />
           }
           label="데이터 출처"
           right={
-            <Text style={{ fontSize: 12, fontWeight: '400', color: '#94a3b8' }}>
+            <Text style={{ fontSize: 12, fontWeight: '400', color: 'rgba(255,255,255,0.45)' }}>
               Etherscan · CoinGecko
             </Text>
           }
@@ -51,7 +53,7 @@ export function AppInfoSection() {
           icon={
             <Shield
               size={15}
-              color="#62748e"
+              color="rgba(255,255,255,0.45)"
               strokeWidth={2}
             />
           }
@@ -60,7 +62,7 @@ export function AppInfoSection() {
           right={
             <ChevronRight
               size={16}
-              color="#cbd5e1"
+              color="rgba(255,255,255,0.25)"
               strokeWidth={1.8}
             />
           }
@@ -69,7 +71,7 @@ export function AppInfoSection() {
           icon={
             <Shield
               size={15}
-              color="#62748e"
+              color="rgba(255,255,255,0.45)"
               strokeWidth={2}
             />
           }
@@ -78,7 +80,7 @@ export function AppInfoSection() {
           right={
             <ChevronRight
               size={16}
-              color="#cbd5e1"
+              color="rgba(255,255,255,0.25)"
               strokeWidth={1.8}
             />
           }
@@ -101,7 +103,7 @@ export function AppInfoSection() {
           right={
             <ChevronRight
               size={16}
-              color="#cbd5e1"
+              color="rgba(255,255,255,0.25)"
               strokeWidth={1.8}
             />
           }
@@ -110,7 +112,7 @@ export function AppInfoSection() {
           icon={
             <Mail
               size={15}
-              color="#62748e"
+              color="rgba(255,255,255,0.45)"
               strokeWidth={2}
             />
           }
@@ -120,7 +122,7 @@ export function AppInfoSection() {
           right={
             <ChevronRight
               size={16}
-              color="#cbd5e1"
+              color="rgba(255,255,255,0.25)"
               strokeWidth={1.8}
             />
           }
@@ -130,4 +132,3 @@ export function AppInfoSection() {
     </Animated.View>
   );
 }
-

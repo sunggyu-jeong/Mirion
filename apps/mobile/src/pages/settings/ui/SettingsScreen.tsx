@@ -15,7 +15,7 @@ export function SettingsScreen() {
   return (
     <SafeAreaView
       edges={['top']}
-      style={{ flex: 1, backgroundColor: 'white' }}
+      style={{ flex: 1, backgroundColor: '#020B18' }}
     >
       <ScrollView
         style={{ flex: 1 }}
@@ -33,15 +33,15 @@ export function SettingsScreen() {
             <View
               style={{
                 borderWidth: 1,
-                borderColor: '#fbbf24',
+                borderColor: 'rgba(251,191,36,0.4)',
                 borderRadius: 16,
                 padding: 16,
                 gap: 12,
-                backgroundColor: '#fffbeb',
+                backgroundColor: 'rgba(251,191,36,0.08)',
               }}
             >
               <Text
-                style={{ fontSize: 11, fontWeight: '700', color: '#b45309', letterSpacing: 0.5 }}
+                style={{ fontSize: 11, fontWeight: '700', color: '#fbbf24', letterSpacing: 0.5 }}
               >
                 DEV ONLY
               </Text>
@@ -52,7 +52,7 @@ export function SettingsScreen() {
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ fontSize: 15, fontWeight: '600', color: '#0f172b' }}>PRO 모드</Text>
+                <Text style={{ fontSize: 15, fontWeight: '600', color: 'white' }}>PRO 모드</Text>
                 <Switch
                   value={isPro}
                   onValueChange={setPro}

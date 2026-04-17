@@ -36,21 +36,21 @@ export function SubscriptionSection() {
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <BadgeCheck
                 size={20}
-                color="#22c55e"
+                color="#4ADE80"
                 strokeWidth={2}
               />
               <Text
                 style={{
                   fontSize: 15,
                   fontWeight: '700',
-                  color: '#15803d',
+                  color: '#4ADE80',
                   letterSpacing: -0.02,
                 }}
               >
                 프로 구독 중
               </Text>
             </View>
-            <Text style={{ fontSize: 13, color: '#16a34a', letterSpacing: -0.01 }}>
+            <Text style={{ fontSize: 13, color: 'rgba(74,222,128,0.7)', letterSpacing: -0.01 }}>
               모든 고래 추적과 실시간 알림이 활성화되어 있습니다
             </Text>
             <PrimaryButton
@@ -69,13 +69,13 @@ export function SubscriptionSection() {
                 style={{
                   fontSize: 16,
                   fontWeight: '800',
-                  color: '#0f172b',
+                  color: 'white',
                   letterSpacing: -0.03,
                 }}
               >
                 🔓 프로로 업그레이드
               </Text>
-              <Text style={{ fontSize: 13, color: '#62748e', letterSpacing: -0.01 }}>
+              <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', letterSpacing: -0.01 }}>
                 월 ₩9,900 · 언제든지 해지 가능
               </Text>
             </View>
@@ -101,7 +101,7 @@ export function SubscriptionSection() {
                     style={{
                       fontSize: 13,
                       fontWeight: '500',
-                      color: '#0f172b',
+                      color: 'white',
                       letterSpacing: -0.01,
                     }}
                   >
