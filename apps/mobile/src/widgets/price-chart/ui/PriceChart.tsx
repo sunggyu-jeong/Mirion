@@ -105,7 +105,7 @@ export function PriceChart({ whaleEvents = [] }: Props) {
   const firstPrice = data?.length ? data[0].price : 0;
 
   const isPositive = lastPrice >= firstPrice;
-  const lineColor = isPositive ? '#22c55e' : '#ef4444';
+  const lineColor = isPositive ? '#22D3EE' : '#F43F5E';
 
   const linePath = data && chartWidth > 0 ? buildLinePath(data, chartWidth) : '';
   const fillPath = data && chartWidth > 0 ? buildFillPath(data, chartWidth) : '';
@@ -117,6 +117,7 @@ export function PriceChart({ whaleEvents = [] }: Props) {
         options={PERIODS}
         value={period}
         onChange={setPeriod}
+        dark
       />
 
       {!isLoading && maxPrice > 0 && (
@@ -124,18 +125,18 @@ export function PriceChart({ whaleEvents = [] }: Props) {
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#ef4444' }} />
-            <Text style={{ fontSize: 12, color: '#64748b' }}>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#F43F5E' }} />
+            <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
               저점{'  '}
-              <Text style={{ fontWeight: '700', color: '#0f172b' }}>${formatPrice(minPrice)}</Text>
+              <Text style={{ fontWeight: '700', color: 'white' }}>${formatPrice(minPrice)}</Text>
             </Text>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Text style={{ fontSize: 12, color: '#64748b' }}>
+            <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
               고점{'  '}
-              <Text style={{ fontWeight: '700', color: '#0f172b' }}>${formatPrice(maxPrice)}</Text>
+              <Text style={{ fontWeight: '700', color: 'white' }}>${formatPrice(maxPrice)}</Text>
             </Text>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#22c55e' }} />
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#22D3EE' }} />
           </View>
         </View>
       )}
@@ -151,7 +152,7 @@ export function PriceChart({ whaleEvents = [] }: Props) {
               top: 8,
               right: 8,
               zIndex: 1,
-              backgroundColor: isPositive ? '#dcfce7' : '#fee2e2',
+              backgroundColor: isPositive ? 'rgba(34,211,238,0.15)' : 'rgba(244,63,94,0.15)',
               borderRadius: 8,
               paddingHorizontal: 10,
               paddingVertical: 4,
@@ -161,7 +162,7 @@ export function PriceChart({ whaleEvents = [] }: Props) {
               style={{
                 fontSize: 12,
                 fontWeight: '700',
-                color: isPositive ? '#16a34a' : '#dc2626',
+                color: isPositive ? '#22D3EE' : '#F43F5E',
                 letterSpacing: -0.3,
               }}
             >
@@ -228,8 +229,8 @@ export function PriceChart({ whaleEvents = [] }: Props) {
                   cx={m.x}
                   cy={m.y}
                   r={4.5}
-                  fill={m.type === 'send' ? '#ef4444' : '#22c55e'}
-                  stroke="white"
+                  fill={m.type === 'send' ? '#F43F5E' : '#22D3EE'}
+                  stroke="#020B18"
                   strokeWidth={1.5}
                 />
               ))}
@@ -241,12 +242,12 @@ export function PriceChart({ whaleEvents = [] }: Props) {
       {markers.length > 0 && (
         <View style={{ flexDirection: 'row', gap: 16 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#ef4444' }} />
-            <Text style={{ fontSize: 11, color: '#64748b' }}>고래 전송</Text>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#F43F5E' }} />
+            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>고래 전송</Text>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#22c55e' }} />
-            <Text style={{ fontSize: 11, color: '#64748b' }}>고래 수신</Text>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#22D3EE' }} />
+            <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>고래 수신</Text>
           </View>
         </View>
       )}
