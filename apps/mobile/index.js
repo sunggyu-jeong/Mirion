@@ -4,7 +4,14 @@
 
 import { AppRegistry } from 'react-native';
 
-import App from './App';
 import { name as appName } from './app.json';
 
-AppRegistry.registerComponent(appName, () => App);
+const STORYBOOK_ENABLED = process.env.STORYBOOK_ENABLED === 'true';
+
+if (STORYBOOK_ENABLED) {
+  const StorybookUI = require('./.rnstorybook').default;
+  AppRegistry.registerComponent(appName, () => StorybookUI);
+} else {
+  const App = require('./App').default;
+  AppRegistry.registerComponent(appName, () => App);
+}

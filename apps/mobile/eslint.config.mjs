@@ -40,6 +40,9 @@ export default tseslint.config(
       '.pnpm/',
       '**/.pnpm/**',
       '**/node_modules/**',
+      '.rnstorybook/**',
+      'src/**/*.stories.tsx',
+      'src/**/storybook/**',
     ],
   },
 
