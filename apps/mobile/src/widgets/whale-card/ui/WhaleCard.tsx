@@ -83,7 +83,7 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
                 style={{
                   fontSize: 13,
                   fontWeight: '500',
-                  color: 'rgba(255,255,255,0.4)',
+                  color: 'rgba(255,255,255,0.65)',
                 }}
               >
                 {whale.tag}
@@ -142,7 +142,7 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
           ) : (
             <ArrowRight
               size={20}
-              color="rgba(255,255,255,0.2)"
+              color="rgba(255,255,255,0.45)"
               strokeWidth={2}
             />
           )}
@@ -154,9 +154,7 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
         >
           <View style={{ gap: 4 }}>
-            <Text
-              style={{ fontSize: 13, fontWeight: '500', color: 'rgba(255,255,255,0.4)' }}
-            >
+            <Text style={{ fontSize: 13, fontWeight: '500', color: 'rgba(255,255,255,0.6)' }}>
               총 자산
             </Text>
             {isLocked ? (
@@ -216,12 +214,14 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
           style={{
             fontSize: 13,
             fontWeight: '500',
-            color: isLocked ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.5)',
-            lineHeight: 18,
+            color: isLocked ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.7)',
+            lineHeight: 19,
           }}
-          numberOfLines={1}
+          numberOfLines={2}
         >
-          {isLocked ? '구독 후 고래의 최근 활동을 확인하세요' : (whale.recentActivity ?? '최근 활동이 없어요')}
+          {isLocked
+            ? '구독 후 고래의 최근 활동을 확인하세요'
+            : (whale.recentActivity ?? '최근 활동이 없어요')}
         </Text>
       </Animated.View>
     </Pressable>

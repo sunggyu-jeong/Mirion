@@ -3,7 +3,7 @@ import type { ActivityEvent } from '@entities/unified-activity';
 import type { WhaleTx } from '@entities/whale-tx';
 import { formatRelativeTime } from '@shared/lib/format';
 import { useAppNavigation } from '@shared/lib/navigation';
-import { ArrowDownLeft, ArrowRight, ArrowUpRight, Lock, RefreshCw } from 'lucide-react-native';
+import { ArrowDownLeft, ArrowUpRight, ChevronRight, Lock, RefreshCw } from 'lucide-react-native';
 import React, { useCallback } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -12,22 +12,19 @@ const ONCHAIN_TYPE_CONFIG = {
     action: '보냈어요',
     Icon: ArrowUpRight,
     color: '#F43F5E',
-    bg: 'rgba(244,63,94,0.12)',
-    glow: 'rgba(244,63,94,0.3)',
+    bg: 'rgba(244,63,94,0.15)',
   },
   receive: {
     action: '받았어요',
     Icon: ArrowDownLeft,
     color: '#22D3EE',
-    bg: 'rgba(34,211,238,0.12)',
-    glow: 'rgba(34,211,238,0.3)',
+    bg: 'rgba(34,211,238,0.15)',
   },
   swap: {
     action: '바꿨어요',
     Icon: RefreshCw,
     color: '#A78BFA',
-    bg: 'rgba(167,139,250,0.12)',
-    glow: 'rgba(167,139,250,0.3)',
+    bg: 'rgba(167,139,250,0.15)',
   },
 } as const;
 
@@ -48,13 +45,26 @@ const COIN_NAME: Record<string, string> = {
 
 function formatAmountKo(usd: number): string {
   if (usd >= 1_000_000_000) {
-    return `${(usd / 1_000_000_000).toFixed(1)}B달러 (약 ${(usd * 0.0014).toFixed(0)}조원)`;
+    return `약 ${(usd * 0.0014).toFixed(0)}조원`;
   }
   if (usd >= 1_000_000) {
-    return `${(usd / 1_000_000).toFixed(1)}M달러 (약 ${((usd * 1350) / 100_000_000).toFixed(1)}억원)`;
+    return `약 ${((usd * 1350) / 100_000_000).toFixed(1)}억원`;
   }
   if (usd >= 1_000) {
-    return `${(usd / 1_000).toFixed(0)}K달러 (약 ${((usd * 1350) / 10_000).toFixed(0)}만원)`;
+    return `약 ${((usd * 1350) / 10_000).toFixed(0)}만원`;
+  }
+  return `$${usd.toLocaleString()}`;
+}
+
+function formatUsdShort(usd: number): string {
+  if (usd >= 1_000_000_000) {
+    return `$${(usd / 1_000_000_000).toFixed(1)}B`;
+  }
+  if (usd >= 1_000_000) {
+    return `$${(usd / 1_000_000).toFixed(1)}M`;
+  }
+  if (usd >= 1_000) {
+    return `$${(usd / 1_000).toFixed(0)}K`;
   }
   return `$${usd.toLocaleString()}`;
 }
@@ -81,97 +91,94 @@ function OnChainItem({
   return (
     <View
       style={{
-        backgroundColor: 'rgba(255,255,255,0.04)',
-        borderRadius: 24,
-        padding: 20,
-        gap: 16,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: 20,
+        padding: 18,
+        gap: 14,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.06)',
+        borderColor: 'rgba(255,255,255,0.09)',
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 14 }}>
         <View
           style={{
-            width: 48,
-            height: 48,
-            borderRadius: 16,
+            width: 44,
+            height: 44,
+            borderRadius: 14,
             backgroundColor: config.bg,
             alignItems: 'center',
             justifyContent: 'center',
-            shadowColor: config.color,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.2,
-            shadowRadius: 8,
+            flexShrink: 0,
           }}
         >
           <Icon
-            size={22}
+            size={20}
             color={config.color}
             strokeWidth={2.5}
           />
         </View>
 
-        <View style={{ flex: 1, gap: 2 }}>
+        <View style={{ flex: 1, gap: 3 }}>
           <View
             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
           >
-            <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
-              {formatRelativeTime(tx.timestampMs)}
+            <Text style={{ fontSize: 15, fontWeight: '700', color: 'white', letterSpacing: -0.3 }}>
+              {assetName}을 {config.action}
             </Text>
             <View
               style={{
-                backgroundColor: 'rgba(34,211,238,0.1)',
-                paddingHorizontal: 6,
-                paddingVertical: 2,
-                borderRadius: 4,
+                backgroundColor: 'rgba(34,211,238,0.15)',
+                paddingHorizontal: 8,
+                paddingVertical: 3,
+                borderRadius: 6,
               }}
             >
-              <Text style={{ fontSize: 10, color: '#22D3EE', fontWeight: '700' }}>온체인</Text>
+              <Text style={{ fontSize: 11, color: '#22D3EE', fontWeight: '700' }}>온체인</Text>
             </View>
           </View>
-          <Text style={{ fontSize: 16, fontWeight: '700', color: 'white', letterSpacing: -0.4 }}>
-            {assetName} {tx.amountNative.toLocaleString()}개를 {config.action}
-          </Text>
-          <Text style={{ fontSize: 14, fontWeight: '600', color: config.color }}>
-            {isLocked ? '금액 잠금됨' : formatAmountKo(tx.amountUsd)}
+          <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontWeight: '500' }}>
+            {formatRelativeTime(tx.timestampMs)}
           </Text>
         </View>
       </View>
 
-      {!isLocked && (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 8,
-            backgroundColor: 'rgba(255,255,255,0.03)',
-            borderRadius: 12,
-            padding: 12,
-          }}
-        >
-          <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
-            이동 경로
-          </Text>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Text
-              style={{ fontSize: 12, color: 'white', fontWeight: '600' }}
-              numberOfLines={1}
-            >
-              지갑
-            </Text>
-            <ArrowRight
-              size={10}
-              color="rgba(255,255,255,0.2)"
+      <View
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.04)',
+          borderRadius: 12,
+          padding: 14,
+          gap: 4,
+        }}
+      >
+        {isLocked ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Lock
+              size={16}
+              color="rgba(255,255,255,0.35)"
+              strokeWidth={2.5}
             />
             <Text
-              style={{ fontSize: 12, color: 'white', fontWeight: '600' }}
-              numberOfLines={1}
+              style={{
+                fontSize: 22,
+                fontWeight: '800',
+                color: 'rgba(255,255,255,0.25)',
+                letterSpacing: -0.5,
+              }}
             >
-              거래소
+              ••••••
             </Text>
           </View>
-        </View>
-      )}
+        ) : (
+          <>
+            <Text style={{ fontSize: 24, fontWeight: '800', color: 'white', letterSpacing: -0.8 }}>
+              {formatAmountKo(tx.amountUsd)}
+            </Text>
+            <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontWeight: '500' }}>
+              {formatUsdShort(tx.amountUsd)} · {tx.amountNative.toLocaleString()} {tx.asset}
+            </Text>
+          </>
+        )}
+      </View>
 
       {isLocked ? (
         <Pressable
@@ -181,8 +188,8 @@ function OnChainItem({
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            paddingVertical: 14,
-            borderRadius: 16,
+            paddingVertical: 13,
+            borderRadius: 14,
             backgroundColor: '#06B6D4',
           }}
         >
@@ -200,15 +207,22 @@ function OnChainItem({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 6,
-            paddingVertical: 12,
-            borderRadius: 16,
-            backgroundColor: 'rgba(255,255,255,0.05)',
+            gap: 4,
+            paddingVertical: 11,
+            borderRadius: 14,
+            backgroundColor: 'rgba(255,255,255,0.08)',
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.1)',
           }}
         >
-          <Text style={{ fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>
-            상세 정보
+          <Text style={{ fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.85)' }}>
+            상세 정보 보기
           </Text>
+          <ChevronRight
+            size={14}
+            color="rgba(255,255,255,0.6)"
+            strokeWidth={2.5}
+          />
         </Pressable>
       )}
     </View>
@@ -226,59 +240,96 @@ function CexItem({
 }) {
   const isBuy = trade.side === 'buy';
   const color = isBuy ? '#4ADE80' : '#FB923C';
-  const bg = isBuy ? 'rgba(74,222,128,0.12)' : 'rgba(251,146,60,0.12)';
+  const bg = isBuy ? 'rgba(74,222,128,0.15)' : 'rgba(251,146,60,0.15)';
   const coinName = COIN_NAME[trade.symbol.split('/')[0]] ?? trade.symbol.split('/')[0];
+  const actionText = isBuy ? '대량 매수' : '대량 매도';
 
   return (
     <View
       style={{
-        backgroundColor: 'rgba(255,255,255,0.04)',
-        borderRadius: 24,
-        padding: 20,
-        gap: 16,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: 20,
+        padding: 18,
+        gap: 14,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.06)',
+        borderColor: 'rgba(255,255,255,0.09)',
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 14 }}>
         <View
           style={{
-            width: 48,
-            height: 48,
-            borderRadius: 16,
+            width: 44,
+            height: 44,
+            borderRadius: 14,
             backgroundColor: bg,
             alignItems: 'center',
             justifyContent: 'center',
+            flexShrink: 0,
           }}
         >
           <Text style={{ fontSize: 20 }}>{isBuy ? '🚀' : '🔥'}</Text>
         </View>
 
-        <View style={{ flex: 1, gap: 2 }}>
+        <View style={{ flex: 1, gap: 3 }}>
           <View
             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
           >
-            <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
-              {formatRelativeTime(trade.timestampMs)}
+            <Text style={{ fontSize: 15, fontWeight: '700', color: 'white', letterSpacing: -0.3 }}>
+              {coinName} {actionText}
             </Text>
             <View
               style={{
-                backgroundColor: 'rgba(167,139,250,0.1)',
-                paddingHorizontal: 6,
-                paddingVertical: 2,
-                borderRadius: 4,
+                backgroundColor: 'rgba(167,139,250,0.15)',
+                paddingHorizontal: 8,
+                paddingVertical: 3,
+                borderRadius: 6,
               }}
             >
-              <Text style={{ fontSize: 10, color: '#A78BFA', fontWeight: '700' }}>거래소</Text>
+              <Text style={{ fontSize: 11, color: '#A78BFA', fontWeight: '700' }}>거래소</Text>
             </View>
           </View>
-          <Text style={{ fontSize: 16, fontWeight: '700', color: 'white', letterSpacing: -0.4 }}>
-            {coinName} 대량 {isBuy ? '매수 발생' : '매도 발생'}
-          </Text>
-          <Text style={{ fontSize: 14, fontWeight: '600', color: color }}>
-            {isLocked ? '금액 잠금됨' : formatAmountKo(trade.valueUsd)}
+          <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', fontWeight: '500' }}>
+            {formatRelativeTime(trade.timestampMs)}
           </Text>
         </View>
+      </View>
+
+      <View
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.04)',
+          borderRadius: 12,
+          padding: 14,
+          gap: 4,
+        }}
+      >
+        {isLocked ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Lock
+              size={16}
+              color="rgba(255,255,255,0.35)"
+              strokeWidth={2.5}
+            />
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: '800',
+                color: 'rgba(255,255,255,0.25)',
+                letterSpacing: -0.5,
+              }}
+            >
+              ••••••
+            </Text>
+          </View>
+        ) : (
+          <>
+            <Text style={{ fontSize: 24, fontWeight: '800', color, letterSpacing: -0.8 }}>
+              {formatAmountKo(trade.valueUsd)}
+            </Text>
+            <Text style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontWeight: '500' }}>
+              {formatUsdShort(trade.valueUsd)} · {trade.symbol}
+            </Text>
+          </>
+        )}
       </View>
 
       {isLocked && (
@@ -289,8 +340,8 @@ function CexItem({
             alignItems: 'center',
             justifyContent: 'center',
             gap: 8,
-            paddingVertical: 14,
-            borderRadius: 16,
+            paddingVertical: 13,
+            borderRadius: 14,
             backgroundColor: '#06B6D4',
           }}
         >
