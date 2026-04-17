@@ -1,5 +1,5 @@
 import type { Env } from "../types";
-import { withCache } from "../lib/cache";
+import { withKvCache } from "../lib/cache";
 import { getWhaleProfile } from "../lib/alchemy";
 import { getBtcProfile } from "../lib/blockstream";
 import { getSolProfile } from "../lib/solana";
@@ -10,7 +10,7 @@ import { getMultiCoinPrices } from "../lib/coingecko";
 const FALLBACK_PROFILE = { nativeBalance: "0", totalValueUsd: 0, tokens: [] };
 
 async function fetchProfile(chain: string, address: string, env: Env) {
-  const prices = await withCache("prices:multi", 10 * 60, getMultiCoinPrices);
+  const prices = await withKvCache(env.CACHE, "prices:multi", 10 * 60, getMultiCoinPrices);
   if (chain === "BTC") return getBtcProfile(address, prices.btc);
   if (chain === "SOL") return getSolProfile(address, prices.sol, env.HELIUS_API_KEY);
   if (chain === "XRP") return getXrpProfile(address, prices.xrp);
@@ -33,7 +33,7 @@ export async function handleWhaleProfile(
 
   try {
     const cacheKey = `whale-profile:${chain}:${address.toLowerCase()}`;
-    const data = await withCache(cacheKey, 3600, () =>
+    const data = await withKvCache(env.CACHE, cacheKey, 3600, () =>
       fetchProfile(chain, address, env),
     );
     return Response.json(data);

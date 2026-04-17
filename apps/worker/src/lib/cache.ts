@@ -1,40 +1,32 @@
-const CACHE_BASE = "https://cache.mirion/";
-
-function cacheRequest(key: string): Request {
-  return new Request(`${CACHE_BASE}${encodeURIComponent(key)}`);
+// KV-backed cache (global across all CF datacenters)
+export async function kvGet<T>(kv: KVNamespace, key: string): Promise<T | null> {
+  return kv.get<T>(key, "json");
 }
 
-export async function cacheGet<T>(key: string): Promise<T | null> {
-  const cached = await caches.default.match(cacheRequest(key));
-  if (!cached) return null;
-  return cached.json() as Promise<T>;
+export async function kvPut<T>(
+  kv: KVNamespace,
+  key: string,
+  value: T,
+  ttlSeconds: number,
+): Promise<void> {
+  await kv.put(key, JSON.stringify(value), { expirationTtl: ttlSeconds });
 }
 
-export async function cachePut<T>(key: string, value: T, ttlSeconds: number): Promise<void> {
-  const res = new Response(JSON.stringify(value), {
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": `max-age=${ttlSeconds}`,
-    },
-  });
-  await caches.default.put(cacheRequest(key), res);
-}
-
-export async function withCache<T>(
+export async function withKvCache<T>(
+  kv: KVNamespace,
   key: string,
   ttlSeconds: number,
   fn: () => Promise<T>,
 ): Promise<T> {
-  const cached = await cacheGet<T>(key);
+  const cached = await kvGet<T>(kv, key);
   if (cached !== null) {
-    const isEmpty = Array.isArray(cached) && cached.length === 0;
+    const isEmpty = Array.isArray(cached) && (cached as unknown[]).length === 0;
     if (!isEmpty) return cached;
   }
-
   const fresh = await fn();
   const isEmpty = Array.isArray(fresh) && (fresh as unknown[]).length === 0;
   if (!isEmpty) {
-    await cachePut(key, fresh, ttlSeconds);
+    await kvPut(kv, key, fresh, ttlSeconds);
   }
   return fresh;
 }

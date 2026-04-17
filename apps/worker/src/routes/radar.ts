@@ -6,7 +6,7 @@ import { getSolTransfers } from "../lib/solana";
 import { getXrpTransfers } from "../lib/xrpl";
 import { getTrxTransfers } from "../lib/trongrid";
 import { getMultiCoinPrices } from "../lib/coingecko";
-import { cacheGet, cachePut, withCache } from "../lib/cache";
+import { kvGet, kvPut, withKvCache } from "../lib/cache";
 import { getWhaleList } from "./whales";
 import type { WhaleEntry } from "./whales";
 
@@ -23,8 +23,8 @@ type Prices = {
   bnb: number; xrp: number; trx: number;
 };
 
-async function getCachedPrices(_env: Env): Promise<Prices> {
-  const raw = await withCache("prices:multi", PRICE_CACHE_TTL, getMultiCoinPrices);
+async function getCachedPrices(env: Env): Promise<Prices> {
+  const raw = await withKvCache(env.CACHE, "prices:multi", PRICE_CACHE_TTL, getMultiCoinPrices);
   return {
     eth: raw.eth, btc: raw.btc, sol: raw.sol,
     bnb: raw.bnb, xrp: raw.xrp ?? 0.5, trx: raw.trx ?? 0.1,
@@ -143,7 +143,7 @@ export async function handleRadar(request: Request, env: Env): Promise<Response>
     Promise.all(
       chainList.map(async (chain) => {
         const key = `radar:v2:${chain}:${minValueUsd}`;
-        return { chain, key, data: await cacheGet<WhaleTxDTO[]>(key) };
+        return { chain, key, data: await kvGet<WhaleTxDTO[]>(env.CACHE, key) };
       }),
     ),
   ]);
@@ -170,7 +170,7 @@ export async function handleRadar(request: Request, env: Env): Promise<Response>
       uncached.map(async ({ chain, key }) => {
         const chainWhales = whales.filter((w) => w.chain === chain);
         const txs = await fetchChain(chain, chainWhales, minValueUsd, prices, env);
-        await cachePut(key, txs, txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL);
+        await kvPut(env.CACHE, key, txs, txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL);
         return txs;
       }),
     )
