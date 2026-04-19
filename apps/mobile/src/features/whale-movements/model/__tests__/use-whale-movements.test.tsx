@@ -1,7 +1,7 @@
 import type { WhaleTx } from '@entities/whale-tx';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react-native';
-import React from 'react';
+import { asMock } from '@test/mocks';
+import { renderQueryHook } from '@test/query';
+import { waitFor } from '@testing-library/react-native';
 
 jest.mock('@entities/whale-tx', () => ({
   fetchRadarTransactions: jest.fn(),
@@ -28,18 +28,8 @@ function makeTx(overrides: Partial<WhaleTx> = {}): WhaleTx {
   };
 }
 
-function createWrapper() {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: 0 } },
-  });
-  function Wrapper({ children }: { children: React.ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-  }
-  return Wrapper;
-}
-
 beforeEach(() => {
-  (fetchRadarTransactions as jest.Mock).mockResolvedValue([]);
+  asMock(fetchRadarTransactions).mockResolvedValue([]);
 });
 
 afterEach(() => {
@@ -48,19 +38,19 @@ afterEach(() => {
 
 describe('useWhaleMovements', () => {
   it('returns isLoading true before data resolves', () => {
-    const { result } = renderHook(() => useWhaleMovements(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleMovements());
 
     expect(result.current.isLoading).toBe(true);
   });
 
   it('returns isLoading false after data resolves', async () => {
-    const { result } = renderHook(() => useWhaleMovements(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleMovements());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
   });
 
   it('calls fetchRadarTransactions once', async () => {
-    const { result } = renderHook(() => useWhaleMovements(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleMovements());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -69,9 +59,9 @@ describe('useWhaleMovements', () => {
 
   it('returns all transactions when chainFilter is ALL', async () => {
     const txs = [makeTx({ chain: 'ETH' }), makeTx({ txHash: '0xBTC', chain: 'BTC' })];
-    (fetchRadarTransactions as jest.Mock).mockResolvedValue(txs);
+    asMock(fetchRadarTransactions).mockResolvedValue(txs);
 
-    const { result } = renderHook(() => useWhaleMovements('ALL'), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleMovements('ALL'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -84,9 +74,9 @@ describe('useWhaleMovements', () => {
       makeTx({ txHash: '0xBTC', chain: 'BTC' }),
       makeTx({ txHash: '0xETH2', chain: 'ETH' }),
     ];
-    (fetchRadarTransactions as jest.Mock).mockResolvedValue(txs);
+    asMock(fetchRadarTransactions).mockResolvedValue(txs);
 
-    const { result } = renderHook(() => useWhaleMovements('ETH'), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleMovements('ETH'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -96,9 +86,9 @@ describe('useWhaleMovements', () => {
 
   it('returns empty array when no transactions match the chainFilter', async () => {
     const txs = [makeTx({ chain: 'ETH' }), makeTx({ txHash: '0xETH2', chain: 'ETH' })];
-    (fetchRadarTransactions as jest.Mock).mockResolvedValue(txs);
+    asMock(fetchRadarTransactions).mockResolvedValue(txs);
 
-    const { result } = renderHook(() => useWhaleMovements('BTC'), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleMovements('BTC'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -106,9 +96,9 @@ describe('useWhaleMovements', () => {
   });
 
   it('returns empty array when fetchRadarTransactions returns empty', async () => {
-    (fetchRadarTransactions as jest.Mock).mockResolvedValue([]);
+    asMock(fetchRadarTransactions).mockResolvedValue([]);
 
-    const { result } = renderHook(() => useWhaleMovements(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleMovements());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -116,9 +106,9 @@ describe('useWhaleMovements', () => {
   });
 
   it('sets isError true when fetchRadarTransactions rejects', async () => {
-    (fetchRadarTransactions as jest.Mock).mockRejectedValue(new Error('api down'));
+    asMock(fetchRadarTransactions).mockRejectedValue(new Error('api down'));
 
-    const { result } = renderHook(() => useWhaleMovements(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleMovements());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

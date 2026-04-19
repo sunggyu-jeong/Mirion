@@ -3,6 +3,7 @@ jest.mock('@shared/api/worker', () => ({
 }));
 
 import { workerGet } from '@shared/api/worker';
+import { asMock } from '@test/mocks';
 
 import { fetchEthMarketChart, fetchEthMarketData, fetchEthPriceUsd } from '../index';
 
@@ -19,7 +20,7 @@ const MOCK_POINTS = [
 ];
 
 beforeEach(() => {
-  (workerGet as jest.Mock).mockResolvedValue(MOCK_MARKET);
+  asMock(workerGet).mockResolvedValue(MOCK_MARKET);
 });
 
 afterEach(() => {
@@ -38,7 +39,7 @@ describe('fetchEthPriceUsd', () => {
   });
 
   it('propagates error when the worker request fails', async () => {
-    (workerGet as jest.Mock).mockRejectedValueOnce(new Error('Worker HTTP 429'));
+    asMock(workerGet).mockRejectedValueOnce(new Error('Worker HTTP 429'));
     await expect(fetchEthPriceUsd()).rejects.toThrow('Worker HTTP 429');
   });
 });
@@ -55,14 +56,14 @@ describe('fetchEthMarketData', () => {
   });
 
   it('propagates error when the worker request fails', async () => {
-    (workerGet as jest.Mock).mockRejectedValueOnce(new Error('Worker HTTP 503'));
+    asMock(workerGet).mockRejectedValueOnce(new Error('Worker HTTP 503'));
     await expect(fetchEthMarketData()).rejects.toThrow('Worker HTTP 503');
   });
 });
 
 describe('fetchEthMarketChart', () => {
   beforeEach(() => {
-    (workerGet as jest.Mock).mockResolvedValue(MOCK_POINTS);
+    asMock(workerGet).mockResolvedValue(MOCK_POINTS);
   });
 
   it('returns price point array from the worker', async () => {
@@ -86,7 +87,7 @@ describe('fetchEthMarketChart', () => {
   });
 
   it('propagates error when the worker request fails', async () => {
-    (workerGet as jest.Mock).mockRejectedValueOnce(new Error('Worker HTTP 500'));
+    asMock(workerGet).mockRejectedValueOnce(new Error('Worker HTTP 500'));
     await expect(fetchEthMarketChart('1W')).rejects.toThrow('Worker HTTP 500');
   });
 });

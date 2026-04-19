@@ -61,4 +61,20 @@ describe('computeDailySummary', () => {
     const result = computeDailySummary(txs);
     expect(result.dominantType).toBe('send');
   });
+
+  it('updates dominant type when a later type has more txs', () => {
+    const txs = [
+      makeTx({ type: 'send' }),
+      makeTx({ type: 'receive' }),
+      makeTx({ type: 'receive' }),
+    ];
+    const result = computeDailySummary(txs);
+    expect(result.dominantType).toBe('receive');
+  });
+
+  it('keeps first when counts are tied', () => {
+    const txs = [makeTx({ type: 'send' }), makeTx({ type: 'receive' })];
+    const result = computeDailySummary(txs);
+    expect(result.dominantType).toBe('send');
+  });
 });

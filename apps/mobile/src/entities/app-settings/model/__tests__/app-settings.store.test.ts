@@ -66,4 +66,20 @@ describe('useAppSettingsStore', () => {
     });
     expect(result.current.quietHoursEnabled).toBe(true);
   });
+
+  it('setMinDetectionEth should update minDetectionEth', () => {
+    const { result } = renderHook(() => useAppSettingsStore());
+    act(() => {
+      result.current.setMinDetectionEth(500);
+    });
+    expect(result.current.minDetectionEth).toBe(500);
+  });
+
+  it('setAlertMinEth should update alertMinEth', () => {
+    const { result } = renderHook(() => useAppSettingsStore());
+    act(() => {
+      result.current.setAlertMinEth(1000);
+    });
+    expect(result.current.alertMinEth).toBe(1000);
+  });
 });

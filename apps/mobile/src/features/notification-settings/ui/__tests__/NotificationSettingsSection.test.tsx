@@ -68,4 +68,12 @@ describe('NotificationSettingsSection', () => {
 
     expect(screen.getByText('밤 12시 ~ 오전 7시')).toBeTruthy();
   });
+
+  it('renders with quiet hours enabled', () => {
+    useAppSettingsStore.setState({ quietHoursEnabled: true });
+
+    render(<NotificationSettingsSection />);
+
+    expect(screen.getByText('방해 금지 모드')).toBeTruthy();
+  });
 });

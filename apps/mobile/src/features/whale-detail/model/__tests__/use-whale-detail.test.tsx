@@ -1,8 +1,8 @@
 import type { WhaleMetadata, WhaleOnchainData } from '@entities/whale';
 import type { WhaleTx } from '@entities/whale-tx';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react-native';
-import React from 'react';
+import { asMock, withSuppressedConsoleError } from '@test/mocks';
+import { renderQueryHook } from '@test/query';
+import { waitFor } from '@testing-library/react-native';
 
 jest.mock('@entities/whale', () => ({
   CURATED_WHALES: [
@@ -60,19 +60,9 @@ const MOCK_TX: WhaleTx = {
   chain: 'ETH',
 };
 
-function createWrapper() {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: 0 } },
-  });
-  function Wrapper({ children }: { children: React.ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-  }
-  return Wrapper;
-}
-
 beforeEach(() => {
-  (fetchWhaleProfile as jest.Mock).mockResolvedValue(MOCK_ONCHAIN);
-  (fetchWhaleTransfers as jest.Mock).mockResolvedValue([MOCK_TX]);
+  asMock(fetchWhaleProfile).mockResolvedValue(MOCK_ONCHAIN);
+  asMock(fetchWhaleTransfers).mockResolvedValue([MOCK_TX]);
 });
 
 afterEach(() => {
@@ -81,17 +71,13 @@ afterEach(() => {
 
 describe('useWhaleDetail', () => {
   it('returns isLoading true before data resolves', () => {
-    const { result } = renderHook(() => useWhaleDetail('vitalik'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useWhaleDetail('vitalik'));
 
     expect(result.current.isLoading).toBe(true);
   });
 
   it('calls fetchWhaleProfile with just the whale address', async () => {
-    const { result } = renderHook(() => useWhaleDetail('vitalik'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useWhaleDetail('vitalik'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -99,9 +85,7 @@ describe('useWhaleDetail', () => {
   });
 
   it('calls fetchWhaleTransfers with the whale address and opts', async () => {
-    const { result } = renderHook(() => useWhaleDetail('vitalik'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useWhaleDetail('vitalik'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -112,9 +96,7 @@ describe('useWhaleDetail', () => {
   });
 
   it('returns totalValueUsd from onchain profile data', async () => {
-    const { result } = renderHook(() => useWhaleDetail('vitalik'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useWhaleDetail('vitalik'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -122,9 +104,7 @@ describe('useWhaleDetail', () => {
   });
 
   it('returns tokens from onchain profile data', async () => {
-    const { result } = renderHook(() => useWhaleDetail('vitalik'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useWhaleDetail('vitalik'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -135,9 +115,7 @@ describe('useWhaleDetail', () => {
   });
 
   it('returns transactions from fetchWhaleTransfers', async () => {
-    const { result } = renderHook(() => useWhaleDetail('vitalik'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useWhaleDetail('vitalik'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -146,9 +124,7 @@ describe('useWhaleDetail', () => {
   });
 
   it('does not call fetchWhaleProfile for a non-ETH-chain whale', async () => {
-    const { result } = renderHook(() => useWhaleDetail('microstrategy'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useWhaleDetail('microstrategy'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -156,21 +132,19 @@ describe('useWhaleDetail', () => {
   });
 
   it('returns data undefined for an unrecognised whaleId', async () => {
-    const { result } = renderHook(() => useWhaleDetail('unknown-id'), {
-      wrapper: createWrapper(),
+    await withSuppressedConsoleError(async () => {
+      const { result } = renderQueryHook(() => useWhaleDetail('unknown-id'));
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+      expect(result.current.data).toBeUndefined();
     });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    expect(result.current.data).toBeUndefined();
   });
 
   it('sets isError true when fetchWhaleProfile rejects', async () => {
-    (fetchWhaleProfile as jest.Mock).mockRejectedValueOnce(new Error('profile failed'));
+    asMock(fetchWhaleProfile).mockRejectedValueOnce(new Error('profile failed'));
 
-    const { result } = renderHook(() => useWhaleDetail('vitalik'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useWhaleDetail('vitalik'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -178,11 +152,9 @@ describe('useWhaleDetail', () => {
   });
 
   it('sets isError true when fetchWhaleTransfers rejects', async () => {
-    (fetchWhaleTransfers as jest.Mock).mockRejectedValueOnce(new Error('transfers failed'));
+    asMock(fetchWhaleTransfers).mockRejectedValueOnce(new Error('transfers failed'));
 
-    const { result } = renderHook(() => useWhaleDetail('vitalik'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useWhaleDetail('vitalik'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

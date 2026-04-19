@@ -1,7 +1,7 @@
 import type { WhaleMetadata, WhaleOnchainData } from '@entities/whale';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react-native';
-import React from 'react';
+import { asMock } from '@test/mocks';
+import { renderQueryHook } from '@test/query';
+import { waitFor } from '@testing-library/react-native';
 
 jest.mock('@entities/whale', () => ({
   fetchWhales: jest.fn(),
@@ -51,19 +51,9 @@ const MOCK_ONCHAIN_DATA: WhaleOnchainData = {
   tokens: [],
 };
 
-function createWrapper() {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: 0 } },
-  });
-  function Wrapper({ children }: { children: React.ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-  }
-  return Wrapper;
-}
-
 beforeEach(() => {
-  (fetchWhales as jest.Mock).mockResolvedValue(MOCK_WHALES);
-  (fetchWhaleProfile as jest.Mock).mockResolvedValue(MOCK_ONCHAIN_DATA);
+  asMock(fetchWhales).mockResolvedValue(MOCK_WHALES);
+  asMock(fetchWhaleProfile).mockResolvedValue(MOCK_ONCHAIN_DATA);
 });
 
 afterEach(() => {
@@ -72,19 +62,19 @@ afterEach(() => {
 
 describe('useWhaleFeed', () => {
   it('returns isLoading true before data resolves', () => {
-    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleFeed());
 
     expect(result.current.isLoading).toBe(true);
   });
 
   it('returns isLoading false after data resolves', async () => {
-    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleFeed());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
   });
 
   it('calls fetchWhaleProfile for every whale with address and chain', async () => {
-    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleFeed());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -100,7 +90,7 @@ describe('useWhaleFeed', () => {
   });
 
   it('returns a WhaleProfile entry for every whale', async () => {
-    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleFeed());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -108,7 +98,7 @@ describe('useWhaleFeed', () => {
   });
 
   it('merges onchain totalValueUsd into the whale profile', async () => {
-    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleFeed());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -117,7 +107,7 @@ describe('useWhaleFeed', () => {
   });
 
   it('preserves static metadata fields in returned profiles', async () => {
-    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleFeed());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -128,9 +118,9 @@ describe('useWhaleFeed', () => {
   });
 
   it('falls back to zero balances when fetchWhaleProfile rejects for a whale', async () => {
-    (fetchWhaleProfile as jest.Mock).mockRejectedValueOnce(new Error('network'));
+    asMock(fetchWhaleProfile).mockRejectedValueOnce(new Error('network'));
 
-    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleFeed());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -140,9 +130,9 @@ describe('useWhaleFeed', () => {
   });
 
   it('sets isError true when fetchWhales rejects', async () => {
-    (fetchWhales as jest.Mock).mockRejectedValueOnce(new Error('network'));
+    asMock(fetchWhales).mockRejectedValueOnce(new Error('network'));
 
-    const { result } = renderHook(() => useWhaleFeed(), { wrapper: createWrapper() });
+    const { result } = renderQueryHook(() => useWhaleFeed());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

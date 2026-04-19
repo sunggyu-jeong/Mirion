@@ -3,6 +3,7 @@ jest.mock('@shared/api/worker', () => ({
 }));
 
 import { workerGet } from '@shared/api/worker';
+import { asMock } from '@test/mocks';
 
 import { fetchWhaleProfile } from '../fetch-whale-profile';
 
@@ -22,7 +23,7 @@ const MOCK_DTO = {
 };
 
 beforeEach(() => {
-  (workerGet as jest.Mock).mockResolvedValue(MOCK_DTO);
+  asMock(workerGet).mockResolvedValue(MOCK_DTO);
 });
 
 afterEach(() => {
@@ -59,7 +60,7 @@ describe('fetchWhaleProfile', () => {
   });
 
   it('returns 0n ethBalance and empty tokens for a zero-balance address', async () => {
-    (workerGet as jest.Mock).mockResolvedValueOnce({
+    asMock(workerGet).mockResolvedValueOnce({
       nativeBalance: ZERO_HEX,
       totalValueUsd: 0,
       tokens: [],
@@ -73,7 +74,7 @@ describe('fetchWhaleProfile', () => {
   });
 
   it('propagates error when the worker request fails', async () => {
-    (workerGet as jest.Mock).mockRejectedValueOnce(new Error('Worker HTTP 503'));
+    asMock(workerGet).mockRejectedValueOnce(new Error('Worker HTTP 503'));
 
     await expect(fetchWhaleProfile(ETH_ADDRESS)).rejects.toThrow('Worker HTTP 503');
   });

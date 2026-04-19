@@ -3,6 +3,7 @@ jest.mock('@shared/api/worker', () => ({
 }));
 
 import { workerGet } from '@shared/api/worker';
+import { asMock } from '@test/mocks';
 
 import { fetchRadarTransactions } from '../fetch-radar-transactions';
 
@@ -36,7 +37,7 @@ const MOCK_DTOS = [
 ];
 
 beforeEach(() => {
-  (workerGet as jest.Mock).mockResolvedValue(MOCK_DTOS);
+  asMock(workerGet).mockResolvedValue(MOCK_DTOS);
 });
 
 afterEach(() => {
@@ -85,7 +86,7 @@ describe('fetchRadarTransactions', () => {
   });
 
   it('returns empty array when worker returns no data', async () => {
-    (workerGet as jest.Mock).mockResolvedValueOnce([]);
+    asMock(workerGet).mockResolvedValueOnce([]);
 
     const txs = await fetchRadarTransactions();
 
@@ -93,7 +94,7 @@ describe('fetchRadarTransactions', () => {
   });
 
   it('propagates error when worker request fails', async () => {
-    (workerGet as jest.Mock).mockRejectedValueOnce(new Error('Worker HTTP 503'));
+    asMock(workerGet).mockRejectedValueOnce(new Error('Worker HTTP 503'));
 
     await expect(fetchRadarTransactions()).rejects.toThrow('Worker HTTP 503');
   });
