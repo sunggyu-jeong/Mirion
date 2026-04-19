@@ -7,12 +7,12 @@ import React, { useCallback } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-const TOSS_PRESS = { damping: 15, stiffness: 400 } as const;
+const PRESS_SPRING = { damping: 15, stiffness: 400 } as const;
 
 const ACTIVITY_CONFIG = {
-  buy: { label: '매수', color: '#22c55e', Icon: TrendingUp },
-  sell: { label: '매도', color: '#fb2c36', Icon: TrendingDown },
-  transfer: { label: '전송', color: '#f97316', Icon: ArrowRight },
+  buy: { label: '매수 중', color: '#4ADE80', Icon: TrendingUp, bg: 'rgba(74,222,128,0.12)' },
+  sell: { label: '매도 중', color: '#F43F5E', Icon: TrendingDown, bg: 'rgba(244,63,94,0.12)' },
+  transfer: { label: '이동 중', color: '#FB923C', Icon: ArrowRight, bg: 'rgba(251,146,60,0.12)' },
 } as const;
 
 type Props = {
@@ -45,21 +45,23 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
   return (
     <Pressable
       onPressIn={() => {
-        scale.value = withSpring(0.97, TOSS_PRESS);
+        scale.value = withSpring(0.97, PRESS_SPRING);
       }}
       onPressOut={() => {
-        scale.value = withSpring(1, TOSS_PRESS);
+        scale.value = withSpring(1, PRESS_SPRING);
       }}
       onPress={handlePress}
     >
       <Animated.View
         style={[
           {
-            backgroundColor: '#f8fafc',
-            borderRadius: 20,
-            padding: 18,
-            gap: 14,
-            opacity: isLocked ? 0.72 : 1,
+            backgroundColor: 'rgba(255,255,255,0.04)',
+            borderRadius: 24,
+            padding: 20,
+            gap: 16,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.06)',
+            opacity: isLocked ? 0.6 : 1,
           },
           animatedStyle,
         ]}
@@ -68,21 +70,20 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
           <View style={{ flex: 1, gap: 2 }}>
             <Text
               style={{
-                fontSize: 15,
-                fontWeight: '700',
-                color: '#0f172b',
-                letterSpacing: -0.03,
+                fontSize: 17,
+                fontWeight: '800',
+                color: 'white',
+                letterSpacing: -0.4,
               }}
             >
               {whale.name}
             </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: 13,
                   fontWeight: '500',
-                  color: '#94a3b8',
-                  letterSpacing: -0.01,
+                  color: 'rgba(255,255,255,0.65)',
                 }}
               >
                 {whale.tag}
@@ -91,27 +92,26 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: 3,
-                  backgroundColor: `${chainConfig.color}18`,
-                  borderRadius: 4,
-                  paddingHorizontal: 5,
+                  gap: 4,
+                  backgroundColor: 'rgba(255,255,255,0.06)',
+                  borderRadius: 6,
+                  paddingHorizontal: 6,
                   paddingVertical: 2,
                 }}
               >
                 <View
                   style={{
-                    width: 5,
-                    height: 5,
-                    borderRadius: 2.5,
+                    width: 6,
+                    height: 6,
+                    borderRadius: 3,
                     backgroundColor: chainConfig.color,
                   }}
                 />
                 <Text
                   style={{
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: '700',
-                    color: chainConfig.color,
-                    letterSpacing: 0.2,
+                    color: 'rgba(255,255,255,0.6)',
                   }}
                 >
                   {whale.chain}
@@ -125,47 +125,45 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                gap: 4,
-                backgroundColor: '#f1f5f9',
-                borderRadius: 8,
-                paddingHorizontal: 10,
-                paddingVertical: 5,
+                gap: 5,
+                backgroundColor: '#06B6D4',
+                borderRadius: 10,
+                paddingHorizontal: 12,
+                paddingVertical: 6,
               }}
             >
               <Lock
                 size={12}
-                color="#94a3b8"
-                strokeWidth={2}
+                color="white"
+                strokeWidth={2.5}
               />
-              <Text style={{ fontSize: 12, fontWeight: '600', color: '#94a3b8' }}>PRO</Text>
+              <Text style={{ fontSize: 12, fontWeight: '800', color: 'white' }}>PRO</Text>
             </View>
           ) : (
             <ArrowRight
-              size={18}
-              color="#94a3b8"
-              strokeWidth={1.8}
+              size={20}
+              color="rgba(255,255,255,0.45)"
+              strokeWidth={2}
             />
           )}
         </View>
 
-        <View style={{ height: 1, backgroundColor: '#f1f5f9' }} />
+        <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.06)' }} />
 
         <View
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
         >
-          <View style={{ gap: 3 }}>
-            <Text
-              style={{ fontSize: 12, fontWeight: '400', color: '#94a3b8', letterSpacing: -0.01 }}
-            >
+          <View style={{ gap: 4 }}>
+            <Text style={{ fontSize: 13, fontWeight: '500', color: 'rgba(255,255,255,0.6)' }}>
               총 자산
             </Text>
             {isLocked ? (
               <Text
                 style={{
-                  fontSize: 18,
-                  fontWeight: '700',
-                  color: '#94a3b8',
-                  letterSpacing: -0.03,
+                  fontSize: 20,
+                  fontWeight: '800',
+                  color: 'rgba(255,255,255,0.2)',
+                  letterSpacing: -0.5,
                 }}
               >
                 ****
@@ -175,10 +173,10 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
                 value={whale.totalValueUsd}
                 formatter={formatUsd}
                 style={{
-                  fontSize: 18,
-                  fontWeight: '700',
-                  color: '#0f172b',
-                  letterSpacing: -0.03,
+                  fontSize: 20,
+                  fontWeight: '800',
+                  color: 'white',
+                  letterSpacing: -0.5,
                 }}
               />
             )}
@@ -186,26 +184,25 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
 
           <View
             style={{
-              backgroundColor: isLocked ? '#f1f5f9' : `${config.color}18`,
-              borderRadius: 10,
-              paddingHorizontal: 10,
-              paddingVertical: 6,
+              backgroundColor: isLocked ? 'rgba(255,255,255,0.06)' : config.bg,
+              borderRadius: 12,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 5,
+              gap: 6,
             }}
           >
             <Icon
-              size={13}
-              color={isLocked ? '#94a3b8' : config.color}
+              size={14}
+              color={isLocked ? 'rgba(255,255,255,0.2)' : config.color}
               strokeWidth={2.5}
             />
             <Text
               style={{
-                fontSize: 12,
-                fontWeight: '600',
-                color: isLocked ? '#94a3b8' : config.color,
-                letterSpacing: -0.01,
+                fontSize: 13,
+                fontWeight: '700',
+                color: isLocked ? 'rgba(255,255,255,0.2)' : config.color,
               }}
             >
               {config.label}
@@ -215,12 +212,12 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
 
         <Text
           style={{
-            fontSize: 12,
-            fontWeight: '400',
-            color: isLocked ? '#cbd5e1' : '#62748e',
-            letterSpacing: -0.01,
+            fontSize: 13,
+            fontWeight: '500',
+            color: isLocked ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.7)',
+            lineHeight: 19,
           }}
-          numberOfLines={1}
+          numberOfLines={2}
         >
           {isLocked ? '구독 후 최근 활동 확인 가능' : (whale.recentActivity ?? '—')}
         </Text>

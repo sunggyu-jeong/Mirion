@@ -36,12 +36,22 @@ export function AppDataSettingsSection() {
       style={{ gap: 12 }}
     >
       <SectionTitle title="데이터 설정" />
-      <View style={{ backgroundColor: '#f8fafc', borderRadius: 16, padding: 16, gap: 16 }}>
+      <View
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.04)',
+          borderRadius: 16,
+          padding: 16,
+          gap: 16,
+          borderWidth: 1,
+          borderColor: 'rgba(255,255,255,0.07)',
+        }}
+      >
         <LabelRow label="갱신 주기">
           <SegmentedControl
             options={REFRESH_OPTIONS}
             value={refreshInterval}
             onChange={setRefreshInterval}
+            dark
           />
         </LabelRow>
         <LabelRow label="최소 감지 기준금액">
@@ -49,6 +59,7 @@ export function AppDataSettingsSection() {
             options={ETH_OPTIONS}
             value={minDetectionEth}
             onChange={setMinDetectionEth}
+            dark
           />
         </LabelRow>
         <LabelRow label="표시 통화">
@@ -56,6 +67,7 @@ export function AppDataSettingsSection() {
             options={CURRENCY_OPTIONS}
             value={currency}
             onChange={setCurrency}
+            dark
           />
         </LabelRow>
       </View>

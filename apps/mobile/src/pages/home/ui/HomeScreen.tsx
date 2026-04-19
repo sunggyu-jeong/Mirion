@@ -54,8 +54,8 @@ export function HomeScreen() {
   const renderItem = useCallback(
     ({ item, index }: { item: WhaleProfile; index: number }) => (
       <Animated.View
-        entering={FadeInDown.delay(index * 60)
-          .duration(260)
+        entering={FadeInDown.delay(index * 50)
+          .duration(300)
           .easing(EASE_OUT)}
       >
         <WhaleCard
@@ -73,8 +73,11 @@ export function HomeScreen() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <MirionHeader scrollY={scrollY} />
+      <View style={{ flex: 1, backgroundColor: '#020B18' }}>
+        <MirionHeader
+          scrollY={scrollY}
+          streakCount={streakCount}
+        />
         <View style={{ flex: 1, paddingTop: headerTopPadding }}>
           <SkeletonList />
         </View>
@@ -84,8 +87,11 @@ export function HomeScreen() {
 
   if (isError) {
     return (
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <MirionHeader scrollY={scrollY} />
+      <View style={{ flex: 1, backgroundColor: '#020B18' }}>
+        <MirionHeader
+          scrollY={scrollY}
+          streakCount={streakCount}
+        />
         <View style={{ flex: 1, paddingTop: headerTopPadding }}>
           <ErrorState onRetry={refetch} />
         </View>
@@ -94,30 +100,31 @@ export function HomeScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
-      <MirionHeader scrollY={scrollY} />
+    <View style={{ flex: 1, backgroundColor: '#020B18' }}>
+      <MirionHeader
+        scrollY={scrollY}
+        streakCount={streakCount}
+      />
       <Animated.FlatList
         data={filteredWhales}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
-        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+        ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
         contentContainerStyle={{
           paddingTop: headerTopPadding + 8,
           paddingHorizontal: 20,
-          paddingBottom: 32,
+          paddingBottom: 40,
           flexGrow: 1,
         }}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <HomeHeader
-            streakCount={streakCount}
             selectedChain={selectedChain}
             onChainChange={setSelectedChain}
             movements={movements}
-            whales={whales}
-            onWhalePress={toWhaleDetail}
+            onUpgrade={toSettings}
           />
         }
         ListEmptyComponent={

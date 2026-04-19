@@ -1,5 +1,5 @@
 import type { Env } from "../types";
-import { withCache } from "../lib/cache";
+import { withKvCache } from "../lib/cache";
 import { getEthMarketChart } from "../lib/coingecko";
 
 export async function handleEthChart(
@@ -14,7 +14,7 @@ export async function handleEthChart(
     );
   }
 
-  const data = await withCache(env.CACHE, `eth-chart:${period}`, 300, () =>
+  const data = await withKvCache(env.CACHE, `eth-chart:${period}`, 10 * 60, () =>
     getEthMarketChart(period),
   );
   return Response.json(data);

@@ -1,5 +1,5 @@
 import type { Env } from "../types";
-import { withCache } from "../lib/cache";
+import { withKvCache } from "../lib/cache";
 import { getWhaleTransfers } from "../lib/alchemy";
 import { getBtcTransfers } from "../lib/blockstream";
 import { getBnbTransfers } from "../lib/bscscan";
@@ -14,7 +14,7 @@ async function fetchTransfers(
   minValueEth: number,
   env: Env,
 ) {
-  const prices = await withCache(env.CACHE, "multi-prices", 60, getMultiCoinPrices);
+  const prices = await withKvCache(env.CACHE, "prices:multi", 10 * 60, getMultiCoinPrices);
   const minValueUsd = minValueEth * prices.eth;
 
   if (chain === "BTC") return getBtcTransfers(address, minValueUsd, prices.btc);
@@ -40,7 +40,7 @@ export async function handleWhaleTransfers(
 
   try {
     const cacheKey = `whale-transfers:${chain}:${address.toLowerCase()}:${minValueEth}`;
-    const data = await withCache(env.CACHE, cacheKey, 900, () =>
+    const data = await withKvCache(env.CACHE, cacheKey, 900, () =>
       fetchTransfers(chain, address, minValueEth, env),
     );
     return Response.json(data);

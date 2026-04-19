@@ -3,6 +3,7 @@ jest.mock('@shared/api/worker', () => ({
 }));
 
 import { workerGet } from '@shared/api/worker';
+import { asMock } from '@test/mocks';
 
 import { fetchWhaleTransfers } from '../fetch-whale-transfers';
 
@@ -37,7 +38,7 @@ const MOCK_DTOS = [
 ];
 
 beforeEach(() => {
-  (workerGet as jest.Mock).mockResolvedValue(MOCK_DTOS);
+  asMock(workerGet).mockResolvedValue(MOCK_DTOS);
 });
 
 afterEach(() => {
@@ -84,7 +85,7 @@ describe('fetchWhaleTransfers', () => {
   });
 
   it('returns an empty array when the worker returns no transfers', async () => {
-    (workerGet as jest.Mock).mockResolvedValueOnce([]);
+    asMock(workerGet).mockResolvedValueOnce([]);
 
     const transfers = await fetchWhaleTransfers(WHALE, { minValueEth: 100 });
 
@@ -92,7 +93,7 @@ describe('fetchWhaleTransfers', () => {
   });
 
   it('propagates error when the worker request fails', async () => {
-    (workerGet as jest.Mock).mockRejectedValueOnce(new Error('Worker HTTP 500'));
+    asMock(workerGet).mockRejectedValueOnce(new Error('Worker HTTP 500'));
 
     await expect(fetchWhaleTransfers(WHALE, { minValueEth: 100 })).rejects.toThrow(
       'Worker HTTP 500',

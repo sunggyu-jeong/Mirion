@@ -1,14 +1,17 @@
 import { computeDailySummary } from '@entities/daily-summary';
 import type { WhaleTx } from '@entities/whale-tx';
 import { formatUsd } from '@shared/lib/format';
-import React, { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { ChevronRight } from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
+import { Modal, Pressable, Text, View } from 'react-native';
 import Animated, {
+  FadeIn,
   FadeInDown,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const GAUGE_SPRING = { stiffness: 120, damping: 14 } as const;
 const CARD_SPRING = { stiffness: 400, damping: 30 } as const;
@@ -18,22 +21,8 @@ function computeMirionScore(txs: WhaleTx[]): number {
     return 50;
   }
   const receiveCnt = txs.filter(t => t.type === 'receive').length;
-  const sendCnt = txs.filter(t => t.type === 'send').length;
-  const total = receiveCnt + sendCnt;
-  if (total === 0) {
-    return 50;
-  }
+  const total = txs.length;
   return Math.round((receiveCnt / total) * 100);
-}
-
-function buildBriefingText(txs: WhaleTx[], score: number): string {
-  if (txs.length === 0) {
-    return '아직 오늘의 고래 활동 데이터가 없습니다.';
-  }
-  const summary = computeDailySummary(txs);
-  const direction = score >= 60 ? '순매수' : score <= 40 ? '순매도' : '관망';
-  const amountStr = formatUsd(summary.totalUsd);
-  return `대형 고래 ${summary.totalCount}건이 12시간 내 ${amountStr} ${direction} 중`;
 }
 
 function scoreLabel(score: number): string {
@@ -69,6 +58,15 @@ function scoreColor(score: number): string {
   return '#fb2c36';
 }
 
+function buildContextText(txs: WhaleTx[], score: number): string {
+  if (txs.length === 0) {
+    return '아직 오늘의 고래 활동 데이터가 없어요';
+  }
+  const summary = computeDailySummary(txs);
+  const direction = score >= 60 ? '순매수' : score <= 40 ? '순매도' : '관망';
+  return `고래 ${summary.totalCount}건 · ${formatUsd(summary.totalUsd)} ${direction}`;
+}
+
 interface GaugeBarProps {
   score: number;
 }
@@ -86,52 +84,188 @@ function GaugeBar({ score }: GaugeBarProps) {
   }));
 
   return (
-    <View style={{ gap: 6 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '500' }}>약세</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-          <Text
-            style={{
-              fontSize: 13,
-              fontWeight: '800',
-              color: scoreColor(score),
-              letterSpacing: -0.3,
-            }}
-          >
-            {score}
-          </Text>
-          <Text
-            style={{
-              fontSize: 11,
-              fontWeight: '600',
-              color: scoreColor(score),
-            }}
-          >
-            {scoreLabel(score)}
-          </Text>
-        </View>
-        <Text style={{ fontSize: 11, color: '#94a3b8', fontWeight: '500' }}>강세</Text>
-      </View>
-
-      <View
-        style={{
-          height: 6,
-          borderRadius: 3,
-          backgroundColor: '#f1f5f9',
-          overflow: 'hidden',
-        }}
-      >
-        <Animated.View
-          style={[
-            {
-              height: '100%',
-              borderRadius: 3,
-            },
-            fillStyle,
-          ]}
-        />
-      </View>
+    <View
+      style={{
+        height: 4,
+        borderRadius: 2,
+        backgroundColor: 'rgba(255,255,255,0.08)',
+        overflow: 'hidden',
+      }}
+    >
+      <Animated.View style={[{ height: '100%', borderRadius: 2 }, fillStyle]} />
     </View>
+  );
+}
+
+interface DetailModalProps {
+  visible: boolean;
+  onClose: () => void;
+  score: number;
+  txs: WhaleTx[];
+}
+
+function DetailModal({ visible, onClose, score, txs }: DetailModalProps) {
+  const insets = useSafeAreaInsets();
+  const today = new Date().toLocaleDateString('ko-KR', {
+    month: 'long',
+    day: 'numeric',
+    weekday: 'short',
+  });
+
+  return (
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={onClose}
+    >
+      <View style={{ flex: 1, backgroundColor: '#020B18', paddingTop: insets.top + 16 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 20,
+            marginBottom: 32,
+          }}
+        >
+          <Text style={{ fontSize: 18, fontWeight: '800', color: 'white', letterSpacing: -0.5 }}>
+            고래사냥 지수 상세
+          </Text>
+          <Pressable
+            onPress={onClose}
+            style={({ pressed }) => ({
+              paddingHorizontal: 14,
+              paddingVertical: 7,
+              borderRadius: 20,
+              backgroundColor: pressed ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)',
+            })}
+          >
+            <Text style={{ fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.6)' }}>
+              닫기
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={{ paddingHorizontal: 20, gap: 24 }}>
+          <View style={{ gap: 8 }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontWeight: '600',
+                color: 'rgba(255,255,255,0.4)',
+                letterSpacing: 0.5,
+              }}
+            >
+              {today.toUpperCase()}
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
+              <Text
+                style={{
+                  fontSize: 72,
+                  fontWeight: '800',
+                  color: scoreColor(score),
+                  letterSpacing: -2,
+                  lineHeight: 80,
+                }}
+              >
+                {score}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: '700',
+                  color: scoreColor(score),
+                  marginBottom: 12,
+                }}
+              >
+                {scoreLabel(score)}
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ gap: 8 }}>
+            <View
+              style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}
+            >
+              <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
+                약세
+              </Text>
+              <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
+                강세
+              </Text>
+            </View>
+            <View
+              style={{
+                height: 10,
+                borderRadius: 5,
+                backgroundColor: 'rgba(255,255,255,0.08)',
+                overflow: 'hidden',
+              }}
+            >
+              <View
+                style={{
+                  width: `${score}%`,
+                  height: '100%',
+                  backgroundColor: scoreColor(score),
+                  borderRadius: 5,
+                }}
+              />
+            </View>
+          </View>
+
+          {txs.length > 0 && (
+            <View
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.04)',
+                borderRadius: 20,
+                padding: 20,
+                gap: 14,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.06)',
+              }}
+            >
+              <Text
+                style={{ fontSize: 13, fontWeight: '700', color: 'white', letterSpacing: -0.2 }}
+              >
+                상세 분석
+              </Text>
+              <View style={{ gap: 10 }}>
+                {[
+                  {
+                    label: '매수 신호',
+                    value: `${txs.filter(t => t.type === 'receive').length}건`,
+                    color: '#22c55e',
+                  },
+                  {
+                    label: '매도 신호',
+                    value: `${txs.filter(t => t.type === 'send').length}건`,
+                    color: '#fb2c36',
+                  },
+                  {
+                    label: '총 이동량',
+                    value: formatUsd(txs.reduce((s, t) => s + t.amountUsd, 0)),
+                    color: 'white',
+                  },
+                ].map(item => (
+                  <View
+                    key={item.label}
+                    style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+                  >
+                    <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>
+                      {item.label}
+                    </Text>
+                    <Text style={{ fontSize: 14, fontWeight: '700', color: item.color }}>
+                      {item.value}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -140,60 +274,102 @@ interface BriefingCardProps {
 }
 
 export function BriefingCard({ movements }: BriefingCardProps) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const scale = useSharedValue(1);
+
   const txs = movements ?? [];
   const score = computeMirionScore(txs);
-  const briefingText = buildBriefingText(txs, score);
+  const label = scoreLabel(score);
+  const color = scoreColor(score);
+  const contextText = buildContextText(txs, score);
 
-  const today = new Date().toLocaleDateString('ko-KR', {
-    month: 'long',
-    day: 'numeric',
-    weekday: 'short',
-  });
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   return (
-    <Animated.View
-      entering={FadeInDown.springify()
-        .stiffness(CARD_SPRING.stiffness)
-        .damping(CARD_SPRING.damping)}
-      style={{
-        backgroundColor: '#ffffff',
-        borderRadius: 20,
-        padding: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.04,
-        shadowRadius: 20,
-        elevation: 3,
-        gap: 14,
-        marginBottom: 4,
-      }}
-    >
-      <Animated.View
-        entering={FadeInDown.delay(60).duration(260)}
-        style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-      >
-        <Text style={{ fontSize: 11, fontWeight: '600', color: '#2b7fff', letterSpacing: 0.3 }}>
-          오늘의 미리온 지수
-        </Text>
-        <Text style={{ fontSize: 11, color: '#94a3b8' }}>{today}</Text>
-      </Animated.View>
-
-      <Animated.Text
-        entering={FadeInDown.delay(120).duration(280)}
-        style={{
-          fontSize: 17,
-          fontWeight: '700',
-          color: '#0f172b',
-          letterSpacing: -0.4,
-          lineHeight: 24,
+    <>
+      <Pressable
+        onPressIn={() => {
+          scale.value = withSpring(0.97, CARD_SPRING);
         }}
+        onPressOut={() => {
+          scale.value = withSpring(1, CARD_SPRING);
+        }}
+        onPress={() => setModalVisible(true)}
       >
-        {briefingText}
-      </Animated.Text>
+        <Animated.View
+          entering={FadeInDown.springify()
+            .stiffness(CARD_SPRING.stiffness)
+            .damping(CARD_SPRING.damping)}
+          style={[
+            {
+              backgroundColor: 'rgba(255,255,255,0.04)',
+              borderRadius: 20,
+              padding: 20,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.06)',
+              gap: 16,
+            },
+            animStyle,
+          ]}
+        >
+          <View
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            <Text style={{ fontSize: 11, fontWeight: '600', color: '#2b7fff', letterSpacing: 0.3 }}>
+              오늘의 고래사냥 지수
+            </Text>
+            <ChevronRight
+              size={14}
+              color="#cbd5e1"
+              strokeWidth={2}
+            />
+          </View>
 
-      <Animated.View entering={FadeInDown.delay(200).duration(300)}>
-        <GaugeBar score={score} />
-      </Animated.View>
-    </Animated.View>
+          <Animated.View
+            entering={FadeIn.delay(80).duration(300)}
+            style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}
+          >
+            <Text
+              style={{
+                fontSize: 56,
+                fontWeight: '800',
+                color,
+                letterSpacing: -2,
+                lineHeight: 60,
+              }}
+            >
+              {score}
+            </Text>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: '700',
+                color,
+                marginBottom: 6,
+                letterSpacing: -0.3,
+              }}
+            >
+              {label}
+            </Text>
+          </Animated.View>
+
+          <View style={{ gap: 10 }}>
+            <Text
+              style={{ fontSize: 13, color: '#62748e', fontWeight: '400', letterSpacing: -0.1 }}
+            >
+              {contextText}
+            </Text>
+            <GaugeBar score={score} />
+          </View>
+        </Animated.View>
+      </Pressable>
+
+      <DetailModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        score={score}
+        txs={txs}
+      />
+    </>
   );
 }

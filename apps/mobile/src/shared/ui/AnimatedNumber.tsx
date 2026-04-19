@@ -5,7 +5,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 type AnimatedNumberProps = {
   value: string;
   fontSize?: number;
-  fontWeight?: '400' | '500' | '600' | '700' | 'bold';
+  fontWeight?: '400' | '500' | '600' | '700' | '800' | 'bold';
   color?: string;
   letterSpacing?: number;
 };

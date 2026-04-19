@@ -1,4 +1,4 @@
-﻿import { useAppNavigation } from '@shared/lib/navigation';
+import { useAppNavigation } from '@shared/lib/navigation';
 import { LEGAL_ACCEPTED_KEY, ONBOARDING_SEEN_KEY, storage } from '@shared/lib/storage';
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
@@ -56,4 +56,3 @@ export function SplashScreen() {
     </View>
   );
 }
-

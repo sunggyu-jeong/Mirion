@@ -1,7 +1,7 @@
 import type { PricePoint } from '@shared/api/coingecko';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react-native';
-import React from 'react';
+import { asMock } from '@test/mocks';
+import { renderQueryHook } from '@test/query';
+import { waitFor } from '@testing-library/react-native';
 
 jest.mock('@shared/api/coingecko', () => ({
   fetchEthMarketChart: jest.fn(),
@@ -26,19 +26,9 @@ const MOCK_MARKET_DATA = {
   volume24hUsd: 12_000_000_000,
 };
 
-function createWrapper() {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: 0 } },
-  });
-  function Wrapper({ children }: { children: React.ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
-  }
-  return Wrapper;
-}
-
 beforeEach(() => {
-  (fetchEthMarketChart as jest.Mock).mockResolvedValue(MOCK_POINTS);
-  (fetchEthMarketData as jest.Mock).mockResolvedValue(MOCK_MARKET_DATA);
+  asMock(fetchEthMarketChart).mockResolvedValue(MOCK_POINTS);
+  asMock(fetchEthMarketData).mockResolvedValue(MOCK_MARKET_DATA);
 });
 
 afterEach(() => {
@@ -47,16 +37,12 @@ afterEach(() => {
 
 describe('useMarketChart', () => {
   it('returns isLoading true initially', () => {
-    const { result } = renderHook(() => useMarketChart('1W'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useMarketChart('1W'));
     expect(result.current.isLoading).toBe(true);
   });
 
   it('returns price points after fetch resolves', async () => {
-    const { result } = renderHook(() => useMarketChart('1W'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useMarketChart('1W'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -64,9 +50,7 @@ describe('useMarketChart', () => {
   });
 
   it('calls fetchEthMarketChart with the given period', async () => {
-    const { result } = renderHook(() => useMarketChart('1M'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useMarketChart('1M'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -74,11 +58,9 @@ describe('useMarketChart', () => {
   });
 
   it('sets isError true when fetch fails', async () => {
-    (fetchEthMarketChart as jest.Mock).mockRejectedValueOnce(new Error('network'));
+    asMock(fetchEthMarketChart).mockRejectedValueOnce(new Error('network'));
 
-    const { result } = renderHook(() => useMarketChart('1D'), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useMarketChart('1D'));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -88,16 +70,12 @@ describe('useMarketChart', () => {
 
 describe('useEthMarketData', () => {
   it('returns isLoading true initially', () => {
-    const { result } = renderHook(() => useEthMarketData(), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useEthMarketData());
     expect(result.current.isLoading).toBe(true);
   });
 
   it('returns market data after fetch resolves', async () => {
-    const { result } = renderHook(() => useEthMarketData(), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useEthMarketData());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -105,11 +83,9 @@ describe('useEthMarketData', () => {
   });
 
   it('sets isError true when fetch fails', async () => {
-    (fetchEthMarketData as jest.Mock).mockRejectedValueOnce(new Error('rate limit'));
+    asMock(fetchEthMarketData).mockRejectedValueOnce(new Error('rate limit'));
 
-    const { result } = renderHook(() => useEthMarketData(), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderQueryHook(() => useEthMarketData());
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

@@ -1,14 +1,12 @@
 import type { RawTokenBalance } from '@entities/whale';
 import type { WhaleDetailData } from '@features/whale-detail';
 import { formatRelativeTime, formatUsd } from '@shared/lib/format';
+import { PaywallOverlay, SectionTitle } from '@shared/ui';
 import { ArrowDownLeft, ArrowRight, ArrowUpRight, RefreshCw } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import { FlatList, Linking, Pressable, Text, View } from 'react-native';
 import Animated, { Easing, FadeInDown, useSharedValue, withSpring } from 'react-native-reanimated';
 import Svg, { G, Path } from 'react-native-svg';
-
-import { PaywallOverlay } from '../../../shared/ui/PaywallOverlay';
-import { SectionTitle } from '../../../shared/ui/SectionTitle';
 
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 const TOSS_PRESS = { damping: 15, stiffness: 400 } as const;

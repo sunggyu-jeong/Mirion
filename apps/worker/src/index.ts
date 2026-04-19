@@ -2,7 +2,8 @@ import type { Env } from "./types";
 import { handleEthChart } from "./routes/eth-chart";
 import { handleEthMarket } from "./routes/eth-market";
 import { handleGetCexTrades, handleIngestCexTrade, handlePollCexTrades } from "./routes/cex-trades";
-import { handleRadar, handleRadarDebug } from "./routes/radar";
+import { handleRadar, handleRadarDebug, warmRadarCache } from "./routes/radar";
+import { warmPricesAndMarket } from "./routes/warm-cache";
 import { handleWhaleProfile } from "./routes/whale-profile";
 import { handleWhaleTransfers } from "./routes/whale-transfers";
 import { handleGetWhales } from "./routes/whales";
@@ -78,6 +79,10 @@ export default {
     }
   },
   async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
-    await handlePollCexTrades(env);
+    await Promise.allSettled([
+      handlePollCexTrades(env),
+      warmPricesAndMarket(env),
+      warmRadarCache(env),
+    ]);
   },
 } satisfies ExportedHandler<Env>;

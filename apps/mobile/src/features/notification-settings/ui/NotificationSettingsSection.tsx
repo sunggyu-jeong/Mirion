@@ -51,7 +51,7 @@ export function NotificationSettingsSection() {
             <Switch
               value={notificationsEnabled}
               onValueChange={isPro ? setNotifications : undefined}
-              trackColor={{ false: '#e2e8f0', true: '#2b7fff' }}
+              trackColor={{ false: 'rgba(255,255,255,0.12)', true: '#2b7fff' }}
               thumbColor="white"
               disabled={!isPro}
             />
@@ -72,7 +72,7 @@ export function NotificationSettingsSection() {
             <Switch
               value={quietHoursEnabled}
               onValueChange={isPro ? setQuietHours : undefined}
-              trackColor={{ false: '#e2e8f0', true: '#7c3aed' }}
+              trackColor={{ false: 'rgba(255,255,255,0.12)', true: '#7c3aed' }}
               thumbColor="white"
               disabled={!isPro}
             />
@@ -83,13 +83,21 @@ export function NotificationSettingsSection() {
       {notificationsEnabled && isPro && (
         <Animated.View
           entering={FadeInDown.duration(200)}
-          style={{ backgroundColor: '#f8fafc', borderRadius: 16, padding: 16, gap: 10 }}
+          style={{
+            backgroundColor: 'rgba(255,255,255,0.04)',
+            borderRadius: 16,
+            padding: 16,
+            gap: 10,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.07)',
+          }}
         >
           <LabelRow label="최소 알림 기준금액">
             <SegmentedControl
               options={ETH_OPTIONS}
               value={alertMinEth}
               onChange={setAlertMinEth}
+              dark
             />
           </LabelRow>
         </Animated.View>

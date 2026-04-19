@@ -34,6 +34,6 @@ export function useWhaleFeed() {
 
       return profiles.sort((a, b) => (a.isLocked ? 1 : 0) - (b.isLocked ? 1 : 0));
     },
-    staleTime: 30_000,
+    staleTime: 300_000,
   });
 }

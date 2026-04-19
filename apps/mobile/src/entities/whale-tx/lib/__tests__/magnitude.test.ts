@@ -39,4 +39,8 @@ describe('getMagnitudeInfo', () => {
     expect(legendary.color).toBe('#7c3aed');
     expect(legendary.bg).toBe('#f5f3ff');
   });
+
+  it('returns small (fallthrough) for negative value', () => {
+    expect(getMagnitudeInfo(-1).level).toBe('small');
+  });
 });

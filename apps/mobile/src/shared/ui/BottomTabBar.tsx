@@ -1,10 +1,8 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Home, List, Settings, TrendingUp } from 'lucide-react-native';
+import { Home, Radar, Settings, TrendingUp } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { LayoutChangeEvent, Pressable, View } from 'react-native';
 import Animated, {
-  Easing,
-  interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -12,11 +10,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const ACTIVE_COLOR = '#2b7fff';
-const INACTIVE_COLOR = '#94a3b8';
+const ACTIVE_COLOR = '#06B6D4';
+const INACTIVE_COLOR = 'rgba(255,255,255,0.30)';
 
-const TOSS_SPRING = { damping: 20, stiffness: 300, mass: 0.8 } as const;
-const TOSS_PRESS_SPRING = { damping: 15, stiffness: 400 } as const;
+const MORPH_SPRING = { damping: 18, stiffness: 220, mass: 0.8 } as const;
+const ICON_SPRING = { damping: 12, stiffness: 300, mass: 0.6 } as const;
+const PRESS_SPRING = { damping: 15, stiffness: 500 } as const;
 
 type TabConfig = {
   name: string;
@@ -26,7 +25,7 @@ type TabConfig = {
 
 const TAB_CONFIG: Record<string, Omit<TabConfig, 'name'>> = {
   Home: { label: '홈', Icon: Home },
-  History: { label: '레이더', Icon: List },
+  History: { label: '레이더', Icon: Radar },
   Market: { label: '마켓', Icon: TrendingUp },
   Settings: { label: '설정', Icon: Settings },
 };
@@ -40,48 +39,51 @@ function TabItem({
   isActive: boolean;
   onPress: () => void;
 }) {
+  const lift = useSharedValue(isActive ? 1 : 0);
   const scale = useSharedValue(1);
-  const progress = useSharedValue(isActive ? 1 : 0);
 
   useEffect(() => {
-    progress.value = withTiming(isActive ? 1 : 0, {
-      duration: 180,
-      easing: Easing.bezier(0.22, 1, 0.36, 1),
-    });
-  }, [isActive, progress]);
+    lift.value = withSpring(isActive ? 1 : 0, ICON_SPRING);
+  }, [isActive, lift]);
 
-  const containerStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: -6 * lift.value }, { scale: scale.value }],
+    opacity: 0.4 + 0.6 * lift.value,
   }));
 
-  const textStyle = useAnimatedStyle(() => ({
-    color: interpolateColor(progress.value, [0, 1], [INACTIVE_COLOR, ACTIVE_COLOR]),
+  const labelStyle = useAnimatedStyle(() => ({
+    opacity: withTiming(isActive ? 1 : 0, { duration: 200 }),
+    transform: [{ translateY: 4 * (1 - lift.value) }],
   }));
 
   const { Icon } = config;
 
   return (
     <Pressable
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 8 }}
+      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
       onPressIn={() => {
-        scale.value = withSpring(0.88, TOSS_PRESS_SPRING);
+        scale.value = withSpring(0.85, PRESS_SPRING);
       }}
       onPressOut={() => {
-        scale.value = withSpring(1, TOSS_PRESS_SPRING);
+        scale.value = withSpring(1, PRESS_SPRING);
       }}
       onPress={onPress}
     >
-      <Animated.View style={[{ alignItems: 'center', gap: 3 }, containerStyle]}>
+      <Animated.View style={[{ alignItems: 'center' }, iconStyle]}>
         <Icon
           size={22}
           color={isActive ? ACTIVE_COLOR : INACTIVE_COLOR}
-          strokeWidth={isActive ? 2.5 : 1.8}
+          strokeWidth={isActive ? 2.2 : 1.6}
         />
+      </Animated.View>
+      <Animated.View style={[{ position: 'absolute', bottom: 10 }, labelStyle]}>
         <Animated.Text
-          style={[
-            { fontSize: 10, letterSpacing: 0.1, fontWeight: isActive ? '600' : '400' },
-            textStyle,
-          ]}
+          style={{
+            fontSize: 10,
+            fontWeight: '700',
+            color: ACTIVE_COLOR,
+            letterSpacing: -0.2,
+          }}
         >
           {config.label}
         </Animated.Text>
@@ -92,60 +94,56 @@ function TabItem({
 
 export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const [barWidth, setBarWidth] = useState(0);
+  const [layoutWidth, setLayoutWidth] = useState(0);
+  const tabCount = state.routes.length;
+  const slotWidth = layoutWidth / tabCount;
 
-  const slotWidth = barWidth > 0 ? barWidth / state.routes.length : 0;
   const indicatorX = useSharedValue(0);
+  const indicatorWidth = useSharedValue(24);
 
   useEffect(() => {
-    if (barWidth === 0) {
+    if (layoutWidth === 0) {
       return;
     }
-    indicatorX.value = withSpring(state.index * slotWidth + slotWidth / 2 - 16, TOSS_SPRING);
-  }, [state.index, barWidth, slotWidth, indicatorX]);
+    const targetX = state.index * slotWidth + (slotWidth - 24) / 2;
+    indicatorX.value = withSpring(targetX, MORPH_SPRING);
+
+    // Morph effect: momentarily stretch width during move
+    indicatorWidth.value = withSpring(32, { ...MORPH_SPRING, damping: 10 });
+    setTimeout(() => {
+      indicatorWidth.value = withSpring(24, MORPH_SPRING);
+    }, 150);
+  }, [state.index, layoutWidth, slotWidth, indicatorX, indicatorWidth]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: indicatorX.value }],
+    width: indicatorWidth.value,
   }));
+
+  const onLayout = (e: LayoutChangeEvent) => {
+    setLayoutWidth(e.nativeEvent.layout.width);
+  };
 
   return (
     <View
       style={{
-        backgroundColor: 'white',
-        borderTopWidth: 0.5,
-        borderTopColor: '#e8edf2',
+        backgroundColor: '#020B18',
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(6,182,212,0.12)',
         paddingBottom: insets.bottom,
       }}
-      onLayout={e => setBarWidth(e.nativeEvent.layout.width)}
+      onLayout={onLayout}
     >
-      {barWidth > 0 && (
-        <Animated.View
-          style={[
-            {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: 32,
-              height: 2.5,
-              borderRadius: 2,
-              backgroundColor: ACTIVE_COLOR,
-            },
-            indicatorStyle,
-          ]}
-        />
-      )}
-
-      <View style={{ flexDirection: 'row', height: 56 }}>
+      <View style={{ flexDirection: 'row', height: 62 }}>
         {state.routes.map((route, i) => {
           const cfg = TAB_CONFIG[route.name];
           if (!cfg) {
             return null;
           }
-          const config: TabConfig = { name: route.name, ...cfg };
           return (
             <TabItem
               key={route.key}
-              config={config}
+              config={{ name: route.name, ...cfg }}
               isActive={state.index === i}
               onPress={() => {
                 const event = navigation.emit({
@@ -161,6 +159,24 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
           );
         })}
       </View>
+
+      {/* Morphing Line Indicator */}
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            top: 0,
+            height: 3,
+            backgroundColor: ACTIVE_COLOR,
+            borderRadius: 2,
+            shadowColor: ACTIVE_COLOR,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.5,
+            shadowRadius: 4,
+          },
+          indicatorStyle,
+        ]}
+      />
     </View>
   );
 }

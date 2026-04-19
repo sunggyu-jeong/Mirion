@@ -6,12 +6,13 @@ import { getSolTransfers } from "../lib/solana";
 import { getXrpTransfers } from "../lib/xrpl";
 import { getTrxTransfers } from "../lib/trongrid";
 import { getMultiCoinPrices } from "../lib/coingecko";
+import { kvGet, kvPut, withKvCache } from "../lib/cache";
 import { getWhaleList } from "./whales";
 import type { WhaleEntry } from "./whales";
 
 const CHAIN_ORDER = ["ETH", "BTC", "SOL", "BNB", "XRP", "TRX"] as const;
-const CHAIN_CACHE_TTL = 5 * 60;
-const PRICE_CACHE_TTL = 2 * 60;
+const CHAIN_CACHE_TTL = 15 * 60;
+const PRICE_CACHE_TTL = 10 * 60;
 const EMPTY_CACHE_TTL = 60;
 const DEFAULT_MIN_VALUE_USD = 20_000;
 const FETCH_TIMEOUT_MS = 10_000;
@@ -23,17 +24,11 @@ type Prices = {
 };
 
 async function getCachedPrices(env: Env): Promise<Prices> {
-  const cached = await env.CACHE.get<Prices>("coingecko:prices", "json");
-  if (cached) return cached;
-  const raw = await getMultiCoinPrices();
-  const prices: Prices = {
+  const raw = await withKvCache(env.CACHE, "prices:multi", PRICE_CACHE_TTL, getMultiCoinPrices);
+  return {
     eth: raw.eth, btc: raw.btc, sol: raw.sol,
     bnb: raw.bnb, xrp: raw.xrp ?? 0.5, trx: raw.trx ?? 0.1,
   };
-  await env.CACHE.put("coingecko:prices", JSON.stringify(prices), {
-    expirationTtl: PRICE_CACHE_TTL,
-  });
-  return prices;
 }
 
 async function fetchTransfersForWhale(
@@ -106,6 +101,24 @@ async function fetchChain(
   return [...unique.values()].sort((a, b) => b.timestampMs - a.timestampMs);
 }
 
+export async function warmRadarCache(env: Env): Promise<void> {
+  const whales = await getWhaleList(env);
+  const prices = await getCachedPrices(env);
+
+  await Promise.allSettled(
+    CHAIN_ORDER.map(async (chain) => {
+      const key = `radar:v2:${chain}:${DEFAULT_MIN_VALUE_USD}`;
+      const chainWhales = whales.filter((w) => w.chain === chain);
+      try {
+        const txs = await fetchChain(chain, chainWhales, DEFAULT_MIN_VALUE_USD, prices, env);
+        await kvPut(env.CACHE, key, txs, txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL);
+      } catch (e) {
+        console.error(`[warm] ${chain} failed:`, e);
+      }
+    }),
+  );
+}
+
 export async function handleRadarDebug(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const chainsParam = url.searchParams.get("chains") ?? "ETH";
@@ -148,7 +161,7 @@ export async function handleRadar(request: Request, env: Env): Promise<Response>
     Promise.all(
       chainList.map(async (chain) => {
         const key = `radar:v2:${chain}:${minValueUsd}`;
-        return { chain, key, data: await env.CACHE.get<WhaleTxDTO[]>(key, "json") };
+        return { chain, key, data: await kvGet<WhaleTxDTO[]>(env.CACHE, key) };
       }),
     ),
   ]);
@@ -175,9 +188,7 @@ export async function handleRadar(request: Request, env: Env): Promise<Response>
       uncached.map(async ({ chain, key }) => {
         const chainWhales = whales.filter((w) => w.chain === chain);
         const txs = await fetchChain(chain, chainWhales, minValueUsd, prices, env);
-        await env.CACHE.put(key, JSON.stringify(txs), {
-          expirationTtl: txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL,
-        });
+        await kvPut(env.CACHE, key, txs, txs.length > 0 ? CHAIN_CACHE_TTL : EMPTY_CACHE_TTL);
         return txs;
       }),
     )

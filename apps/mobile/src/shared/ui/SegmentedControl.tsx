@@ -20,6 +20,7 @@ type Props<T> = {
   value: T;
   onChange: (v: T) => void;
   disabled?: boolean;
+  dark?: boolean;
 };
 
 export function SegmentedControl<T extends string | number>({
@@ -27,6 +28,7 @@ export function SegmentedControl<T extends string | number>({
   value,
   onChange,
   disabled = false,
+  dark = false,
 }: Props<T>) {
   const activeIndex = options.findIndex(o => o.value === value);
   const segWidth = useSharedValue(0);
@@ -48,7 +50,7 @@ export function SegmentedControl<T extends string | number>({
     <View
       style={{
         flexDirection: 'row',
-        backgroundColor: '#f1f5f9',
+        backgroundColor: dark ? 'rgba(255,255,255,0.08)' : '#f1f5f9',
         borderRadius: 10,
         padding: 3,
         opacity: disabled ? 0.45 : 1,
@@ -65,13 +67,13 @@ export function SegmentedControl<T extends string | number>({
             top: 3,
             left: 3,
             bottom: 3,
-            backgroundColor: 'white',
+            backgroundColor: dark ? 'rgba(255,255,255,0.15)' : 'white',
             borderRadius: 8,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.08,
+            shadowOpacity: dark ? 0 : 0.08,
             shadowRadius: 2,
-            elevation: 2,
+            elevation: dark ? 0 : 2,
           },
           indicatorStyle,
         ]}
@@ -88,7 +90,13 @@ export function SegmentedControl<T extends string | number>({
               style={{
                 fontSize: 13,
                 fontWeight: isActive ? '600' : '400',
-                color: isActive ? '#0f172b' : '#94a3b8',
+                color: dark
+                  ? isActive
+                    ? 'white'
+                    : 'rgba(255,255,255,0.4)'
+                  : isActive
+                    ? '#0f172b'
+                    : '#94a3b8',
                 letterSpacing: -0.01,
               }}
             >

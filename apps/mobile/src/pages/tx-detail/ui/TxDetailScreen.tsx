@@ -1,6 +1,6 @@
-import type { WhaleTxType } from '@entities/whale-tx';
 import { getMagnitudeInfo } from '@entities/whale-tx';
 import { formatRelativeTime, formatUsd } from '@shared/lib/format';
+import type { TxDetailParams } from '@shared/lib/navigation';
 import { useAppNavigation } from '@shared/lib/navigation';
 import {
   ArrowDownLeft,
@@ -14,20 +14,6 @@ import {
 import React, { useCallback } from 'react';
 import { Clipboard, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-export type TxDetailParams = {
-  txHash: string;
-  type: WhaleTxType;
-  amountNative: number;
-  amountUsd: number;
-  fromAddress: string;
-  toAddress: string;
-  timestampMs: number;
-  blockNumber: string;
-  isLarge: boolean;
-  asset: string;
-  chain: string;
-};
 
 const TYPE_CONFIG = {
   send: { label: '대규모 전송', Icon: ArrowUpRight, color: '#fb2c36', bg: '#fff1f2' },

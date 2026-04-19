@@ -1,4 +1,5 @@
-require_relative '../../../node_modules/react-native/scripts/react_native_pods'
+# Resolve react_native_pods.rb
+require File.expand_path('../../../node_modules/react-native/scripts/react_native_pods', __dir__)
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!

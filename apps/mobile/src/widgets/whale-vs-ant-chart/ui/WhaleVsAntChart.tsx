@@ -3,6 +3,7 @@ import { formatUsd } from '@shared/lib/format';
 import { AnimatedNumber } from '@shared/ui';
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   FadeInDown,
   interpolate,
@@ -12,8 +13,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const BAR_SPRING = { stiffness: 120, damping: 14 } as const;
-const BUY_COLOR = '#22c55e';
-const SELL_COLOR = '#fb2c36';
+const BUY_COLOR = '#4ADE80';
+const SELL_COLOR = '#F43F5E';
 const BAR_HEIGHT = 14;
 
 function computeRatio(txs: WhaleTx[]): {
@@ -32,7 +33,7 @@ function computeRatio(txs: WhaleTx[]): {
 }
 
 interface GaugeBarProps {
-  ratio: Animated.SharedValue<number>;
+  ratio: SharedValue<number>;
 }
 
 function GaugeBar({ ratio }: GaugeBarProps) {
@@ -54,13 +55,13 @@ function GaugeBar({ ratio }: GaugeBarProps) {
       style={{
         height: BAR_HEIGHT,
         borderRadius: BAR_HEIGHT / 2,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: 'rgba(255,255,255,0.1)',
         flexDirection: 'row',
         overflow: 'hidden',
       }}
     >
       <Animated.View style={[{ height: '100%', borderRadius: BAR_HEIGHT / 2 }, buyStyle]} />
-      <View style={{ width: 2, backgroundColor: 'white', zIndex: 1 }} />
+      <View style={{ width: 2, backgroundColor: '#020B18', zIndex: 1 }} />
       <Animated.View
         style={[{ height: '100%', flex: 1, borderRadius: BAR_HEIGHT / 2 }, sellStyle]}
       />
@@ -115,24 +116,21 @@ export function WhaleVsAntChart({ movements }: WhaleVsAntChartProps) {
     <Animated.View
       entering={FadeInDown.delay(60).springify().stiffness(400).damping(30)}
       style={{
-        backgroundColor: 'white',
+        backgroundColor: 'rgba(255,255,255,0.04)',
         borderRadius: 20,
         padding: 20,
         gap: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.04,
-        shadowRadius: 20,
-        elevation: 3,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.08)',
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Text style={{ fontSize: 15, fontWeight: '700', color: '#0f172b', letterSpacing: -0.3 }}>
+        <Text style={{ fontSize: 15, fontWeight: '700', color: 'white', letterSpacing: -0.3 }}>
           고래 힘겨루기
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-          <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#22c55e' }} />
-          <Text style={{ fontSize: 11, fontWeight: '600', color: '#22c55e' }}>실시간</Text>
+          <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ADE80' }} />
+          <Text style={{ fontSize: 11, fontWeight: '600', color: '#4ADE80' }}>실시간</Text>
         </View>
       </View>
 
@@ -145,12 +143,21 @@ export function WhaleVsAntChart({ movements }: WhaleVsAntChartProps) {
               color={BUY_COLOR}
               align="left"
             />
-            <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '500' }}>매수</Text>
+            <Text style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: '500' }}>
+              매수
+            </Text>
           </View>
         </View>
 
         <View style={{ alignItems: 'center' }}>
-          <Text style={{ fontSize: 11, color: '#cbd5e1', fontWeight: '500', letterSpacing: 0.5 }}>
+          <Text
+            style={{
+              fontSize: 11,
+              color: 'rgba(255,255,255,0.25)',
+              fontWeight: '500',
+              letterSpacing: 0.5,
+            }}
+          >
             VS
           </Text>
         </View>
@@ -162,7 +169,9 @@ export function WhaleVsAntChart({ movements }: WhaleVsAntChartProps) {
               color={SELL_COLOR}
               align="right"
             />
-            <Text style={{ fontSize: 10, color: '#94a3b8', fontWeight: '500' }}>매도</Text>
+            <Text style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: '500' }}>
+              매도
+            </Text>
           </View>
           <Text style={{ fontSize: 18 }}>🔴</Text>
         </View>
@@ -174,7 +183,7 @@ export function WhaleVsAntChart({ movements }: WhaleVsAntChartProps) {
         <Text style={{ fontSize: 12, fontWeight: '600', color: BUY_COLOR }}>
           {formatUsd(buyUsd)}
         </Text>
-        <Text style={{ fontSize: 11, color: '#cbd5e1' }}>|</Text>
+        <Text style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>|</Text>
         <Text style={{ fontSize: 12, fontWeight: '600', color: SELL_COLOR }}>
           {formatUsd(sellUsd)}
         </Text>

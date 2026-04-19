@@ -6,7 +6,7 @@ export function useCexTrades() {
   return useQuery<CexTrade[]>({
     queryKey: ['cex-trades'],
     queryFn: fetchCexTrades,
-    staleTime: 30_000,
-    refetchInterval: 30_000,
+    staleTime: 120_000,
+    refetchInterval: 120_000,
   });
 }

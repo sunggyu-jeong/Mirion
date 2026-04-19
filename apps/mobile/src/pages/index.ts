@@ -4,6 +4,7 @@ export { HomeScreen } from './home';
 export { LegalScreen } from './legal';
 export { MarketScreen } from './market';
 export { OnboardingScreen } from './onboarding';
+export { RadarFeedScreen } from './radar-feed';
 export { SettingsScreen } from './settings';
 export { SplashScreen } from './splash';
 export type { TxDetailParams } from './tx-detail';

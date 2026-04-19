@@ -1,4 +1,4 @@
-﻿apply plugin: "com.android.application"
+apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
@@ -40,8 +40,11 @@ react {
     // extraPackagerArgs = []
 
     /* Hermes Commands */
-    //   The hermes compiler command to run. By default it is 'hermesc'
-    // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
+    //   pnpm monorepo: hermes-compiler is hoisted to the workspace root, not apps/mobile
+    def os = System.properties['os.name'].toLowerCase()
+    def osBin = os.contains('windows') ? 'win64-bin' : (os.contains('mac') ? 'osx-bin' : 'linux64-bin')
+    def hermescBin = os.contains('windows') ? 'hermesc.exe' : 'hermesc'
+    hermesCommand = "${file('../../../../node_modules/hermes-compiler/hermesc').absolutePath}/$osBin/$hermescBin"
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
