@@ -1,17 +1,7 @@
-import type { TxDetailParams } from '@pages/tx-detail';
 import type { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
-type AppParamList = {
-  Splash: undefined;
-  Legal: undefined;
-  Onboarding: undefined;
-  Main: { screen: 'Settings' } | undefined;
-  WhaleDetail: { whaleId: string };
-  TxDetail: TxDetailParams;
-  RadarFeed: undefined;
-  Error: { errorType: 'network' | 'transaction' | 'balance' };
-};
+import type { AppParamList, TxDetailParams } from './types';
 
 export function useAppNavigation() {
   const navigation = useNavigation<NavigationProp<AppParamList>>();

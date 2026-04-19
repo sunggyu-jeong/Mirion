@@ -7,12 +7,12 @@ import { OnboardingScreen } from '@pages/onboarding';
 import { RadarFeedScreen } from '@pages/radar-feed';
 import { SettingsScreen } from '@pages/settings';
 import { SplashScreen } from '@pages/splash';
-import type { TxDetailParams } from '@pages/tx-detail';
 import { TxDetailScreen } from '@pages/tx-detail';
 import { WhaleDetailScreen } from '@pages/whale-detail';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStaticNavigation, StaticParamList } from '@react-navigation/native';
+import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { AppParamList } from '@shared/lib/navigation';
 import { BottomTabBar } from '@shared/ui';
 import React from 'react';
 
@@ -54,11 +54,7 @@ const RootStack = createNativeStackNavigator({
   },
 });
 
-export type RootStackParamList = StaticParamList<typeof RootStack> & {
-  WhaleDetail: { whaleId: string };
-  TxDetail: TxDetailParams;
-  Error: { errorType: 'network' | 'transaction' | 'balance' };
-};
+export type RootStackParamList = AppParamList;
 
 declare global {
   namespace ReactNavigation {

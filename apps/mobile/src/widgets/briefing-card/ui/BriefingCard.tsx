@@ -88,7 +88,7 @@ function GaugeBar({ score }: GaugeBarProps) {
       style={{
         height: 4,
         borderRadius: 2,
-        backgroundColor: '#f1f5f9',
+        backgroundColor: 'rgba(255,255,255,0.08)',
         overflow: 'hidden',
       }}
     >
@@ -119,7 +119,7 @@ function DetailModal({ visible, onClose, score, txs }: DetailModalProps) {
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View style={{ flex: 1, backgroundColor: 'white', paddingTop: insets.top + 16 }}>
+      <View style={{ flex: 1, backgroundColor: '#020B18', paddingTop: insets.top + 16 }}>
         <View
           style={{
             flexDirection: 'row',
@@ -129,8 +129,8 @@ function DetailModal({ visible, onClose, score, txs }: DetailModalProps) {
             marginBottom: 32,
           }}
         >
-          <Text style={{ fontSize: 18, fontWeight: '800', color: '#0f172b', letterSpacing: -0.5 }}>
-            미리온 지수 상세
+          <Text style={{ fontSize: 18, fontWeight: '800', color: 'white', letterSpacing: -0.5 }}>
+            고래사냥 지수 상세
           </Text>
           <Pressable
             onPress={onClose}
@@ -138,16 +138,25 @@ function DetailModal({ visible, onClose, score, txs }: DetailModalProps) {
               paddingHorizontal: 14,
               paddingVertical: 7,
               borderRadius: 20,
-              backgroundColor: pressed ? '#f1f5f9' : '#f8fafc',
+              backgroundColor: pressed ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)',
             })}
           >
-            <Text style={{ fontSize: 14, fontWeight: '600', color: '#64748b' }}>닫기</Text>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: 'rgba(255,255,255,0.6)' }}>
+              닫기
+            </Text>
           </Pressable>
         </View>
 
         <View style={{ paddingHorizontal: 20, gap: 24 }}>
           <View style={{ gap: 8 }}>
-            <Text style={{ fontSize: 11, fontWeight: '600', color: '#94a3b8', letterSpacing: 0.5 }}>
+            <Text
+              style={{
+                fontSize: 11,
+                fontWeight: '600',
+                color: 'rgba(255,255,255,0.4)',
+                letterSpacing: 0.5,
+              }}
+            >
               {today.toUpperCase()}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
@@ -179,14 +188,18 @@ function DetailModal({ visible, onClose, score, txs }: DetailModalProps) {
             <View
               style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}
             >
-              <Text style={{ fontSize: 12, color: '#94a3b8', fontWeight: '500' }}>약세</Text>
-              <Text style={{ fontSize: 12, color: '#94a3b8', fontWeight: '500' }}>강세</Text>
+              <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
+                약세
+              </Text>
+              <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>
+                강세
+              </Text>
             </View>
             <View
               style={{
                 height: 10,
                 borderRadius: 5,
-                backgroundColor: '#f1f5f9',
+                backgroundColor: 'rgba(255,255,255,0.08)',
                 overflow: 'hidden',
               }}
             >
@@ -204,16 +217,16 @@ function DetailModal({ visible, onClose, score, txs }: DetailModalProps) {
           {txs.length > 0 && (
             <View
               style={{
-                backgroundColor: '#f8fafc',
+                backgroundColor: 'rgba(255,255,255,0.04)',
                 borderRadius: 20,
                 padding: 20,
                 gap: 14,
                 borderWidth: 1,
-                borderColor: '#f1f5f9',
+                borderColor: 'rgba(255,255,255,0.06)',
               }}
             >
               <Text
-                style={{ fontSize: 13, fontWeight: '700', color: '#0f172b', letterSpacing: -0.2 }}
+                style={{ fontSize: 13, fontWeight: '700', color: 'white', letterSpacing: -0.2 }}
               >
                 상세 분석
               </Text>
@@ -232,14 +245,16 @@ function DetailModal({ visible, onClose, score, txs }: DetailModalProps) {
                   {
                     label: '총 이동량',
                     value: formatUsd(txs.reduce((s, t) => s + t.amountUsd, 0)),
-                    color: '#0f172b',
+                    color: 'white',
                   },
                 ].map(item => (
                   <View
                     key={item.label}
                     style={{ flexDirection: 'row', justifyContent: 'space-between' }}
                   >
-                    <Text style={{ fontSize: 14, color: '#64748b' }}>{item.label}</Text>
+                    <Text style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)' }}>
+                      {item.label}
+                    </Text>
                     <Text style={{ fontSize: 14, fontWeight: '700', color: item.color }}>
                       {item.value}
                     </Text>
@@ -287,11 +302,11 @@ export function BriefingCard({ movements }: BriefingCardProps) {
             .damping(CARD_SPRING.damping)}
           style={[
             {
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'rgba(255,255,255,0.04)',
               borderRadius: 20,
               padding: 20,
               borderWidth: 1,
-              borderColor: '#f1f5f9',
+              borderColor: 'rgba(255,255,255,0.06)',
               gap: 16,
             },
             animStyle,
@@ -301,7 +316,7 @@ export function BriefingCard({ movements }: BriefingCardProps) {
             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
           >
             <Text style={{ fontSize: 11, fontWeight: '600', color: '#2b7fff', letterSpacing: 0.3 }}>
-              오늘의 미리온 지수
+              오늘의 고래사냥 지수
             </Text>
             <ChevronRight
               size={14}

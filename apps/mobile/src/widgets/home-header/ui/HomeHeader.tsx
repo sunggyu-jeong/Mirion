@@ -10,7 +10,12 @@ import { Pressable, Text, View } from 'react-native';
 
 const TX_CONFIG = {
   send: { label: '보냈어요', Icon: ArrowUpRight, color: '#F43F5E', bg: 'rgba(244,63,94,0.12)' },
-  receive: { label: '받았어요', Icon: ArrowDownLeft, color: '#22D3EE', bg: 'rgba(34,211,238,0.12)' },
+  receive: {
+    label: '받았어요',
+    Icon: ArrowDownLeft,
+    color: '#22D3EE',
+    bg: 'rgba(34,211,238,0.12)',
+  },
   swap: { label: '바꿨어요', Icon: RefreshCw, color: '#A78BFA', bg: 'rgba(167,139,250,0.12)' },
 } as const;
 
@@ -22,7 +27,9 @@ const ASSET_NAME: Record<string, string> = {
 };
 
 function formatAmountKo(usd: number): string {
-  if (usd >= 1_000_000) return `${(usd / 1_000_000).toFixed(1)}M달러 (약 ${(usd * 1350 / 100_000_000).toFixed(1)}억원)`;
+  if (usd >= 1_000_000) {
+    return `${(usd / 1_000_000).toFixed(1)}M달러 (약 ${((usd * 1350) / 100_000_000).toFixed(1)}억원)`;
+  }
   return `$${usd.toLocaleString()}`;
 }
 
@@ -67,9 +74,7 @@ function LatestMoveCard({ tx }: LatestMoveCardProps) {
 
       <View style={{ flex: 1, gap: 1 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <Text style={{ fontSize: 12, fontWeight: '700', color: '#06B6D4' }}>
-            방금 감지됨
-          </Text>
+          <Text style={{ fontSize: 12, fontWeight: '700', color: '#06B6D4' }}>방금 감지됨</Text>
           <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)' }}>·</Text>
           <Text style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
             {formatRelativeTime(tx.timestampMs)}
@@ -108,7 +113,14 @@ export function HomeHeader({
         <Text style={{ fontSize: 26, fontWeight: '800', color: 'white', letterSpacing: -0.8 }}>
           안녕하세요! 👋
         </Text>
-        <Text style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', fontWeight: '500', letterSpacing: -0.3 }}>
+        <Text
+          style={{
+            fontSize: 16,
+            color: 'rgba(255,255,255,0.5)',
+            fontWeight: '500',
+            letterSpacing: -0.3,
+          }}
+        >
           오늘 고래들의 움직임은 평온한 편이에요.
         </Text>
       </View>

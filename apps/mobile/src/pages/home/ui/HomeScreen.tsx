@@ -45,7 +45,9 @@ export function HomeScreen() {
   useDailyBriefing(movements);
 
   const filteredWhales = useMemo(() => {
-    if (!whales) return [];
+    if (!whales) {
+      return [];
+    }
     return selectedChain === 'ALL' ? whales : whales.filter(w => w.chain === selectedChain);
   }, [whales, selectedChain]);
 
@@ -72,7 +74,10 @@ export function HomeScreen() {
   if (isLoading) {
     return (
       <View style={{ flex: 1, backgroundColor: '#020B18' }}>
-        <MirionHeader scrollY={scrollY} streakCount={streakCount} />
+        <MirionHeader
+          scrollY={scrollY}
+          streakCount={streakCount}
+        />
         <View style={{ flex: 1, paddingTop: headerTopPadding }}>
           <SkeletonList />
         </View>
@@ -83,7 +88,10 @@ export function HomeScreen() {
   if (isError) {
     return (
       <View style={{ flex: 1, backgroundColor: '#020B18' }}>
-        <MirionHeader scrollY={scrollY} streakCount={streakCount} />
+        <MirionHeader
+          scrollY={scrollY}
+          streakCount={streakCount}
+        />
         <View style={{ flex: 1, paddingTop: headerTopPadding }}>
           <ErrorState onRetry={refetch} />
         </View>
@@ -93,7 +101,10 @@ export function HomeScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#020B18' }}>
-      <MirionHeader scrollY={scrollY} streakCount={streakCount} />
+      <MirionHeader
+        scrollY={scrollY}
+        streakCount={streakCount}
+      />
       <Animated.FlatList
         data={filteredWhales}
         renderItem={renderItem}

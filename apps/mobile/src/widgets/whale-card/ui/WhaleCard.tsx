@@ -137,7 +137,7 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
                 color="white"
                 strokeWidth={2.5}
               />
-              <Text style={{ fontSize: 12, fontWeight: '800', color: 'white' }}>잠금</Text>
+              <Text style={{ fontSize: 12, fontWeight: '800', color: 'white' }}>PRO</Text>
             </View>
           ) : (
             <ArrowRight
@@ -166,7 +166,7 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
                   letterSpacing: -0.5,
                 }}
               >
-                ••••••
+                ****
               </Text>
             ) : (
               <RollupText
@@ -219,9 +219,7 @@ export function WhaleCard({ whale, isPro, onPress, onUpgrade }: Props) {
           }}
           numberOfLines={2}
         >
-          {isLocked
-            ? '구독 후 고래의 최근 활동을 확인하세요'
-            : (whale.recentActivity ?? '최근 활동이 없어요')}
+          {isLocked ? '구독 후 최근 활동 확인 가능' : (whale.recentActivity ?? '—')}
         </Text>
       </Animated.View>
     </Pressable>

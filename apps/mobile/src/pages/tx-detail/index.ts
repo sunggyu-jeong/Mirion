@@ -1,2 +1,2 @@
-export type { TxDetailParams } from './ui/TxDetailScreen';
 export { TxDetailScreen } from './ui/TxDetailScreen';
+export type { TxDetailParams } from '@shared/lib/navigation';

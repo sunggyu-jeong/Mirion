@@ -24,7 +24,7 @@ export function MirionHeader({ scrollY, streakCount, onNotificationPress }: Miri
     backgroundColor: interpolateColor(
       scrollY.value,
       [0, 60],
-      ['rgba(255,255,255,0)', 'rgba(255,255,255,0.95)'],
+      ['rgba(2,11,24,0)', 'rgba(2,11,24,0.97)'],
     ),
   }));
 
@@ -60,11 +60,11 @@ export function MirionHeader({ scrollY, streakCount, onNotificationPress }: Miri
             style={{
               fontSize: 22,
               fontWeight: '800',
-              color: '#0f172b',
+              color: '#ffffff',
               letterSpacing: -0.5,
             }}
           >
-            미리온
+            고래사냥
           </Text>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
@@ -77,7 +77,7 @@ export function MirionHeader({ scrollY, streakCount, onNotificationPress }: Miri
                 paddingHorizontal: 10,
                 paddingVertical: 6,
                 borderRadius: 20,
-                backgroundColor: pressed ? '#fef3c7' : streakCount > 0 ? '#fffbeb' : 'transparent',
+                backgroundColor: pressed ? '#2a1a00' : streakCount > 0 ? '#1a1200' : 'transparent',
               })}
             >
               <Text style={{ fontSize: 16 }}>🔥</Text>
@@ -96,21 +96,21 @@ export function MirionHeader({ scrollY, streakCount, onNotificationPress }: Miri
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: pressed ? '#f1f5f9' : 'transparent',
+                backgroundColor: pressed ? '#1e2a3a' : 'transparent',
                 alignItems: 'center',
                 justifyContent: 'center',
               })}
             >
               <Bell
                 size={22}
-                color="#0f172b"
+                color="#ffffff"
                 strokeWidth={1.8}
               />
             </Pressable>
           </View>
         </View>
 
-        <Animated.View style={[{ height: 0.5, backgroundColor: '#e8edf2' }, borderStyle]} />
+        <Animated.View style={[{ height: 0.5, backgroundColor: '#1e2a3a' }, borderStyle]} />
       </Animated.View>
 
       <Modal

@@ -47,10 +47,7 @@ function TabItem({
   }, [isActive, lift]);
 
   const iconStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateY: -6 * lift.value },
-      { scale: scale.value },
-    ],
+    transform: [{ translateY: -6 * lift.value }, { scale: scale.value }],
     opacity: 0.4 + 0.6 * lift.value,
   }));
 
@@ -105,10 +102,12 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
   const indicatorWidth = useSharedValue(24);
 
   useEffect(() => {
-    if (layoutWidth === 0) return;
+    if (layoutWidth === 0) {
+      return;
+    }
     const targetX = state.index * slotWidth + (slotWidth - 24) / 2;
     indicatorX.value = withSpring(targetX, MORPH_SPRING);
-    
+
     // Morph effect: momentarily stretch width during move
     indicatorWidth.value = withSpring(32, { ...MORPH_SPRING, damping: 10 });
     setTimeout(() => {
@@ -138,7 +137,9 @@ export function BottomTabBar({ state, navigation }: BottomTabBarProps) {
       <View style={{ flexDirection: 'row', height: 62 }}>
         {state.routes.map((route, i) => {
           const cfg = TAB_CONFIG[route.name];
-          if (!cfg) return null;
+          if (!cfg) {
+            return null;
+          }
           return (
             <TabItem
               key={route.key}
