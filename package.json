@@ -8,6 +8,8 @@
     "android": "pnpm --filter @mirion/mobile android",
     "ios": "pnpm --filter @mirion/mobile ios",
     "lint:mobile": "pnpm --filter @mirion/mobile lint",
+    "storybook:web": "pnpm --filter @mirion/mobile storybook:web",
+    "storybook:figma": "pnpm --filter @mirion/mobile storybook:figma",
     "worker:dev": "pnpm --filter @mirion/worker dev",
     "worker:deploy": "pnpm --filter @mirion/worker deploy",
     "monitor:dev": "pnpm --filter @mirion/whale-monitor dev",
@@ -18,6 +20,21 @@
   "license": "ISC",
   "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be",
   "pnpm": {
+    "overrides": {
+      "react": "19.2.3",
+      "react-dom": "19.2.3",
+      "@types/react": "^19.2.0",
+      "@types/react-dom": "^19.1.0",
+      "@storybook/core-events": "8.6.4",
+      "@storybook/api": "8.6.4",
+      "@storybook/channels": "8.6.4",
+      "@storybook/client-logger": "8.6.4",
+      "@storybook/core-common": "8.6.4",
+      "@storybook/node-logger": "8.6.4",
+      "@storybook/types": "8.6.4",
+      "@storybook/preview-api": "8.6.4",
+      "@storybook/global": "5.0.0"
+    },
     "peerDependencyRules": {
       "allowedVersions": {
         "@react-native/eslint-config>eslint": "9"

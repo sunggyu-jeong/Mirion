@@ -15,7 +15,12 @@ import Animated, {
 
 import { RadarPulse, WhaleMovementItem } from './WhaleMovementItem';
 
-const AnimatedSectionList = Animated.createAnimatedComponent(SectionList);
+type MovementRow = { tx: WhaleTx; locked: boolean };
+type MovementSection = { title: string; data: MovementRow[] };
+
+const AnimatedSectionList = Animated.createAnimatedComponent(
+  SectionList<MovementRow, MovementSection>,
+);
 const EASE_OUT = Easing.bezier(0.22, 1, 0.36, 1);
 const FREE_LIMIT = 3;
 const TEASER_COUNT = 2;
@@ -70,7 +75,7 @@ export function WhaleMovementList({
       return [];
     }
 
-    let data: { tx: WhaleTx; locked: boolean }[] = [];
+    let data: MovementRow[] = [];
     if (isPro) {
       data = movements.map(tx => ({ tx, locked: false }));
     } else {
@@ -85,7 +90,7 @@ export function WhaleMovementList({
   }, [movements, isPro]);
 
   const renderItem = useCallback(
-    ({ item, index }: { item: { tx: WhaleTx; locked: boolean }; index: number }) => (
+    ({ item, index }: { item: MovementRow; index: number }) => (
       <Animated.View
         entering={FadeInDown.delay(Math.min(index * 40, 400))
           .duration(260)
@@ -120,7 +125,7 @@ export function WhaleMovementList({
   return (
     <AnimatedSectionList
       sections={sections}
-      keyExtractor={(item: any) => item.tx.txHash}
+      keyExtractor={item => item.tx.txHash}
       renderItem={renderItem}
       ItemSeparatorComponent={ItemSeparator}
       contentContainerStyle={{ paddingBottom: 32, flexGrow: 1 }}

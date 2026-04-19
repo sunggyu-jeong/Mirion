@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Dimensions, View } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   Easing,
   interpolate,
@@ -103,7 +104,7 @@ function SweepLayer({
   angleOffset,
   opacity,
 }: {
-  rotation: Animated.SharedValue<number>;
+  rotation: SharedValue<number>;
   angleOffset: number;
   opacity: number;
 }) {

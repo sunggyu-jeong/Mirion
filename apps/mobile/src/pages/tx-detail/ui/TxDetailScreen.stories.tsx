@@ -1,10 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import type { Meta, StoryObj } from '@storybook/react-native';
+import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 
 import { TxDetailScreen } from './TxDetailScreen';
 
 const Stack = createNativeStackNavigator();
+const TxDetailStackScreen = TxDetailScreen as React.ComponentType<any>;
 
 const MOCK_TX_PARAMS = {
   txHash: '0xabc123def456',
@@ -25,7 +26,7 @@ function TxDetailStory() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name="TxDetail"
-        component={TxDetailScreen}
+        component={TxDetailStackScreen}
         initialParams={MOCK_TX_PARAMS}
       />
     </Stack.Navigator>
@@ -47,7 +48,7 @@ export const Send: Story = {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name="TxDetail"
-        component={TxDetailScreen}
+        component={TxDetailStackScreen}
         initialParams={{
           ...MOCK_TX_PARAMS,
           type: 'send',

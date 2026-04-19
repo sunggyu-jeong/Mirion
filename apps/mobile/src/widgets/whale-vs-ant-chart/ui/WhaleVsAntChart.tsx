@@ -3,6 +3,7 @@ import { formatUsd } from '@shared/lib/format';
 import { AnimatedNumber } from '@shared/ui';
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
+import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   FadeInDown,
   interpolate,
@@ -32,7 +33,7 @@ function computeRatio(txs: WhaleTx[]): {
 }
 
 interface GaugeBarProps {
-  ratio: Animated.SharedValue<number>;
+  ratio: SharedValue<number>;
 }
 
 function GaugeBar({ ratio }: GaugeBarProps) {
